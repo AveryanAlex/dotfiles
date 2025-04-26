@@ -14,6 +14,8 @@
   hm = {
     home.packages = with pkgs; [gh-copilot];
 
+    home.sessionVariables.NIXOS_OZONE_WL = "1";
+
     home.file.".vscode/argv.json".text = builtins.toJSON {
       enable-crash-reporter = false;
       password-store = "gnome";
@@ -36,7 +38,7 @@
         vm.ms-python.isort
         vm.ms-python.mypy-type-checker
         vm.ms-python.python
-        vm.ms-python.vscode-pylance
+        (vm.ms-python.vscode-pylance.override {meta.license = [];})
         vm.njpwerner.autodocstring
 
         # Jupyter
@@ -47,18 +49,23 @@
         # Other langs
         pkgs.vscode-extensions.jnoortheen.nix-ide
         pkgs.vscode-extensions.rust-lang.rust-analyzer-nightly
-        # vm.galarius.vscode-opencl
+        vm.galarius.vscode-opencl
         vm.github.vscode-github-actions
         vm.james-yu.latex-workshop
         vm.mechatroner.rainbow-csv
         # vm.ms-vscode.cpptools
         # pkgs.vscode-extensions.ms-vscode.cpptools
         pkgs.vscode-extensions.llvm-vs-code-extensions.vscode-clangd
+        pkgs.vscode-extensions.vadimcn.vscode-lldb
+        pkgs.vscode-extensions.ms-vscode.cmake-tools
+        pkgs.vscode-extensions.twxs.cmake
         vm.redhat.java
         vm.redhat.vscode-xml
         vm.redhat.vscode-yaml
         vm.tamasfe.even-better-toml
         # vscode-marketplace.ms-azuretools.vscode-docker
+        pkgs.vscode-extensions.myriad-dreamin.tinymist
+        vm.orangex4.vscode-typst-sympy-calculator
 
         vm.davidanson.vscode-markdownlint
         vm.yzhang.markdown-all-in-one
@@ -77,16 +84,42 @@
         # vm.bito.bito
         vm.earshinov.sort-lines-by-selection
         vm.editorconfig.editorconfig
-        vm.fill-labs.dependi
+        (vm.fill-labs.dependi.override {meta.license = [];})
         # vm.github.copilot
         vm.github.vscode-pull-request-github
         vm.gruntfuggly.todo-tree
         vm.stkb.rewrap
         vm.tyriar.sort-lines
+        (pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+          mktplcRef = let
+            sources = {
+              "x86_64-linux" = {
+                arch = "linux-x64";
+                hash = "sha256-PLCy6DOcQBU3jRN3k1h/x90a8LCFMrL02ZT2Ma1V9G0=";
+              };
+            };
+          in
+            {
+              name = "continue";
+              publisher = "Continue";
+              version = "1.1.17";
+            }
+            // sources.${pkgs.stdenv.system};
+          nativeBuildInputs = [pkgs.autoPatchelfHook];
+          buildInputs = [(lib.getLib pkgs.stdenv.cc.cc)];
+          meta = {
+            platforms = [
+              "x86_64-linux"
+            ];
+          };
+        })
+
+        # JavaScript
+        vm.svelte.svelte-vscode
 
         # Misc
         vm.donjayamanne.githistory
-        vm.gitlab.gitlab-workflow
+        # vm.gitlab.gitlab-workflow
         vm.mkhl.direnv
         vm.wakatime.vscode-wakatime
       ];
@@ -131,14 +164,19 @@
         "sortLines.filterBlankLines" = true;
         "workbench.startupEditor" = "none";
         "direnv.restart.automatic" = true;
+        "extensions.ignoreRecommendations" = true;
 
         "C_Cpp.clang_format_path" = "${pkgs.clang-tools}/bin/clang-format";
         "OpenCL.formatting.name" = "${pkgs.clang-tools}/bin/clang-format";
 
+        # "cmake.debugConfig" = {
+        #   "MIMode" = "lldb";
+        # };
+
         # Python
         "python.analysis.autoImportCompletions" = true;
-        "black-formatter.path" = ["${pkgs.black}/bin/black"];
-        "python.formatting.provider" = "black";
+        "black-formatter.path" = ["black"];
+        # "python.formatting.provider" = "black";
         "python.languageServer" = "Pylance";
         "mypy-type-checker.args" = ["--disable-error-code=import-untyped"];
         "mypy-type-checker.severity" = {
@@ -148,9 +186,16 @@
         # "mypy-type-checker.path" = [ "${pkgs.mypy}/bin/mypy" ];
         "python.poetryPath" = "${pkgs.poetry}/bin/poetry";
         "python.venvPath" = "~/.cache/pypoetry/virtualenvs";
-        "isort.path" = ["${pkgs.python3Packages.isort}/bin/isort"];
+        "isort.path" = ["isort"]; # ${pkgs.python3Packages.isort}/bin/
         "python.testing.pytestEnabled" = true;
         "python.testing.pytestPath" = "${pkgs.python3Packages.pytest}/bin/pytest";
+        "python.defaultInterpreterPath" = "${lib.getExe ((import ./python.nix) pkgs)}";
+        "python.terminal.activateEnvironment" = false;
+
+        "C_Cpp.default.cppStandard" = "c++23";
+        "C_Cpp.default.cStandard" = "c23";
+
+        "svelte.enable-ts-plugin" = true;
       };
     };
   };

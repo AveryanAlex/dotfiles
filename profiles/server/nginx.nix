@@ -22,7 +22,7 @@ in {
       enable = true;
       inherit package;
 
-      clientMaxBodySize = "512M";
+      clientMaxBodySize = "50000M";
 
       recommendedOptimisation = true;
       recommendedProxySettings = true;

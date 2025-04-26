@@ -3,7 +3,7 @@ let
   users = [alex];
 
   alligator = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE7y1Vw/aeF69RDccAB2BB1IATUvVEQ7sIgAO5fUZKyC";
-  hamster = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPeBh0G+g7lLFUupnW5Vdmo4p4lDkrb/rV+szfqMLHAr";
+  hamster = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBMxV923jWZlK1zghe1WKc05rh0he/A1gO/CPYVKI/PP";
   desktops = [alligator hamster];
 
   ferret = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJCrSdgjm9hxyFMCVCW+SzgF7AThC+fZy8RBQoFqCWT2";
@@ -15,7 +15,7 @@ let
   lizard = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEkmHS0r9G9Qgsponr/XayqOXB28eR+eUiYtBA+x5vTK";
   diamond = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKI3lWpGU0TE74z0STnC1WuUAUNlMYipvUChSaJ/k0pw";
   grizzly = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP7uVSBbSkY2Dyv38TWzljK8eXH/K4q9CukqY8Aly3/I";
-  servers = [hawk falcon whale lizard diamond grizzly];
+  servers = [falcon whale lizard diamond];
 
   systems = desktops ++ family ++ servers;
 in {
@@ -55,6 +55,7 @@ in {
   "secrets/creds/jupyter.age".publicKeys = users ++ [whale];
   "secrets/creds/memexpert.age".publicKeys = users ++ [whale];
   "secrets/creds/gptoolsbot.age".publicKeys = users ++ [whale];
+  "secrets/creds/bash-init.age".publicKeys = users ++ desktops ++ servers;
 
   "secrets/intpass/pterodactyl-panel.age".publicKeys = users ++ [whale];
   "secrets/intpass/pterodactyl-redis.age".publicKeys = users ++ [whale];
@@ -62,6 +63,8 @@ in {
   "secrets/intpass/grizzly-influxdb-admin.age".publicKeys = users ++ [grizzly];
   "secrets/intpass/grizzly-influxdb-admin-token.age".publicKeys = users ++ [grizzly];
   "secrets/intpass/upsmon-pass.age".publicKeys = users ++ [whale];
+  "secrets/intpass/smb-tank.age".publicKeys = users ++ desktops;
+  "secrets/intpass/nextcloud-root.age".publicKeys = users ++ [whale];
 
   "secrets/wireguard/hawk.age".publicKeys = users ++ [hawk falcon];
   "secrets/wireguard/whale.age".publicKeys = users ++ [whale];

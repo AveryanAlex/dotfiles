@@ -9,6 +9,8 @@
       ../../dev
       ../../profiles/apps/wezterm.nix
       ./gnome.nix
+      ./compat.nix
+      ./deployapp.nix
     ]
     ++ (with inputs.self.nixosModules.profiles;
       with apps;
@@ -19,7 +21,7 @@
           mpv
         ]
         ++ (with games; [
-          minecraft
+          # minecraft
           # xonotic
         ])
         ++ (with gui; [
@@ -41,7 +43,7 @@
         ])
         ++ [
           # jupyter
-          autologin
+          # autologin
           embedded
           filemanager
           flatpak
@@ -82,17 +84,22 @@
   #   '';
   # };
 
+  # networking.proxy = rec {
+  #   httpProxy = "socks5://127.0.0.1:10808";
+  #   httpsProxy = httpProxy;
+  # };
+
   programs.appimage.enable = true;
+  # environment.systemPackages = with pkgs; [ocl-icd];
 
   nixcfg.desktop = true;
 
-  hm.services.network-manager-applet.enable = true;
+  # hm.services.network-manager-applet.enable = true;
   programs.adb.enable = true;
 
   programs.wireshark.enable = true;
-  environment.systemPackages = [pkgs.wireshark pkgs.openfortivpn];
+  environment.systemPackages = [pkgs.wireshark pkgs.openfortivpn pkgs.ocl-icd];
   # systemd.packages = [pkgs.fork.amneziawg-tools];
-  # programs.nix-ld.enable = true;
 
   programs.nh = {
     enable = true;

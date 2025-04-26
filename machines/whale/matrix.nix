@@ -239,7 +239,7 @@ in {
   age.secrets.matrix-appservice-discord.file = ../../secrets/creds/matrix-appservice-discord.age;
 
   services.matrix-appservice-discord = {
-    enable = true;
+    # enable = true;
     environmentFile = config.age.secrets.matrix-appservice-discord.path;
     settings = {
       bridge = {
@@ -257,22 +257,22 @@ in {
     };
   };
 
-  users.users.matrix-appservice-discord = {
-    isSystemUser = true;
-    description = "Matrix Appservice Discord";
-    group = "matrix-appservice-discord";
-    uid = 678;
-  };
-  users.groups.matrix-appservice-discord.gid = 678;
+  # users.users.matrix-appservice-discord = {
+  #   isSystemUser = true;
+  #   description = "Matrix Appservice Discord";
+  #   group = "matrix-appservice-discord";
+  #   uid = 678;
+  # };
+  # users.groups.matrix-appservice-discord.gid = 678;
 
-  systemd.services.matrix-appservice-discord = {
-    requires = ["postgresql.service"];
-    after = ["postgresql.service"];
-    serviceConfig = {
-      DynamicUser = lib.mkForce false;
-      User = "matrix-appservice-discord";
-    };
-  };
+  # systemd.services.matrix-appservice-discord = {
+  #   requires = ["postgresql.service"];
+  #   after = ["postgresql.service"];
+  #   serviceConfig = {
+  #     DynamicUser = lib.mkForce false;
+  #     User = "matrix-appservice-discord";
+  #   };
+  # };
 
   persist.state.dirs = [
     {

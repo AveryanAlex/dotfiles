@@ -30,14 +30,14 @@
   #   };
   # };
 
-  # services.snapper.configs = {
-  #   persist = {
-  #     SUBVOLUME = "/persist";
-  #     ALLOW_USERS = ["alex"];
-  #     TIMELINE_CREATE = true;
-  #     TIMELINE_CLEANUP = true;
-  #   };
-  # };
+  services.snapper.configs = {
+    persist = {
+      SUBVOLUME = "/persist";
+      ALLOW_USERS = ["alex"];
+      TIMELINE_CREATE = true;
+      TIMELINE_CLEANUP = true;
+    };
+  };
 
   fileSystems."/boot" = {
     device = "/dev/nvme0n1p1";

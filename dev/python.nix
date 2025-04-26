@@ -1,0 +1,28 @@
+pkgs:
+pkgs.python3.withPackages
+(
+  ps:
+    with ps; [
+      ipympl
+      ipython
+      jupyter
+      matplotlib
+      mypy
+      numpy
+      pandas
+      scipy
+      seaborn
+      tqdm
+      numba
+      sympy
+      olefile
+      z3-solver
+      flask
+      pillow
+      scikit-learn
+      black
+      ipython
+      tokenize-rt
+      piexif
+    ]
+)

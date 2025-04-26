@@ -10,6 +10,8 @@
         "copilot-proxy.githubusercontent.com falcon:1080 ."
         ".githubcopilot.com falcon:1080 ."
         ".openai.com falcon:1080 ."
+        ".generativelanguage.googleapis.com falcon:1080 ."
+        ".anthropic.com falcon:1080 ."
         ".chatgpt.com falcon:1080 ."
         ".rutracker.org falcon:1080 ."
         ".rutracker.cc falcon:1080 ."

@@ -4,7 +4,7 @@
 
   home-manager.users.alex = {
     home.packages = with pkgs; [
-      arduino
+      # arduino
       esptool
       picocom
     ];
@@ -65,5 +65,7 @@
     # ATTRS{idVendor}=="8087", ATTRS{idProduct}=="0ab[a6]", ENV{MTP_NO_PROBE}="1"
     # SUBSYSTEM=="tty", ENV{ID_REVISION}=="8087", ENV{ID_MODEL_ID}=="0ab6", MODE="0666"
     # SUBSYSTEM=="usb", ATTR{idVendor}=="8087", ATTR{idProduct}=="0aba", MODE="666"
+
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="df11", MODE="0664", GROUP="plugdev"
   '';
 }

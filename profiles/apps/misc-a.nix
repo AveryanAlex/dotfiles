@@ -32,7 +32,7 @@
       hunspellDicts.ru-ru
 
       # File viewers
-      gthumb # gtk image viewer
+      # gthumb # gtk image viewer
       evince # gnome document viewer
       # f3d # simple 3d viewer
 
@@ -50,7 +50,7 @@
 
       # Etc
       # tor-browser-bundle-bin # anonymous browsing
-      # libreoffice-fresh # office
+      libreoffice-fresh # office
       # octaveFull # math software
       # kgraphviewer # graphviz viewer
       # stellarium # planetarium
@@ -58,8 +58,11 @@
       # spek # audio file spectrogram
       # kmplot
       helvum
+      # gyroflow
       # betaflight-configurator
       # brave
+      chromium
+      gyroflow
       # ocrmypdf
       # remmina
       # openfortivpn
@@ -69,7 +72,7 @@
       enable = true;
       defaultApplications = {
         "application/pdf" = "org.gnome.Evince.desktop";
-        "image/jpeg" = "org.gnome.gThumb.desktop";
+        # "image/jpeg" = "org.gnome.gThumb.desktop";
       };
     };
 

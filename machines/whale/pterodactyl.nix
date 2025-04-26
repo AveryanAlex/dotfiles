@@ -79,11 +79,7 @@ in {
       "/run/redis-pass".hostPath = config.age.secrets.pterodactyl-redis-password.path;
     };
 
-    config = {
-      config,
-      pkgs,
-      ...
-    }: {
+    config = {pkgs, ...}: {
       system.stateVersion = "23.05";
 
       networking = {

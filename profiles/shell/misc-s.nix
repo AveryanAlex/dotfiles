@@ -37,6 +37,9 @@
       beep
       exiftool
       lsof
+      iperf
+      rmlint
+      immich-cli
     ];
 
     home.sessionVariables = {

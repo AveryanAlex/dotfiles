@@ -17,6 +17,7 @@
 
     ./hardware.nix
     ./mounts.nix
+    ./ollama.nix
   ];
 
   # nixpkgs.localSystem = {

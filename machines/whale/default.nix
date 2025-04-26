@@ -59,21 +59,23 @@ in {
     # ./firesquare.nix
     ./hass.nix
     ./monitoring.nix
-    ./photoprism.nix
+    # ./photoprism.nix
     ./pterodactyl.nix
     ./tanksrv.nix
     # ./yacy.nix
-    ./tor.nix
+    # ./tor.nix
     ./i2p.nix
-    ./lidarr.nix
+    # ./lidarr.nix
     ./ups.nix
     # ./ipfs.nix
     ./mail.nix
     ./matrix.nix
-    ./cosmovert.nix
+    # ./cosmovert.nix
     ./webtlo.nix
     ./dns.nix
     ./borgserve.nix
+    ./printing.nix
+    ./docker.nix
   ];
 
   system.stateVersion = "22.05";
@@ -87,27 +89,29 @@ in {
   # Monitoring
   services.prometheus.exporters.node.enabledCollectors = ["zoneinfo"];
 
-  systemd.services.tempalarm = {
-    description = "Temperature Alarm";
-    wantedBy = ["multi-user.target"];
-    script = ''
-      while :
-      do
-        if [ "$(${pkgs.hddtemp}/bin/hddtemp /dev/sdb 2>/dev/null | grep -oP '[0-9]+°C' | grep -oP '[0-9]+')" -gt "42" ]; then
-          delay=100
-          ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay
-          ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783
-          ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay
-          ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783
-          for i in 1 2 3 4; do
-              ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 987 -l $delay -n -f 493 -l $delay -n -l $delay -f 880 -l $delay -n -f 493 -l $delay -n -l $delay -f 830 -l $delay -n -f 493 -l $delay -n -l $delay -f 880 -l $delay -n -f 493 -l $delay -n -l $delay -f 830 -l $delay -n -f 493 -l $delay -n -f 739 -l $delay -n -f 493 -l $delay -n -f 830 -l $delay -n -f 493 -l $delay -n -f 659 -l $delay -n -f 493 -l $delay -n -f 739 -l $delay -n -f 492 -l $delay -n -f 622 -l $delay -n -f 493 -l $delay -n -f 659 -l $delay -n -f 493 -l $delay -n -f 622 -l $delay -n -f 493 -l $delay -n -f 659 -l $delay -n -f 493 -l $delay -n -f 622 -l $delay -n -f 493 -l $delay -n -f 659 -l $delay -n -f 493 -l $delay -n -f 622 -l $delay
-          done
-        else
-          sleep 10
-        fi
-      done
-    '';
-  };
+  # systemd.services.tempalarm = {
+  #   description = "Temperature Alarm";
+  #   wantedBy = ["multi-user.target"];
+  #   script = ''
+  #     while :
+  #     do
+  #       if [ "$(${pkgs.hddtemp}/bin/hddtemp /dev/sdb 2>/dev/null | grep -oP '[0-9]+°C' | grep -oP '[0-9]+')" -gt "45" ]; then
+  #         delay=100
+  #         ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay
+  #         ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783
+  #         ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay -n -f 493 -l $delay -n -l $delay -f 622 -l $delay -n -f 493 -l $delay -n -l $delay -f 739 -l $delay
+  #         ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783 -l $delay -n -f 493 -l $delay -n -l $delay -f 659 -l $delay -n -f 493 -l $delay -n -l $delay -f 783
+  #         for i in 1 2 3 4; do
+  #             ${pkgs.beep}/bin/beep -f 493 -l $delay -n -l $delay -f 987 -l $delay -n -f 493 -l $delay -n -l $delay -f 880 -l $delay -n -f 493 -l $delay -n -l $delay -f 830 -l $delay -n -f 493 -l $delay -n -l $delay -f 880 -l $delay -n -f 493 -l $delay -n -l $delay -f 830 -l $delay -n -f 493 -l $delay -n -f 739 -l $delay -n -f 493 -l $delay -n -f 830 -l $delay -n -f 493 -l $delay -n -f 659 -l $delay -n -f 493 -l $delay -n -f 739 -l $delay -n -f 492 -l $delay -n -f 622 -l $delay -n -f 493 -l $delay -n -f 659 -l $delay -n -f 493 -l $delay -n -f 622 -l $delay -n -f 493 -l $delay -n -f 659 -l $delay -n -f 493 -l $delay -n -f 622 -l $delay -n -f 493 -l $delay -n -f 659 -l $delay -n -f 493 -l $delay -n -f 622 -l $delay
+  #         done
+  #       else
+  #         sleep 60
+  #       fi
+  #     done
+  #   '';
+  # };
+
+  boot.kernelModules = ["pcspkr"];
 
   # NETWORKING
 
@@ -123,7 +127,7 @@ in {
   services.nginx.virtualHosts = {
     "bw.averyan.ru" = makeAveryanHost "http://whale:8222";
     "dacha.averyan.ru" = makeAveryanHost "http://lizard:8123";
-    "dav.averyan.ru" = makeAveryanHost "http://whale:5232";
+    "dav.averyan.ru" = makeAveryanHost "http://[::1]:5232";
     "git.averyan.ru" = makeAveryanHost "http://whale:3816";
     "grafana.averyan.ru" = makeAveryanHost "http://whale:3729";
     "home.averyan.ru" = makeAveryanHost "http://whale:8123";
@@ -135,7 +139,11 @@ in {
     "lidarr.averyan.ru" = makeAveryanHost "http://127.0.0.1:8686";
     "yacy.averyan.ru" = makeAveryanHost "http://whale:8627";
     "lab.averyan.ru" = makeAveryanHost "http://127.0.0.1:8874";
-    "memexpert.xyz" = makeHost "http://127.0.0.1:3000" // {useACMEHost = "memexpert.xyz";};
+    "memexpert.xyz" = {
+      globalRedirect = "memexpert.net";
+      useACMEHost = "memexpert.xyz";
+    };
+    "memexpert.net" = makeHost "http://127.0.0.1:3000" // {useACMEHost = "memexpert.net";};
 
     "git.neutrino.su" = makeHost "http://whale:3826" // {useACMEHost = "neutrino.su";};
     "bw.neutrino.su" = makeHost "http://whale:8222" // {useACMEHost = "neutrino.su";};

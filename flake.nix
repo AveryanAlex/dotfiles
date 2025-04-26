@@ -53,6 +53,7 @@
       inputs.nixpkgs-24_11.follows = "nixpkgs-stable";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
     fenix = {
       url = "github:nix-community/fenix";
@@ -108,7 +109,7 @@
       url = "git+ssh://git@github.com/averyanalex/auto-market-maker.git";
     };
     gptoolsbot = {
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
       url = "git+ssh://git@github.com/averyanalex/gptoolsbot.git";
     };
     avtor24bot = {

@@ -10,7 +10,7 @@
   };
 
   hm = {
-    services.opensnitch-ui.enable = true;
+    # services.opensnitch-ui.enable = true;
     home.packages = [pkgs.opensnitch-ui];
     home.file.".config/opensnitch/settings.conf".text = ''
       [global]

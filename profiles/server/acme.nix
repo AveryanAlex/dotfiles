@@ -26,6 +26,9 @@
       "memexpert.xyz" = {
         extraDomainNames = ["*.memexpert.xyz"];
       };
+      "memexpert.net" = {
+        extraDomainNames = ["*.memexpert.net"];
+      };
     };
   };
 

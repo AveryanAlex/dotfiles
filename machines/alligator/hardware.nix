@@ -32,8 +32,8 @@
 
   # Screen
   environment.systemPackages = [pkgs.ddcutil];
-  # boot.extraModulePackages = [config.boot.kernelPackages.ddcci-driver];
-  # boot.kernelModules = ["ddcci"];
+  boot.extraModulePackages = [config.boot.kernelPackages.ddcci-driver];
+  boot.kernelModules = ["ddcci"];
   boot.kernelParams = [
     "video=DP-1:3440x1440@144"
   ];

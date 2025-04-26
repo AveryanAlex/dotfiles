@@ -8,7 +8,7 @@
       profiles = {
         default = {
           isDefault = true;
-          extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+          extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
             bitwarden
             # canvasblocker
             # cookies-txt
@@ -37,6 +37,10 @@
             "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
             "browser.newtabpage.activity-stream.showSponsored" = false;
             "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+
+            "network.proxy.socks" = "127.0.0.1";
+            "network.proxy.socks_port" = 10808;
+            "network.proxy.type" = 1;
           };
         };
       };

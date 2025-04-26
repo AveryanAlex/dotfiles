@@ -9,7 +9,7 @@
     inputs.self.nixosModules.profiles.bluetooth
     inputs.self.nixosModules.profiles.netman
     inputs.self.nixosModules.profiles.libvirt
-    inputs.self.nixosModules.profiles.secureboot
+    # inputs.self.nixosModules.profiles.secureboot
     # inputs.self.nixosModules.profiles.pmbootstrap
     # inputs.self.nixosModules.profiles.remote-builder-client
 

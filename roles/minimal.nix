@@ -30,7 +30,7 @@
     ])
     ++ [
       inputs.nixcfg.nixosModules.default
-      inputs.home-manager.nixosModule
+      inputs.home-manager.nixosModules.default
     ];
 
   nixcfg.inputs = inputs;
@@ -42,6 +42,7 @@
     useDHCP = false;
     useNetworkd = true;
   };
+  services.avahi.enable = false;
 
   zramSwap = {
     enable = true;
