@@ -68,9 +68,6 @@ in {
     };
   };
 
-  security.audit.enable = true;
-  security.auditd.enable = true;
-
   systemd.services.gpu-mining-mode = {
     requiredBy = ["nbminer.service" "teamredminer.service" "srbminer.service"];
     partOf = ["nbminer.service" "teamredminer.service" "srbminer.service"];

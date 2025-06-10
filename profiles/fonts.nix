@@ -13,6 +13,7 @@
       source-sans
       source-sans-pro
       font-awesome
+      inter
     ];
     fontconfig = {
       enable = true;

@@ -1,13 +1,4 @@
-{pkgs, ...}: {
-  home-manager.users.alex = {
-    dconf.settings = {
-      "org/virt-manager/virt-manager".xmleditor-enabled = true;
-      "org/virt-manager/virt-manager/connections".uris = ["qemu+ssh://alex@hamster/system" "qemu:///system"];
-      "org/virt-manager/virt-manager/connections".autoconnect = ["qemu:///system"];
-    };
-    home.packages = [pkgs.virt-manager];
-  };
-
+{
   boot.kernelParams = [
     "intel_iommu=on"
     "iommu=pt"
@@ -34,8 +25,15 @@
     networkConfig = {
       IPv6AcceptRA = false;
       ConfigureWithoutCarrier = true;
+      DHCPServer = true;
     };
     linkConfig.RequiredForOnline = false;
+    dhcpServerConfig = {
+      PoolOffset = 100;
+      PoolSize = 50;
+      EmitDNS = true;
+      DNS = "1.1.1.1";
+    };
   };
 
   persist.state.dirs = ["/var/lib/libvirt"];

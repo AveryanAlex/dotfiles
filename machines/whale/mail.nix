@@ -130,6 +130,7 @@ in {
       services.dovecot2.sieve.extensions = ["fileinto"];
 
       mailserver = {
+        stateVersion = 1;
         enable = true;
         fqdn = "whale.averyan.ru";
         domains = ["averyan.ru"];
@@ -138,7 +139,7 @@ in {
         fullTextSearch = {
           enable = true;
           autoIndex = true;
-          indexAttachments = true;
+          # indexAttachments = true;
         };
 
         vmailUserName = "vmail";

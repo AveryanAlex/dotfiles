@@ -1,4 +1,8 @@
-{inputs, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
   imports =
     (with inputs.self.nixosModules.modules; [
       nebula-averyan
@@ -33,8 +37,17 @@
       inputs.home-manager.nixosModules.default
     ];
 
+  security.audit.enable = true;
+  security.auditd.enable = true;
+
   nixcfg.inputs = inputs;
   nixcfg.username = "alex";
+
+  services.resolved.enable = true;
+  # systemd.services.systemd-resolved.unitConfig.After = ["dbus.service"];
+
+  systemd.services.systemd-networkd.stopIfChanged = false;
+  systemd.services.systemd-resolved.stopIfChanged = false;
 
   networking = {
     nameservers = ["95.165.105.90#dns.neutrino.su"];
@@ -43,6 +56,7 @@
     useNetworkd = true;
   };
   services.avahi.enable = false;
+  systemd.network.wait-online.enable = lib.mkDefault false;
 
   zramSwap = {
     enable = true;

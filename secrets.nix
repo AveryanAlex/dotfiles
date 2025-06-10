@@ -56,6 +56,7 @@ in {
   "secrets/creds/memexpert.age".publicKeys = users ++ [whale];
   "secrets/creds/gptoolsbot.age".publicKeys = users ++ [whale];
   "secrets/creds/bash-init.age".publicKeys = users ++ desktops ++ servers;
+  "secrets/creds/podman.age".publicKeys = users ++ desktops ++ servers;
 
   "secrets/intpass/pterodactyl-panel.age".publicKeys = users ++ [whale];
   "secrets/intpass/pterodactyl-redis.age".publicKeys = users ++ [whale];
@@ -108,4 +109,7 @@ in {
   "secrets/nebula-frsqr/hamster-key.age".publicKeys = users ++ [hamster];
   "secrets/nebula-frsqr/alligator-crt.age".publicKeys = users ++ systems;
   "secrets/nebula-frsqr/alligator-key.age".publicKeys = users ++ [alligator];
+
+  "apps/cinemabot/bot.age".publicKeys = users ++ [whale];
+  "apps/wakapi/wakapi.age".publicKeys = users ++ [whale];
 }

@@ -1,7 +1,6 @@
 {
   inputs,
   config,
-  pkgs,
   ...
 }: let
   wan = "enp5s0"; # with gpu: enp6s0
@@ -41,13 +40,13 @@ in {
     inputs.self.nixosModules.profiles.server.vaultwarden
     inputs.self.nixosModules.profiles.server.matomo
     inputs.self.nixosModules.profiles.server.qdrant
-    inputs.self.nixosModules.profiles.server.meilisearch
+    # inputs.self.nixosModules.profiles.server.meilisearch
     inputs.self.nixosModules.profiles.server.memexpert
     inputs.self.nixosModules.profiles.server.gptoolsbot
     inputs.self.nixosModules.profiles.server.avtor24bot
     # inputs.self.nixosModules.profiles.server.aibox
 
-    # inputs.self.nixosModules.profiles.libvirt
+    inputs.self.nixosModules.profiles.libvirt
     inputs.self.nixosModules.profiles.persist-yggdrasil
     inputs.self.nixosModules.profiles.podman
     inputs.self.nixosModules.profiles.remote-builder-host
@@ -76,6 +75,9 @@ in {
     ./borgserve.nix
     ./printing.nix
     ./docker.nix
+
+    ../../apps/cinemabot
+    ../../apps/wakapi
   ];
 
   system.stateVersion = "22.05";
@@ -184,7 +186,7 @@ in {
         PoolOffset = 100;
         PoolSize = 50;
         EmitDNS = true;
-        DNS = "9.9.9.9";
+        DNS = "1.1.1.1";
       };
     };
 

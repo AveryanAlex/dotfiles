@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-master.url = "github:nixos/nixpkgs";
     # nixpkgs-fork.url = "git+file:///home/alex/projects/averyanalex/nixpkgs";
     # nixpkgs-fork.url = "github:averyanalex/nixpkgs/test";
@@ -49,8 +49,8 @@
     # };
     lanzaboote.url = "github:nix-community/lanzaboote";
     mailserver = {
-      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-24.11";
-      inputs.nixpkgs-24_11.follows = "nixpkgs-stable";
+      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
+      inputs.nixpkgs-25_05.follows = "nixpkgs-stable";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";

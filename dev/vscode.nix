@@ -48,7 +48,7 @@
 
         # Other langs
         pkgs.vscode-extensions.jnoortheen.nix-ide
-        pkgs.vscode-extensions.rust-lang.rust-analyzer-nightly
+        pkgs.vscode-extensions.rust-lang.rust-analyzer
         vm.galarius.vscode-opencl
         vm.github.vscode-github-actions
         vm.james-yu.latex-workshop
@@ -95,14 +95,14 @@
             sources = {
               "x86_64-linux" = {
                 arch = "linux-x64";
-                hash = "sha256-PLCy6DOcQBU3jRN3k1h/x90a8LCFMrL02ZT2Ma1V9G0=";
+                hash = "sha256-EjaYwZlO9mOlTyUEOXxcxRU/KQj5xt0s8EscBD+Dv8k=";
               };
             };
           in
             {
               name = "continue";
               publisher = "Continue";
-              version = "1.1.17";
+              version = "1.1.35";
             }
             // sources.${pkgs.stdenv.system};
           nativeBuildInputs = [pkgs.autoPatchelfHook];
@@ -113,6 +113,8 @@
             ];
           };
         })
+        # vm.saoudrizwan.claude-dev
+        vm.rooveterinaryinc.roo-cline
 
         # JavaScript
         vm.svelte.svelte-vscode
@@ -178,6 +180,7 @@
         "black-formatter.path" = ["black"];
         # "python.formatting.provider" = "black";
         "python.languageServer" = "Pylance";
+        "python.analysis.typeCheckingMode" = "standard";
         "mypy-type-checker.args" = ["--disable-error-code=import-untyped"];
         "mypy-type-checker.severity" = {
           "error" = "Warning";
@@ -196,10 +199,16 @@
         "C_Cpp.default.cStandard" = "c23";
 
         "svelte.enable-ts-plugin" = true;
+
+        "roo-cline.allowedCommands" = [
+          "pnpm test"
+          "cargo test"
+          "pytest"
+        ];
       };
     };
   };
 
-  persist.state.homeDirs = [".config/Code"];
+  persist.state.homeDirs = [".config/Code" ".config/Cursor" ".cursor"];
   persist.cache.homeDirs = [".wakatime"];
 }

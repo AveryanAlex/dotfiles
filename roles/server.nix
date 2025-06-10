@@ -17,5 +17,8 @@
     '';
   };
 
+  systemd.targets.network-online.wantedBy = ["multi-user.target"];
+  systemd.network.wait-online.enable = true;
+
   hm.services.gpg-agent.pinentryPackage = pkgs.pinentry-curses;
 }

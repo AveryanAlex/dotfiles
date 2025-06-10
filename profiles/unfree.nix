@@ -10,5 +10,6 @@
       "hplip"
       "obsidian"
       "mdk-sdk"
+      "cursor"
     ];
 }

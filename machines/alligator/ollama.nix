@@ -1,17 +1,17 @@
 {pkgs, ...}: let
-  ollamaImage = pkgs.dockerTools.pullImage {
-    imageName = "ollama/ollama";
-    finalImageTag = "rocm";
-    imageDigest = "sha256:2092b61563b18fb73ae01224a28eb00d9f253248002b79eac96d237dee995c46";
-    sha256 = "sha256-aCWpvH0AiCFZh/DN+SC90j4AJjaDIB30g8edKe+a5EU=";
-  };
-
-  webuiImage = pkgs.dockerTools.pullImage {
-    imageName = "ghcr.io/open-webui/open-webui";
-    finalImageTag = "main";
-    imageDigest = "sha256:e8a0f40a2724e1b4c1573596e23cd1c6dce52e16a285e4fd9c713e3c5eec3eb0";
-    sha256 = "sha256-mvPa8usTIbUgX2vmzWCa5aCc7WHqthKesqnEzyUETnI=";
-  };
+#   ollamaImage = pkgs.dockerTools.pullImage {
+#     imageName = "ollama/ollama";
+#     finalImageTag = "0.6.7-rc0-rocm";
+#     imageDigest = "sha256:98bee0d601a51d5b9791f41914db252188f1a715d67932ef686fcf8ae3361ee5";
+#     sha256 = "sha256-zDFkGFEGgVumWLDkiSv02eHxBxpN6A3YwsOOVL3yY5w=";
+#   };
+# 
+#   webuiImage = pkgs.dockerTools.pullImage {
+#     imageName = "ghcr.io/open-webui/open-webui";
+#     finalImageTag = "main";
+#     imageDigest = "sha256:e8a0f40a2724e1b4c1573596e23cd1c6dce52e16a285e4fd9c713e3c5eec3eb0";
+#     sha256 = "sha256-mvPa8usTIbUgX2vmzWCa5aCc7WHqthKesqnEzyUETnI=";
+#   };
 in {
   persist.state.dirs = ["/var/lib/ollama" "/var/lib/open-webui"];
 
@@ -19,7 +19,7 @@ in {
     containers = {
       open-webui = {
         image = "ghcr.io/open-webui/open-webui:main";
-        imageFile = webuiImage;
+        # imageFile = webuiImage;
         volumes = [
           "/var/lib/open-webui:/app/backend/data"
         ];
@@ -28,8 +28,8 @@ in {
       };
 
       ollama = {
-        image = "ollama/ollama:rocm";
-        imageFile = ollamaImage;
+        image = "docker.io/ollama/ollama:rocm";
+        # imageFile = ollamaImage;
         volumes = [
           "/var/lib/ollama:/root/.ollama"
         ];

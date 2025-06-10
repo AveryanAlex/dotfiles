@@ -114,4 +114,13 @@
   programs.gnome-disks.enable = true;
 
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
+
+  home-manager.users.alex = {
+    dconf.settings = {
+      "org/virt-manager/virt-manager".xmleditor-enabled = true;
+      "org/virt-manager/virt-manager/connections".uris = ["qemu+ssh://alex@whale/system" "qemu:///system"];
+      "org/virt-manager/virt-manager/connections".autoconnect = ["qemu:///system"];
+    };
+    home.packages = [pkgs.virt-manager];
+  };
 }

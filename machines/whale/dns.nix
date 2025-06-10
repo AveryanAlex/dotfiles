@@ -43,5 +43,8 @@
   networking.firewall.allowedTCPPorts = [53 853];
 
   services.resolved.enable = lib.mkForce false;
-  networking.resolvconf.useLocalResolver = true;
+  environment.etc."resolv.conf".text = ''
+    options edns0
+    nameserver 95.165.105.90
+  '';
 }

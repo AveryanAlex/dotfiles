@@ -20,6 +20,7 @@ pkgs.python3.withPackages
       flask
       pillow
       scikit-learn
+      scikit-image
       black
       ipython
       tokenize-rt

@@ -6,7 +6,7 @@
   nixcfg.gnome.enable = true;
   services.xserver = {
     xkb.layout = "us,ru";
-    xkb.options = "grp:caps_toggle,grp_led:caps";
+    # xkb.options = "grp:caps_toggle,grp_led:caps";
     displayManager = {
       gdm = {
         enable = true;
@@ -250,6 +250,9 @@
       };
       "org/gnome/shell/extensions/astra-monitor" = {
         storage-main = "name-hamster-data";
+      };
+      "org/gnome/desktop/input-sources" = {
+        xkb-options = ["grp:caps_toggle" "grp_led:caps"];
       };
       # "org/gnome/desktop/wm/preferences" = {
       #   button-layout = "appmenu:minimize,maximize,close";

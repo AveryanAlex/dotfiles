@@ -25,10 +25,17 @@
     };
   };
 
-  services.nginx.virtualHosts."immich.averyan.ru" = {
-    useACMEHost = "averyan.ru";
-    locations."/".proxyPass = "http://192.168.30.2:2283";
-    locations."/".proxyWebsockets = true;
+  services.nginx.virtualHosts = {
+    "immich.averyan.ru" = {
+      useACMEHost = "averyan.ru";
+      locations."/".proxyPass = "http://192.168.30.2:2283";
+      locations."/".proxyWebsockets = true;
+    };
+    "llm.averyan.ru" = {
+      useACMEHost = "averyan.ru";
+      locations."/".proxyPass = "http://192.168.30.2:3012";
+      locations."/".proxyWebsockets = true;
+    };
   };
 
   containers.docker = {

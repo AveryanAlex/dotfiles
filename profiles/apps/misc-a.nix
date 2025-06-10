@@ -62,7 +62,6 @@
       # betaflight-configurator
       # brave
       chromium
-      gyroflow
       # ocrmypdf
       # remmina
       # openfortivpn
@@ -72,6 +71,9 @@
       enable = true;
       defaultApplications = {
         "application/pdf" = "org.gnome.Evince.desktop";
+        "text/html" = "com.brave.Browser.desktop";
+          "x-scheme-handler/http" = "com.brave.Browser.desktop";
+          "x-scheme-handler/https" = "com.brave.Browser.desktop";
         # "image/jpeg" = "org.gnome.gThumb.desktop";
       };
     };
