@@ -44,6 +44,8 @@ in {
   #   ]
   #   ++ libraries)}";
 
+  services.envfs.enable = true;
+
   programs.nix-ld = {
     enable = true;
     inherit libraries;
