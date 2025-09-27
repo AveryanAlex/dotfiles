@@ -2,16 +2,16 @@
   inputs,
   modulesPath,
   ...
-}: {
-  imports =
-    [
-      (modulesPath + "/installer/scan/not-detected.nix")
-    ]
-    ++ (with inputs.self.nixosModules.hardware; [
-      physical
-      sdboot
-      cpu.intel
-    ]);
+}:
+{
+  imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
+  ]
+  ++ (with inputs.self.nixosModules.hardware; [
+    physical
+    sdboot
+    cpu.intel
+  ]);
 
   # Storage
   boot.initrd.availableKernelModules = [
@@ -31,6 +31,8 @@
     "dm-cache-mq"
     "dm-cache-cleaner"
     "dm-mirror"
+    "dm-raid"
+    "raid1"
   ];
   boot.kernelModules = [
     "kvm-intel"
@@ -43,6 +45,8 @@
     "dm-writecache"
     "dm-mirror"
     "dm-snapshot"
+    "dm-raid"
+    "raid1"
   ];
 
   services.lvm.boot.thin.enable = true;

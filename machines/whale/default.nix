@@ -2,9 +2,11 @@
   inputs,
   config,
   ...
-}: let
-  wan = "enp5s0"; # with gpu: enp6s0
-  physLan = "enp4s0"; # with gpu: enp5s0
+}:
+let
+  physWan = "enx2a26a0060857";
+  wan = "wan0";
+  physLan = "enx2a26a0060856";
   lan = "lan0";
 
   makeHost = proxyPass: {
@@ -347,7 +349,10 @@ in {
   networking = {
     nat = {
       externalInterface = wan;
-      internalInterfaces = [lan "vms"];
+      internalInterfaces = [
+        lan
+        "vms"
+      ];
     };
 
     firewall = {
@@ -363,23 +368,14 @@ in {
     };
 
     bridges = {
-      ${lan}.interfaces = ["${physLan}"];
-      vms.interfaces = [];
-      yggbr.interfaces = [];
-      wgavbr.interfaces = [];
+      ${lan}.interfaces = [ "${physLan}" ];
+      ${wan}.interfaces = [ "${physWan}" ];
+      vms.interfaces = [ ];
+      yggbr.interfaces = [ ];
+      wgavbr.interfaces = [ ];
     };
 
     interfaces = {
-      # "${wan}" = {
-      #   ipv4 = {
-      #     addresses = [
-      #       {
-      #         address = "95.165.105.90";
-      #         prefixLength = 20;
-      #       }
-      #     ];
-      #   };
-      # };
       "${lan}" = {
         ipv4 = {
           addresses = [

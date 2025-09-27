@@ -6,7 +6,7 @@
   };
 
   fileSystems."/boot" = {
-    device = "/dev/nvme0n1p2";
+    device = "UUID=84E4-B57E";
     fsType = "vfat";
   };
 

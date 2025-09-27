@@ -5,13 +5,16 @@
 }: {
   services.coredns = {
     enable = true;
+
     config = let
       nullsProxy = domain: ''
         forward ${domain} tls://51.195.92.136 tls://54.38.198.100 tls://79.127.215.166 tls://79.127.215.167 tls://179.43.146.42 {
           tls_servername dns.nullsproxy.com
         }
       '';
+      # bind enx2a26a0060857
       common = ''
+        bind wan0
         errors
         prometheus
         cache
