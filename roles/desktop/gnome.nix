@@ -96,139 +96,197 @@
       };
       "org/gnome/desktop/wm/keybindings" =
         {
-          activate-window-menu = [];
-          begin-move = [];
-          begin-resize = [];
-          close = ["<Super>q"];
-          cycle-group = [];
-          cycle-group-backward = [];
-          cycle-panels = [];
-          cycle-panels-backward = [];
-          cycle-windows = [];
-          cycle-windows-backward = [];
-          maximize = [];
-          minimize = [];
-          move-to-monitor-down = [];
-          move-to-monitor-left = [];
-          move-to-monitor-right = [];
-          move-to-monitor-up = [];
-          move-to-workspace-down = [];
-          move-to-workspace-last = [];
-          move-to-workspace-left = [];
-          move-to-workspace-right = [];
-          move-to-workspace-up = [];
-          panel-run-dialog = [];
-          switch-applications = [];
-          switch-applications-backward = [];
-          switch-group = [];
-          switch-group-backward = [];
-          switch-input-source = [];
-          switch-input-source-backward = [];
-          switch-panels = [];
-          switch-panels-backward = [];
-          switch-to-workspace-down = [];
-          switch-to-workspace-last = [];
-          switch-to-workspace-left = [];
-          switch-to-workspace-right = [];
-          switch-to-workspace-up = [];
-          toggle-maximized = ["<Super>f"];
-          unmaximize = [];
+          activate-window-menu = [ ];
+          begin-move = [ ];
+          begin-resize = [ ];
+          close = [ "<Super>q" ];
+          cycle-group = [ ];
+          cycle-group-backward = [ ];
+          cycle-panels = [ ];
+          cycle-panels-backward = [ ];
+          cycle-windows = [ ];
+          cycle-windows-backward = [ ];
+          maximize = [ ];
+          minimize = [ ];
+          move-to-monitor-down = [ ];
+          move-to-monitor-left = [ ];
+          move-to-monitor-right = [ ];
+          move-to-monitor-up = [ ];
+          move-to-workspace-down = [ ];
+          move-to-workspace-last = [ ];
+          move-to-workspace-left = [ ];
+          move-to-workspace-right = [ ];
+          move-to-workspace-up = [ ];
+          panel-run-dialog = [ ];
+          switch-applications = [ ];
+          switch-applications-backward = [ ];
+          switch-group = [ ];
+          switch-group-backward = [ ];
+          switch-input-source = [ ];
+          switch-input-source-backward = [ ];
+          switch-panels = [ ];
+          switch-panels-backward = [ ];
+          switch-to-workspace-down = [ ];
+          switch-to-workspace-last = [ ];
+          switch-to-workspace-left = [ ];
+          switch-to-workspace-right = [ ];
+          switch-to-workspace-up = [ ];
+          toggle-maximized = [ "<Super>f" ];
+          unmaximize = [ ];
         }
-        // (lib.listToAttrs (map (v: {
+        // (lib.listToAttrs (
+          map
+            (v: {
           name = "move-to-workspace-${builtins.toString v}";
-          value = ["<Super><Shift>${builtins.toString v}"];
-        }) [1 2 3 4 5 6 7 8 9]))
-        // (lib.listToAttrs (map (v: {
+              value = [ "<Super><Shift>${builtins.toString v}" ];
+            })
+            [
+              1
+              2
+              3
+              4
+              5
+              6
+              7
+              8
+              9
+            ]
+        ))
+        // (lib.listToAttrs (
+          map
+            (v: {
           name = "switch-to-workspace-${builtins.toString v}";
-          value = ["<Super>${builtins.toString v}"];
-        }) [1 2 3 4 5 6 7 8 9]));
+              value = [ "<Super>${builtins.toString v}" ];
+            })
+            [
+              1
+              2
+              3
+              4
+              5
+              6
+              7
+              8
+              9
+            ]
+        ));
       "org/gnome/desktop/wm/preferences" = {
         focus-mode = "sloppy";
         num-workspaces = 9;
       };
       "org/gnome/shell/keybindings" =
         {
-          focus-active-notification = [];
-          shift-overview-down = [];
-          shift-overview-up = [];
-          show-screen-recording-ui = [];
-          toggle-application-view = [];
-          toggle-message-tray = [];
-          toggle-quick-settings = [];
+          focus-active-notification = [ ];
+          shift-overview-down = [ ];
+          shift-overview-up = [ ];
+          show-screen-recording-ui = [ ];
+          toggle-application-view = [ ];
+          toggle-message-tray = [ ];
+          toggle-quick-settings = [ ];
         }
-        // (lib.listToAttrs (map (v: {
+        // (lib.listToAttrs (
+          map
+            (v: {
           name = "open-new-window-application-${builtins.toString v}";
-          value = [];
-        }) [1 2 3 4 5 6 7 8 9]))
-        // (lib.listToAttrs (map (v: {
+              value = [ ];
+            })
+            [
+              1
+              2
+              3
+              4
+              5
+              6
+              7
+              8
+              9
+            ]
+        ))
+        // (lib.listToAttrs (
+          map
+            (v: {
           name = "switch-to-application-${builtins.toString v}";
-          value = [];
-        }) [1 2 3 4 5 6 7 8 9]));
+              value = [ ];
+            })
+            [
+              1
+              2
+              3
+              4
+              5
+              6
+              7
+              8
+              9
+            ]
+        ));
       "org/gnome/mutter/keybindings" = {
-        cancel-input-capture = [];
-        switch-monitor = ["XF86Display"];
-        toggle-tiled-left = [];
-        toggle-tiled-right = [];
+        cancel-input-capture = [ ];
+        switch-monitor = [ "XF86Display" ];
+        toggle-tiled-left = [ ];
+        toggle-tiled-right = [ ];
       };
       "org/gnome/mutter/wayland/keybindings" = {
-        restore-shortcuts = [];
+        restore-shortcuts = [ ];
       };
       "org/gnome/shell/extensions/forge" = {
         window-gap-hidden-on-single = true;
         dnd-center-layout = "swap";
       };
       "org/gnome/shell/extensions/forge/keybindings" = {
-        window-focus-down = ["<Super>s"];
-        window-focus-left = ["<Super>a"];
-        window-focus-right = ["<Super>d"];
-        window-focus-up = ["<Super>w"];
-        window-move-down = ["<Shift><Super>s"];
-        window-move-left = ["<Shift><Super>a"];
-        window-move-right = ["<Shift><Super>d"];
-        window-move-up = ["<Shift><Super>w"];
-        window-swap-last-active = [];
-        window-gap-size-decrease = [];
-        window-gap-size-increase = [];
-        window-resize-bottom-decrease = [];
-        window-resize-bottom-increase = [];
-        window-resize-left-decrease = [];
-        window-resize-left-increase = [];
-        window-resize-right-decrease = [];
-        window-resize-right-increase = [];
-        window-resize-top-decrease = [];
-        window-resize-top-increase = [];
-        window-snap-center = [];
-        window-snap-one-third-left = [];
-        window-snap-one-third-right = [];
-        window-snap-two-third-left = [];
-        window-snap-two-third-right = [];
-        window-swap-down = [];
-        window-swap-left = [];
-        window-swap-right = [];
-        window-swap-up = [];
-        window-toggle-always-float = [];
-        window-toggle-float = [];
-        workspace-active-tile-toggle = [];
-        con-split-horizontal = [];
-        con-split-layout-toggle = ["<Super>e"];
-        con-split-vertical = [];
-        con-stacked-layout-toggle = [];
-        con-tabbed-layout-toggle = [];
-        con-tabbed-showtab-decoration-toggle = [];
-        focus-border-toggle = [];
-        prefs-open = [];
-        prefs-tiling-toggle = [];
+        window-focus-down = [ "<Super>s" ];
+        window-focus-left = [ "<Super>a" ];
+        window-focus-right = [ "<Super>d" ];
+        window-focus-up = [ "<Super>w" ];
+        window-move-down = [ "<Shift><Super>s" ];
+        window-move-left = [ "<Shift><Super>a" ];
+        window-move-right = [ "<Shift><Super>d" ];
+        window-move-up = [ "<Shift><Super>w" ];
+        window-swap-last-active = [ ];
+        window-gap-size-decrease = [ ];
+        window-gap-size-increase = [ ];
+        window-resize-bottom-decrease = [ ];
+        window-resize-bottom-increase = [ ];
+        window-resize-left-decrease = [ ];
+        window-resize-left-increase = [ ];
+        window-resize-right-decrease = [ ];
+        window-resize-right-increase = [ ];
+        window-resize-top-decrease = [ ];
+        window-resize-top-increase = [ ];
+        window-snap-center = [ ];
+        window-snap-one-third-left = [ ];
+        window-snap-one-third-right = [ ];
+        window-snap-two-third-left = [ ];
+        window-snap-two-third-right = [ ];
+        window-swap-down = [ ];
+        window-swap-left = [ ];
+        window-swap-right = [ ];
+        window-swap-up = [ ];
+        window-toggle-always-float = [ ];
+        window-toggle-float = [ ];
+        workspace-active-tile-toggle = [ ];
+        con-split-horizontal = [ ];
+        con-split-layout-toggle = [ "<Super>e" ];
+        con-split-vertical = [ ];
+        con-stacked-layout-toggle = [ ];
+        con-tabbed-layout-toggle = [ ];
+        con-tabbed-showtab-decoration-toggle = [ ];
+        focus-border-toggle = [ ];
+        prefs-open = [ ];
+        prefs-tiling-toggle = [ ];
       };
       "org/gnome/settings-daemon/plugins/media-keys" = {
-        help = [];
-        logout = [];
-        magnifier = [];
-        magnifier-zoom-in = [];
-        magnifier-zoom-out = [];
-        screenreader = [];
-        screensaver = [];
+        help = [ ];
+        logout = [ ];
+        magnifier = [ ];
+        magnifier-zoom-in = [ ];
+        magnifier-zoom-out = [ ];
+        screenreader = [ ];
+        screensaver = [ ];
       };
-      "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = ["/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"];
+      "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+      ];
       "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
         name = "Terminal";
         binding = "<Super>Return";
@@ -240,9 +298,9 @@
       "org/gnome/shell/extensions/space-bar/shortcuts" = {
         back-and-forth = true;
         enable-activate-workspace-shortcuts = true;
-        open-menu = [];
-        activate-empty-key = [];
-        activate-previous-key = [];
+        open-menu = [ ];
+        activate-empty-key = [ ];
+        activate-previous-key = [ ];
       };
       "org/gnome/shell/extensions/space-bar/appearance" = {
         workspaces-bar-padding = 4;
@@ -252,7 +310,10 @@
         storage-main = "name-hamster-data";
       };
       "org/gnome/desktop/input-sources" = {
-        xkb-options = ["grp:caps_toggle" "grp_led:caps"];
+        xkb-options = [
+          "grp:caps_toggle"
+          "grp_led:caps"
+        ];
       };
       # "org/gnome/desktop/wm/preferences" = {
       #   button-layout = "appmenu:minimize,maximize,close";
@@ -324,7 +385,7 @@
     };
   };
 
-  persist.state.homeDirs = [".local/share/keyrings"];
+  persist.state.homeDirs = [ ".local/share/keyrings" ];
 
   programs.dconf.enable = true;
 

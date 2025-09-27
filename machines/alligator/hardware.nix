@@ -4,7 +4,8 @@
   inputs,
   modulesPath,
   ...
-}: {
+}:
+{
   imports =
     [
       (modulesPath + "/installer/scan/not-detected.nix")
@@ -16,7 +17,7 @@
       gpu.amd
     ]);
 
-  # Storage
+  # STORAGE
   boot.initrd.availableKernelModules = [
     "nvme"
     "xhci_pci"
@@ -26,18 +27,19 @@
     "uas"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = ["dm-snapshot"];
-
+  boot.initrd.kernelModules = [ "dm-snapshot" ];
   services.lvm.boot.thin.enable = true;
 
-  # Screen
-  environment.systemPackages = [pkgs.ddcutil];
-  boot.extraModulePackages = [config.boot.kernelPackages.ddcci-driver];
-  boot.kernelModules = ["ddcci"];
+  # SCREEN
+  # brightness control
+  environment.systemPackages = [ pkgs.ddcutil ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.ddcci-driver ];
+  boot.kernelModules = [ "ddcci" ];
+
   boot.kernelParams = [
     "video=DP-1:3440x1440@144"
   ];
-  home-manager.users.alex = {
+  hm = {
     wayland.windowManager.sway.config.output.DP-1 = {
       mode = "3440x1440@144Hz";
       scale = "1.25";

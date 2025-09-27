@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   imports = [
     ./full.nix
   ];
@@ -17,8 +18,8 @@
     '';
   };
 
-  systemd.targets.network-online.wantedBy = ["multi-user.target"];
+  systemd.targets.network-online.wantedBy = [ "multi-user.target" ];
   systemd.network.wait-online.enable = true;
 
-  hm.services.gpg-agent.pinentryPackage = pkgs.pinentry-curses;
+  hm.services.gpg-agent.pinentry.package = pkgs.pinentry-curses;
 }

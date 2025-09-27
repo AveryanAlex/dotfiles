@@ -4,9 +4,11 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.networking.nebula-averyan;
-in {
+in
+{
   options = {
     networking.nebula-averyan = {
       enable = mkOption {
@@ -30,7 +32,7 @@ in {
             }
           ];
           description = "Firewall rules for outbound traffic.";
-          example = [];
+          example = [ ];
         };
         inbound = mkOption {
           type = types.listOf types.attrs;
@@ -42,7 +44,7 @@ in {
             }
           ];
           description = "Firewall rules for inbound traffic.";
-          example = [];
+          example = [ ];
         };
       };
     };
@@ -74,7 +76,7 @@ in {
       listen.port = 4242;
       isLighthouse = cfg.isLighthouse;
 
-      lighthouses = mkIf (!cfg.isLighthouse) ["10.57.1.10"];
+      lighthouses = mkIf (!cfg.isLighthouse) [ "10.57.1.10" ];
       staticHostMap = {
         "10.57.1.10" = [
           "95.165.105.90:4242"
@@ -98,7 +100,7 @@ in {
         };
         relay = {
           am_relay = cfg.isLighthouse;
-          relays = mkIf (!cfg.isLighthouse) ["10.57.1.10"];
+          relays = mkIf (!cfg.isLighthouse) [ "10.57.1.10" ];
         };
       };
 

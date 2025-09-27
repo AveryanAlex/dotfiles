@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   hm = {
     programs.wezterm = {
       enable = true;

@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home-manager.users.alex = {
     home.packages = with pkgs; [
       # mpc-cli # cli mpd client
@@ -21,5 +22,5 @@
     dconf.settings."io/github/Rirusha/Cassette/application".application-state = "online";
   };
 
-  persist.state.homeDirs = [".local/share/cassette"];
+  persist.state.homeDirs = [ ".local/share/cassette" ];
 }

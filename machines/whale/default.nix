@@ -14,8 +14,9 @@ let
     locations."/".proxyWebsockets = true;
   };
 
-  makeAveryanHost = proxyPass: makeHost proxyPass // {useACMEHost = "averyan.ru";};
-in {
+  makeAveryanHost = proxyPass: makeHost proxyPass // { useACMEHost = "averyan.ru"; };
+in
+{
   imports = [
     inputs.self.nixosModules.roles.server
 
@@ -91,7 +92,7 @@ in {
   services.syncthing.dataDir = "/home/alex/tank/hot/sync";
 
   # Monitoring
-  services.prometheus.exporters.node.enabledCollectors = ["zoneinfo"];
+  services.prometheus.exporters.node.enabledCollectors = [ "zoneinfo" ];
 
   # systemd.services.tempalarm = {
   #   description = "Temperature Alarm";
@@ -115,7 +116,7 @@ in {
   #   '';
   # };
 
-  boot.kernelModules = ["pcspkr"];
+  boot.kernelModules = [ "pcspkr" ];
 
   # NETWORKING
 
@@ -258,7 +259,7 @@ in {
       peers = [
         {
           publicKey = "h+76esMcmPLakUN/1vDlvGGf2Ovmw/IDKKxFtqXCdm8=";
-          allowedIPs = ["0.0.0.0/0"];
+          allowedIPs = [ "0.0.0.0/0" ];
           endpoint = "vpn.averyan.ru:51820";
           persistentKeepalive = 25;
         }
@@ -342,7 +343,10 @@ in {
       "tcp://zabugor.itrus.su:7991"
     ];
     NodeInfo.public = {
-      internet = ["tls://ygg-msk-1.averyan.ru:8362" "tcp://ygg-msk-1.averyan.ru:8363"];
+      internet = [
+        "tls://ygg-msk-1.averyan.ru:8362"
+        "tcp://ygg-msk-1.averyan.ru:8363"
+      ];
     };
   };
 
@@ -356,8 +360,11 @@ in {
     };
 
     firewall = {
-      interfaces.${lan}.allowedTCPPorts = [22];
-      allowedUDPPorts = [67 546]; # DHCP
+      interfaces.${lan}.allowedTCPPorts = [ 22 ];
+      allowedUDPPorts = [
+        67
+        546
+      ]; # DHCP
 
       extraForwardRules = ''
         iifname yggbr oifname ygg0 accept

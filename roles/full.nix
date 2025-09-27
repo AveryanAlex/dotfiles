@@ -1,7 +1,9 @@
-{inputs, ...}: {
+{ inputs, ... }:
+{
   imports =
-    [./minimal.nix]
-    ++ (with inputs.self.nixosModules.profiles;
+    [ ./minimal ]
+    ++ (
+      with inputs.self.nixosModules.profiles;
       with shell;
         [
           direnv

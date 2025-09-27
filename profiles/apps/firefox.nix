@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home-manager.users.alex = {
     home.sessionVariables = {
       MOZ_ENABLE_WAYLAND = "1";
@@ -47,5 +48,5 @@
     };
   };
 
-  persist.state.homeDirs = [".mozilla"];
+  persist.state.homeDirs = [ ".mozilla" ];
 }

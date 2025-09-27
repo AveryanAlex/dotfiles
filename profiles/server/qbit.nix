@@ -1,9 +1,10 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   systemd.services.qbittorrent = {
-    after = ["network.target"];
+    after = [ "network.target" ];
     description = "Qbittorrent Web";
-    wantedBy = ["multi-user.target"];
-    path = [pkgs.qbittorrent-nox];
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.qbittorrent-nox ];
     serviceConfig = {
       ExecStart = ''
         ${pkgs.qbittorrent-nox}/bin/qbittorrent-nox --webui-port=8173
@@ -15,10 +16,13 @@
     };
   };
 
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [8173];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 8173 ];
 
-  networking.firewall.allowedTCPPorts = [12813];
-  networking.firewall.allowedUDPPorts = [12813];
+  networking.firewall.allowedTCPPorts = [ 12813 ];
+  networking.firewall.allowedUDPPorts = [ 12813 ];
 
-  persist.state.homeDirs = [".config/qBittorrent" ".local/share/qBittorrent"];
+  persist.state.homeDirs = [
+    ".config/qBittorrent"
+    ".local/share/qBittorrent"
+  ];
 }

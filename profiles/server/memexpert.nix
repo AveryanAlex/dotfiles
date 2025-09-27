@@ -43,18 +43,18 @@ in {
       ProtectKernelModules = true;
       ProtectKernelLogs = true;
       ProtectControlGroups = true;
-      RestrictAddressFamilies = ["AF_UNIX AF_INET AF_INET6"];
+      RestrictAddressFamilies = [ "AF_UNIX AF_INET AF_INET6" ];
       LockPersonality = true;
       MemoryDenyWriteExecute = true;
       RestrictRealtime = true;
       RestrictSUIDSGID = true;
       PrivateMounts = true;
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
 
   services.postgresql = {
-    ensureDatabases = ["memexpert"];
+    ensureDatabases = [ "memexpert" ];
     ensureUsers = [
       {
         name = "memexpert";
@@ -69,6 +69,6 @@ in {
       description = "MemeXpert";
       group = "memexpert";
     };
-    groups.memexpert = {};
+    groups.memexpert = { };
   };
 }

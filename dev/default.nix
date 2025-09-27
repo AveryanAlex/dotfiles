@@ -2,7 +2,8 @@
   inputs,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     ./vscode.nix
     ./nbconvert.nix
@@ -32,5 +33,5 @@
   	nixfmt-rfc-style
   ]);
 
-  persist.cache.homeDirs = [".local/share/uv"];
+  persist.cache.homeDirs = [ ".local/share/uv" ];
 }

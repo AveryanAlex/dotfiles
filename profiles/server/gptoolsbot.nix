@@ -3,14 +3,16 @@
   inputs,
   pkgs,
   ...
-}: let
+}:
+let
   gptoolsbot-pkg = inputs.gptoolsbot.packages.${pkgs.hostPlatform.system}.default;
-in {
+in
+{
   age.secrets.gptoolsbot.file = ../../secrets/creds/gptoolsbot.age;
   systemd.services.gptoolsbot = {
-    after = ["network-online.target"];
-    wants = ["network-online.target"];
-    path = [gptoolsbot-pkg];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    path = [ gptoolsbot-pkg ];
     environment = {
       HTTPS_PROXY = "http://127.0.0.1:8118";
       HTTP_PROXY = "http://127.0.0.1:8118";
@@ -58,6 +60,6 @@ in {
       ];
       UMask = "0077";
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
 }
