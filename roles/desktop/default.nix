@@ -11,6 +11,7 @@
       ./gnome.nix
       ./compat.nix
       ./deployapp.nix
+      ./tuning.nix
     ]
     ++ (with inputs.self.nixosModules.profiles;
       with apps;
