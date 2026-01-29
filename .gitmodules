@@ -1,0 +1,3 @@
+[submodule "secrets"]
+	path = secrets
+	url = ssh://forgejo@git.neutrino.su/averyanalex/dotfiles-secrets.git
