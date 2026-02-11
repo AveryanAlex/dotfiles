@@ -1,13 +1,14 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   services.printing = {
     enable = true;
     stateless = true;
-    drivers = with pkgs; [hplip];
+    drivers = with pkgs; [ hplip ];
     startWhenNeeded = false;
     listenAddresses = [
       "10.57.1.10:631"
     ];
-    allowFrom = ["all"];
+    allowFrom = [ "all" ];
     defaultShared = true;
   };
 
@@ -26,5 +27,5 @@
   ];
   hardware.printers.ensureDefaultPrinter = "DeskJet_5820";
 
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [631];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 631 ];
 }

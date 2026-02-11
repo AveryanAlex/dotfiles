@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   services.xserver = {
     enable = true;
 
@@ -36,7 +37,7 @@
 
   programs.gnome-disks.enable = false;
 
-  environment.systemPackages = [pkgs.gnomeExtensions.dash-to-dock];
+  environment.systemPackages = [ pkgs.gnomeExtensions.dash-to-dock ];
 
   home-manager.users.olga.dconf.settings = {
     "org/gnome/desktop/background" = {
@@ -52,7 +53,10 @@
     };
 
     "org/gnome/mutter" = {
-      experimental-features = ["scale-monitor-framebuffer" "x11-randr-fractional-scaling"];
+      experimental-features = [
+        "scale-monitor-framebuffer"
+        "x11-randr-fractional-scaling"
+      ];
     };
 
     "org/gnome/desktop/peripherals/touchpad" = {
@@ -65,7 +69,7 @@
       font-antialiasing = "rgba";
     };
     "org/gnome/shell" = {
-      enabled-extensions = ["dash-to-dock@micxgx.gmail.com"];
+      enabled-extensions = [ "dash-to-dock@micxgx.gmail.com" ];
       favorite-apps = [
         "org.gnome.Console.desktop"
         "org.gnome.Calendar.desktop"

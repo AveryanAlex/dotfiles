@@ -1,11 +1,12 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   # services.avahi.enable = true;
   # services.avahi.openFirewall = true;
 
   services.printing = {
     enable = true;
     stateless = true;
-    drivers = with pkgs; [hplip];
+    drivers = with pkgs; [ hplip ];
     cups-pdf.enable = true;
   };
 

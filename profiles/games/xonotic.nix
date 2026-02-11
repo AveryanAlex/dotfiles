@@ -1,7 +1,8 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home-manager.users.alex = {
-    home.packages = [pkgs.xonotic];
+    home.packages = [ pkgs.xonotic ];
   };
 
-  persist.state.homeDirs = [".xonotic"];
+  persist.state.homeDirs = [ ".xonotic" ];
 }

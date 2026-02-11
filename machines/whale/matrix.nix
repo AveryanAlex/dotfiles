@@ -3,7 +3,8 @@
   lib,
   config,
   ...
-}: let
+}:
+let
   clientConfig = {
     "m.homeserver" = {
       base_url = "https://matrix.neutrino.su";
@@ -18,7 +19,8 @@
     add_header Access-Control-Allow-Origin *;
     return 200 '${builtins.toJSON data}';
   '';
-in {
+in
+{
   services.nginx = {
     virtualHosts = {
       "neutrino.su" = {
@@ -60,7 +62,11 @@ in {
   fileSystems."/var/lib/matrix-synapse/media_store" = {
     device = "UUID=bcfa404a-68de-4a25-9fb0-4e972c8f9423";
     fsType = "btrfs";
-    options = ["compress=zstd:7" "noatime" "subvol=@matrix-media"];
+    options = [
+      "compress=zstd:7"
+      "noatime"
+      "subvol=@matrix-media"
+    ];
   };
 
   services.matrix-synapse = {
@@ -87,20 +93,23 @@ in {
       listeners = [
         {
           port = 8008;
-          bind_addresses = ["::1"];
+          bind_addresses = [ "::1" ];
           type = "http";
           tls = false;
           x_forwarded = true;
           resources = [
             {
-              names = ["client" "federation"];
+              names = [
+                "client"
+                "federation"
+              ];
               compress = true;
             }
           ];
         }
       ];
 
-      log_config = (pkgs.formats.yaml {}).generate "synapse-log.yaml" {
+      log_config = (pkgs.formats.yaml { }).generate "synapse-log.yaml" {
         version = 1;
         formatters.journal_fmt.format = "%(name)s: [%(request)s] %(message)s";
         handlers.journal = {
@@ -110,7 +119,7 @@ in {
         };
         root = {
           level = "WARN";
-          handlers = ["journal"];
+          handlers = [ "journal" ];
         };
         disable_existing_loggers = true;
       };
@@ -120,8 +129,8 @@ in {
   # systemd.tmpfiles.rules = ["d /tank/matrix-media 0750 matrix-synapse matrix-synapse - -"];
 
   systemd.services.matrix-synapse = {
-    requires = ["postgresql.service"];
-    after = ["postgresql.service"];
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
     # serviceConfig.ReadWritePaths = ["/tank/matrix-media"];
   };
 
@@ -222,8 +231,8 @@ in {
   users.groups.mautrix-telegram.gid = 641;
 
   systemd.services.mautrix-telegram = {
-    requires = ["postgresql.service"];
-    after = ["postgresql.service"];
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
     serviceConfig = {
       DynamicUser = lib.mkForce false;
       User = "mautrix-telegram";

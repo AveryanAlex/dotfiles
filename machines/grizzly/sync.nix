@@ -2,8 +2,13 @@
   lib,
   config,
   ...
-}: let
-  allDevices = ["hamster" "alligator" "whale"];
+}:
+let
+  allDevices = [
+    "hamster"
+    "alligator"
+    "whale"
+  ];
   commonFolder = name: {
     label = name;
     id = lib.strings.toLower name;
@@ -11,7 +16,8 @@
     ignorePerms = false;
     devices = allDevices;
   };
-in {
+in
+{
   services.syncthing = {
     enable = true;
 
@@ -50,5 +56,5 @@ in {
     };
   };
 
-  persist.state.homeDirs = [".config/syncthing"];
+  persist.state.homeDirs = [ ".config/syncthing" ];
 }

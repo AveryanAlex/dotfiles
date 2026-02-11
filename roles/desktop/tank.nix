@@ -1,5 +1,5 @@
 {
-  boot.supportedFilesystems = ["nfs"];
+  boot.supportedFilesystems = [ "nfs" ];
 
   systemd.mounts = [
     {
@@ -9,14 +9,14 @@
       };
       what = "whale:/home/alex/tank";
       where = "/tank";
-      after = ["nebula@averyan.service"];
-      wants = ["nebula@averyan.service"];
+      after = [ "nebula@averyan.service" ];
+      wants = [ "nebula@averyan.service" ];
     }
   ];
 
   systemd.automounts = [
     {
-      wantedBy = ["multi-user.target"];
+      wantedBy = [ "multi-user.target" ];
       automountConfig = {
         TimeoutIdleSec = "300";
       };

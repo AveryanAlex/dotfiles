@@ -2,7 +2,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   services.matomo = {
     enable = true;
     package = pkgs.matomo;

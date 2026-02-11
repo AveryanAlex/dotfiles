@@ -3,19 +3,25 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.networking.firewall;
   nft-cfg = config.networking.nft-firewall;
 
-  defaultInterface = {default = mapAttrs (name: value: cfg.${name}) commonOptions;};
+  defaultInterface = {
+    default = mapAttrs (name: value: cfg.${name}) commonOptions;
+  };
   allInterfaces = defaultInterface // cfg.interfaces;
 
   commonOptions = {
     allowedTCPPorts = mkOption {
       type = types.listOf types.port;
-      default = [];
+      default = [ ];
       apply = canonicalizePortList;
-      example = [22 80];
+      example = [
+        22
+        80
+      ];
       description = lib.mdDoc ''
         List of TCP ports on which incoming connections are
         accepted.
@@ -24,7 +30,7 @@ with lib; let
 
     allowedTCPPortRanges = mkOption {
       type = types.listOf (types.attrsOf types.port);
-      default = [];
+      default = [ ];
       example = [
         {
           from = 8999;
@@ -39,9 +45,9 @@ with lib; let
 
     allowedUDPPorts = mkOption {
       type = types.listOf types.port;
-      default = [];
+      default = [ ];
       apply = canonicalizePortList;
-      example = [53];
+      example = [ 53 ];
       description = lib.mdDoc ''
         List of open UDP ports.
       '';
@@ -49,7 +55,7 @@ with lib; let
 
     allowedUDPPortRanges = mkOption {
       type = types.listOf (types.attrsOf types.port);
-      default = [];
+      default = [ ];
       example = [
         {
           from = 60000;
@@ -61,7 +67,8 @@ with lib; let
       '';
     };
   };
-in {
+in
+{
   options = {
     networking.nft-firewall = {
       enable = mkOption {
@@ -72,43 +79,43 @@ in {
 
       extraFilterOutputRules = mkOption {
         type = types.listOf types.str;
-        default = [];
-        example = [];
+        default = [ ];
+        example = [ ];
         description = lib.mdDoc "Additional rules in filter output chain.";
       };
 
       extraFilterInputRules = mkOption {
         type = types.listOf types.str;
-        default = [];
-        example = ["tcp dport 80 iifname eth0 counter accept"];
+        default = [ ];
+        example = [ "tcp dport 80 iifname eth0 counter accept" ];
         description = lib.mdDoc "Additional rules in input chain.";
       };
 
       extraFilterForwardRules = mkOption {
         type = types.listOf types.str;
-        default = [];
-        example = ["iifname lan0 oifname wan0 counter accept"];
+        default = [ ];
+        example = [ "iifname lan0 oifname wan0 counter accept" ];
         description = lib.mdDoc "Additional rules in forward chain.";
       };
 
       extraMangleOutputRules = mkOption {
         type = types.listOf types.str;
-        default = [];
-        example = [];
+        default = [ ];
+        example = [ ];
         description = lib.mdDoc "Additional rules in mangle output chain.";
       };
 
       extraNatPreroutingRules = mkOption {
         type = types.listOf types.str;
-        default = [];
-        example = [];
+        default = [ ];
+        example = [ ];
         description = lib.mdDoc "Additional rules in prerouting chain.";
       };
 
       extraNatPostroutingRules = mkOption {
         type = types.listOf types.str;
-        default = [];
-        example = [];
+        default = [ ];
+        example = [ ];
         description = lib.mdDoc "Additional rules in postrouting chain.";
       };
     };
@@ -134,78 +141,76 @@ in {
           type filter hook input priority 0;
 
           # Accept all traffic on the trusted interfaces.
-          ${flip concatMapStrings (cfg.trustedInterfaces ++ ["lo"]) (iface: ''
-        iifname ${iface} accept
-      '')}
+          ${flip concatMapStrings (cfg.trustedInterfaces ++ [ "lo" ]) (iface: ''
+            iifname ${iface} accept
+          '')}
 
           # Accept packets from established or related connections.
           ct state { established, related } accept
 
           # Accept connections to the allowed TCP ports.
-          ${concatStrings (mapAttrsToList (
-          iface: cfg:
-            concatMapStrings (
-              port: ''
+          ${concatStrings (
+            mapAttrsToList (
+              iface: cfg:
+              concatMapStrings (port: ''
                 tcp dport ${toString port} ${optionalString (iface != "default") "iifname ${iface}"} accept
-              ''
-            )
-            cfg.allowedTCPPorts
-        )
-        allInterfaces)}
+              '') cfg.allowedTCPPorts
+            ) allInterfaces
+          )}
 
           # Accept connections to the allowed TCP port ranges.
-          ${concatStrings (mapAttrsToList (
-          iface: cfg:
-            concatMapStrings (
-              rangeAttr: let
-                range = toString rangeAttr.from + "-" + toString rangeAttr.to;
-              in ''
-                tcp dport ${range} ${optionalString (iface != "default") "iifname ${iface}"} accept
-              ''
-            )
-            cfg.allowedTCPPortRanges
-        )
-        allInterfaces)}
+          ${concatStrings (
+            mapAttrsToList (
+              iface: cfg:
+              concatMapStrings (
+                rangeAttr:
+                let
+                  range = toString rangeAttr.from + "-" + toString rangeAttr.to;
+                in
+                ''
+                  tcp dport ${range} ${optionalString (iface != "default") "iifname ${iface}"} accept
+                ''
+              ) cfg.allowedTCPPortRanges
+            ) allInterfaces
+          )}
 
           # Accept packets on the allowed UDP ports.
-          ${concatStrings (mapAttrsToList (
-          iface: cfg:
-            concatMapStrings (
-              port: ''
+          ${concatStrings (
+            mapAttrsToList (
+              iface: cfg:
+              concatMapStrings (port: ''
                 udp dport ${toString port} ${optionalString (iface != "default") "iifname ${iface}"} accept
-              ''
-            )
-            cfg.allowedUDPPorts
-        )
-        allInterfaces)}
+              '') cfg.allowedUDPPorts
+            ) allInterfaces
+          )}
 
           # Accept connections to the allowed UDP port ranges.
-          ${concatStrings (mapAttrsToList (
-          iface: cfg:
-            concatMapStrings (
-              rangeAttr: let
-                range = toString rangeAttr.from + "-" + toString rangeAttr.to;
-              in ''
-                udp dport ${range} ${optionalString (iface != "default") "iifname ${iface}"} accept
-              ''
-            )
-            cfg.allowedUDPPortRanges
-        )
-        allInterfaces)}
+          ${concatStrings (
+            mapAttrsToList (
+              iface: cfg:
+              concatMapStrings (
+                rangeAttr:
+                let
+                  range = toString rangeAttr.from + "-" + toString rangeAttr.to;
+                in
+                ''
+                  udp dport ${range} ${optionalString (iface != "default") "iifname ${iface}"} accept
+                ''
+              ) cfg.allowedUDPPortRanges
+            ) allInterfaces
+          )}
 
           # Optionally respond to ICMP pings.
           ${optionalString cfg.allowPing ''
-        icmp type echo-request ${
-          optionalString (cfg.pingLimit != null)
-          "limit rate ${cfg.pingLimit} "
-        }accept
-      ''}
+            icmp type echo-request ${
+              optionalString (cfg.pingLimit != null) "limit rate ${cfg.pingLimit} "
+            }accept
+          ''}
           ${optionalString (cfg.allowPing && config.networking.enableIPv6) ''
-        icmpv6 type echo-request ${
-          optionalString (cfg.pingLimit != null)
-          "limit rate ${cfg.pingLimit} "
-        }accept
-      ''}
+            icmpv6 type echo-request ${
+              optionalString (cfg.pingLimit != null) "limit rate ${cfg.pingLimit} "
+            }accept
+          ''}
 
           icmp type {echo-reply, destination-unreachable, source-quench, redirect, time-exceeded, parameter-problem, timestamp-request, timestamp-reply, info-request, info-reply, address-mask-request, address-mask-reply, router-advertisement, router-solicitation} accept
           icmpv6 type {destination-unreachable, packet-too-big, time-exceeded, echo-reply, mld-listener-query, mld-listener-report, mld-listener-reduction, nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-redirect, parameter-problem, router-renumbering} accept

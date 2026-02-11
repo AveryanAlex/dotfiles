@@ -12,6 +12,9 @@
         "projects"
       ];
     };
-    cache.homeDirs = [".cache" ".cargo"];
+    cache.homeDirs = [
+      ".cache"
+      ".cargo"
+    ];
   };
 }

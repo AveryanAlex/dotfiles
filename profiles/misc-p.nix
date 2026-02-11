@@ -1,3 +1,4 @@
-{lib, ...}: {
+{ lib, ... }:
+{
   systemd.defaultUnit = "graphical.target";
 }

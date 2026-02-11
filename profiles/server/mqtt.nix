@@ -5,7 +5,7 @@
       {
         users = {
           switch = {
-            acl = ["readwrite #"];
+            acl = [ "readwrite #" ];
             password = "switch";
           };
         };
@@ -13,5 +13,5 @@
     ];
   };
 
-  networking.firewall.interfaces.lan0.allowedTCPPorts = [1883];
+  networking.firewall.interfaces.lan0.allowedTCPPorts = [ 1883 ];
 }

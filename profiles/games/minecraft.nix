@@ -2,35 +2,39 @@
   pkgs,
   inputs,
   ...
-}: let
+}:
+let
   mkNixPak = inputs.nixpak.lib.nixpak {
     inherit (pkgs) lib;
     inherit pkgs;
   };
 
   sandboxed-prismlauncher = mkNixPak {
-    config = {sloth, ...}: {
-      app.package = pkgs.prismlauncher;
+    config =
+      { sloth, ... }:
+      {
+        app.package = pkgs.prismlauncher;
 
-      bubblewrap = {
-        bind.rw = [
-          (sloth.concat' sloth.homeDir "/.local/share/PrismLauncher")
-        ];
-        sockets = {
-          wayland = true;
-          pipewire = true;
+        bubblewrap = {
+          bind.rw = [
+            (sloth.concat' sloth.homeDir "/.local/share/PrismLauncher")
+          ];
+          sockets = {
+            wayland = true;
+            pipewire = true;
+          };
         };
-      };
 
-      etc.sslCertificates.enable = true;
-      gpu.enable = true;
-      locale.enable = true;
-      fonts.enable = true;
-    };
+        etc.sslCertificates.enable = true;
+        gpu.enable = true;
+        locale.enable = true;
+        fonts.enable = true;
+      };
   };
-in {
+in
+{
   home-manager.users.alex = {
-    home.packages = [sandboxed-prismlauncher.config.env];
+    home.packages = [ sandboxed-prismlauncher.config.env ];
   };
 
   # services.syncthing.settings.folders."PrismLauncher" = {
@@ -40,5 +44,5 @@ in {
   #   devices = ["hamster" "alligator"];
   # };
 
-  persist.state.homeDirs = [".local/share/PrismLauncher"];
+  persist.state.homeDirs = [ ".local/share/PrismLauncher" ];
 }

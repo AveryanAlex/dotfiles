@@ -2,9 +2,11 @@
   inputs,
   pkgs,
   ...
-}: let
+}:
+let
   package = inputs.avtor24bot.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in {
+in
+{
   users.users.avtor24bot = {
     uid = 721;
     isSystemUser = true;
@@ -14,9 +16,9 @@ in {
   users.groups.avtor24bot.gid = 721;
 
   systemd.services.avtor24bot = {
-    after = ["network-online.target"];
-    wants = ["network-online.target"];
-    path = [package];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    path = [ package ];
     serviceConfig = {
       User = "avtor24bot";
       Group = "avtor24bot";
@@ -42,14 +44,17 @@ in {
       ProtectKernelModules = true;
       ProtectKernelLogs = true;
       ProtectControlGroups = true;
-      RestrictAddressFamilies = ["AF_INET" "AF_INET6"];
+      RestrictAddressFamilies = [
+        "AF_INET"
+        "AF_INET6"
+      ];
       LockPersonality = true;
       MemoryDenyWriteExecute = true;
       RestrictRealtime = true;
       RestrictSUIDSGID = true;
       PrivateMounts = true;
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
 
   persist.state.dirs = [

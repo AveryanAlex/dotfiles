@@ -1,4 +1,5 @@
-{config, ...}: {
+{ config, ... }:
+{
   services.influxdb2 = {
     enable = true;
     provision = {
@@ -10,7 +11,7 @@
         tokenFile = config.age.secrets.influxdb-admin-token.path;
       };
       organizations.main = {
-        buckets = {};
+        buckets = { };
       };
     };
   };
@@ -33,7 +34,7 @@
     group = "influxdb2";
   };
 
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [8086];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 8086 ];
 
   fileSystems."/var/lib/influxdb2" = {
     device = "/dev/sdf1";

@@ -12,6 +12,6 @@
         "Шаблоны"
       ];
     };
-    cache.homeDirs = [".cache"];
+    cache.homeDirs = [ ".cache" ];
   };
 }

@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   hm = {
     home.packages = with pkgs; [
       # screenshots
@@ -51,7 +52,7 @@
     };
   };
 
-  persist.state.homeDirs = [".local/share/keyrings"];
+  persist.state.homeDirs = [ ".local/share/keyrings" ];
 
   programs.dconf.enable = true;
 }

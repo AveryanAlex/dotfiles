@@ -15,12 +15,12 @@
       BandWidthRate = "2 MBytes";
     };
   };
-  networking.firewall.allowedTCPPorts = [4372];
+  networking.firewall.allowedTCPPorts = [ 4372 ];
 
   services.prometheus.exporters.tor = {
     enable = true;
   };
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [9130];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 9130 ];
 
   services.snowflake-proxy.enable = true;
   systemd.services.snowflake-proxy.serviceConfig.MemoryMax = "256M";

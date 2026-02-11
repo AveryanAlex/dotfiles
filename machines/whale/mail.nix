@@ -2,7 +2,8 @@
   config,
   inputs,
   ...
-}: let
+}:
+let
   commonSieve = ''
     require ["fileinto"];
 
@@ -12,7 +13,8 @@
     }
   '';
   certDir = config.security.acme.certs."averyan.ru".directory;
-in {
+in
+{
   systemd.tmpfiles.rules = [
     "d /persist/mail/dkim 755 221 221 - -"
     "d /persist/mail/sieve 770 5000 5000 - -"
@@ -24,18 +26,20 @@ in {
     "d /persist/mail/spool 1777 0 0 - -"
   ];
 
-  networking.nat.forwardPorts = let
-    mkRule = port: {
-      destination = "192.168.12.36:${toString port}";
-      sourcePort = port;
-      proto = "tcp";
-      loopbackIPs = ["95.165.105.90"];
-    };
-  in [
-    (mkRule 25)
-    (mkRule 465)
-    (mkRule 993)
-  ];
+  networking.nat.forwardPorts =
+    let
+      mkRule = port: {
+        destination = "192.168.12.36:${toString port}";
+        sourcePort = port;
+        proto = "tcp";
+        loopbackIPs = [ "95.165.105.90" ];
+      };
+    in
+    [
+      (mkRule 25)
+      (mkRule 465)
+      (mkRule 993)
+    ];
 
   age.secrets.mail-alex = {
     file = ../../secrets/mail/alex.age;
@@ -104,101 +108,108 @@ in {
       };
     };
 
-    config = {
-      config,
-      pkgs,
-      ...
-    }: {
-      imports = [
-        inputs.mailserver.nixosModules.mailserver
-      ];
+    config =
+      {
+        config,
+        pkgs,
+        ...
+      }:
+      {
+        imports = [
+          inputs.mailserver.nixosModules.mailserver
+        ];
 
-      system.stateVersion = "24.05";
+        system.stateVersion = "24.05";
 
-      networking = {
-        defaultGateway = {
-          address = "192.168.12.1";
-          interface = "eth0";
+        networking = {
+          defaultGateway = {
+            address = "192.168.12.1";
+            interface = "eth0";
+          };
+          firewall.enable = false;
+          useHostResolvConf = false;
+          nameservers = [
+            "9.9.9.9"
+            "8.8.8.8"
+            "1.1.1.1"
+            "77.88.8.8"
+          ];
         };
-        firewall.enable = false;
-        useHostResolvConf = false;
-        nameservers = ["9.9.9.9" "8.8.8.8" "1.1.1.1" "77.88.8.8"];
-      };
-      services.resolved.enable = true;
+        services.resolved.enable = true;
 
-      services.dovecot2.sieve.extensions = ["fileinto"];
+        services.dovecot2.sieve.extensions = [ "fileinto" ];
 
-      mailserver = {
-        stateVersion = 3;
-        enable = true;
-        fqdn = "whale.averyan.ru";
-        domains = ["averyan.ru"];
-
-        indexDir = "/var/lib/dovecot/indices";
-        fullTextSearch = {
+        mailserver = {
+          stateVersion = 3;
           enable = true;
-          autoIndex = true;
-          # indexAttachments = true;
+          fqdn = "whale.averyan.ru";
+          domains = [ "averyan.ru" ];
+
+          indexDir = "/var/lib/dovecot/indices";
+          fullTextSearch = {
+            enable = true;
+            autoIndex = true;
+            # indexAttachments = true;
+          };
+
+          vmailUserName = "vmail";
+          vmailGroupName = "vmail";
+
+          useFsLayout = true;
+
+          x509 = {
+            certificateFile = certDir + "/fullchain.pem";
+            privateKeyFile = certDir + "/key.pem";
+          };
+
+          dkimKeyBits = 2048;
+
+          mailboxes = {
+            Trash = {
+              auto = "create";
+              specialUse = "Trash";
+            };
+            Archive = {
+              auto = "create";
+              specialUse = "Archive";
+            };
+            Junk = {
+              auto = "subscribe";
+              specialUse = "Junk";
+            };
+            Drafts = {
+              auto = "subscribe";
+              specialUse = "Drafts";
+            };
+            Sent = {
+              auto = "subscribe";
+              specialUse = "Sent";
+            };
+          };
+
+          loginAccounts = {
+            "alex@averyan.ru" = {
+              hashedPasswordFile = "/run/mail-passwords/alex";
+              sieveScript = commonSieve;
+            };
+            "sonya8128@averyan.ru" = {
+              hashedPasswordFile = "/run/mail-passwords/sonya8128";
+              sieveScript = commonSieve;
+            };
+            "cofob@averyan.ru" = {
+              hashedPasswordFile = "/run/mail-passwords/cofob";
+              sieveScript = commonSieve;
+            };
+          };
         };
 
-        vmailUserName = "vmail";
-        vmailGroupName = "vmail";
-
-        useFsLayout = true;
-
-		x509 = {
-			certificateFile = certDir + "/fullchain.pem";
-			privateKeyFile = certDir + "/key.pem";
-		};
-
-        dkimKeyBits = 2048;
-
-        mailboxes = {
-          Trash = {
-            auto = "create";
-            specialUse = "Trash";
-          };
-          Archive = {
-            auto = "create";
-            specialUse = "Archive";
-          };
-          Junk = {
-            auto = "subscribe";
-            specialUse = "Junk";
-          };
-          Drafts = {
-            auto = "subscribe";
-            specialUse = "Drafts";
-          };
-          Sent = {
-            auto = "subscribe";
-            specialUse = "Sent";
-          };
-        };
-
-        loginAccounts = {
-          "alex@averyan.ru" = {
-            hashedPasswordFile = "/run/mail-passwords/alex";
-            sieveScript = commonSieve;
-          };
-          "sonya8128@averyan.ru" = {
-            hashedPasswordFile = "/run/mail-passwords/sonya8128";
-            sieveScript = commonSieve;
-          };
-          "cofob@averyan.ru" = {
-            hashedPasswordFile = "/run/mail-passwords/cofob";
-            sieveScript = commonSieve;
-          };
-        };
+        services.rspamd.extraConfig = ''
+          actions {
+            reject = null;
+            add_header = 6;
+            greylist = null;
+          }
+        '';
       };
-
-      services.rspamd.extraConfig = ''
-        actions {
-          reject = null;
-          add_header = 6;
-          greylist = null;
-        }
-      '';
-    };
   };
 }

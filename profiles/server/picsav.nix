@@ -3,7 +3,8 @@
   inputs,
   pkgs,
   ...
-}: let
+}:
+let
   picsavbot-pkg = inputs.picsavbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   dockerImage = pkgs.dockerTools.pullImage {
@@ -12,7 +13,8 @@
     imageDigest = "sha256:8a9c7622365976ba37fe23d166c80a1e5a68226e221e31890ae5516c215d3c08";
     sha256 = "4ArRTQkSXLPDdYpU7DyEsHF/0EzMlgWyHw5CQn06jp8=";
   };
-in {
+in
+{
   age.secrets.picsav.file = ../../secrets/creds/picsavbot.age;
 
   virtualisation.oci-containers = {
@@ -20,16 +22,23 @@ in {
       picsavai = {
         image = "averyanalex/picsavai";
         imageFile = dockerImage;
-        extraOptions = ["--network=host"];
+        extraOptions = [ "--network=host" ];
       };
     };
   };
 
   systemd.services.picsavbot = {
-    after = ["network-online.target" "postgresql.service" "podman-picsavai.service"];
-    wants = ["network-online.target"];
-    requires = ["postgresql.service" "podman-picsavai.service"];
-    path = [picsavbot-pkg];
+    after = [
+      "network-online.target"
+      "postgresql.service"
+      "podman-picsavai.service"
+    ];
+    wants = [ "network-online.target" ];
+    requires = [
+      "postgresql.service"
+      "podman-picsavai.service"
+    ];
+    path = [ picsavbot-pkg ];
     environment = {
       DATABASE_URL = "postgresql:///picsav";
     };
@@ -58,18 +67,18 @@ in {
       ProtectKernelModules = true;
       ProtectKernelLogs = true;
       ProtectControlGroups = true;
-      RestrictAddressFamilies = ["AF_UNIX AF_INET AF_INET6"];
+      RestrictAddressFamilies = [ "AF_UNIX AF_INET AF_INET6" ];
       LockPersonality = true;
       MemoryDenyWriteExecute = true;
       RestrictRealtime = true;
       RestrictSUIDSGID = true;
       PrivateMounts = true;
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
 
   services.postgresql = {
-    ensureDatabases = ["picsav"];
+    ensureDatabases = [ "picsav" ];
     ensureUsers = [
       {
         name = "picsav";
@@ -84,6 +93,6 @@ in {
       description = "PicSav";
       group = "picsav";
     };
-    groups.picsav = {};
+    groups.picsav = { };
   };
 }

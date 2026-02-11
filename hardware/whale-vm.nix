@@ -1,4 +1,5 @@
-{modulesPath, ...}: {
+{ modulesPath, ... }:
+{
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
     ./sdboot.nix
@@ -17,6 +18,6 @@
   ];
 
   # Intel
-  boot.kernelModules = ["kvm-intel"];
+  boot.kernelModules = [ "kvm-intel" ];
   hardware.enableRedistributableFirmware = false;
 }

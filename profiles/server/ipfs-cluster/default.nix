@@ -3,16 +3,18 @@
   lib,
   config,
   ...
-}: let
+}:
+let
   serviceConfig = lib.importJSON ./service.json;
-in {
+in
+{
   age.secrets.credentials-ipfs-cluster.file = ../../../secrets/creds/ipfs-cluster.age;
 
   systemd.services.ipfs-cluster = {
-    path = [pkgs.ipfs-cluster];
-    requires = ["ipfs.service"];
-    after = ["ipfs.service"];
-    wantedBy = ["multi-user.target"];
+    path = [ pkgs.ipfs-cluster ];
+    requires = [ "ipfs.service" ];
+    after = [ "ipfs.service" ];
+    wantedBy = [ "multi-user.target" ];
     preStart = ''
       if [ ! -f "identity.json" ]; then
         ipfs-cluster-service --config . init -f
@@ -53,10 +55,10 @@ in {
       group = "ipfs-cluster";
     };
 
-    groups."ipfs-cluster" = {};
+    groups."ipfs-cluster" = { };
   };
 
-  environment.systemPackages = [pkgs.ipfs-cluster];
+  environment.systemPackages = [ pkgs.ipfs-cluster ];
 
   # networking.firewall.allowedTCPPorts = [ 9094 9096 ];
   # networking.firewall.allowedUDPPorts = [ 9096 ];

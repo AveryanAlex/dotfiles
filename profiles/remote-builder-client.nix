@@ -1,12 +1,21 @@
-{config, ...}: {
+{ config, ... }:
+{
   nix.buildMachines = [
     {
       hostName = "whale";
-      systems = ["x86_64-linux" "aarch64-linux"];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
       maxJobs = 2;
       speedFactor = 16;
-      supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
-      mandatoryFeatures = [];
+      supportedFeatures = [
+        "nixos-test"
+        "benchmark"
+        "big-parallel"
+        "kvm"
+      ];
+      mandatoryFeatures = [ ];
       protocol = "ssh-ng";
       sshUser = "nix-remote-builder";
       sshKey = config.age.secrets.remote-builder-ssh-key.path;

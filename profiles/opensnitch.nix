@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   services.opensnitch = {
     enable = true;
     settings = {
@@ -11,7 +12,7 @@
 
   hm = {
     # services.opensnitch-ui.enable = true;
-    home.packages = [pkgs.opensnitch-ui];
+    home.packages = [ pkgs.opensnitch-ui ];
     home.file.".config/opensnitch/settings.conf".text = ''
       [global]
       default_action=1

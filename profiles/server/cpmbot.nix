@@ -3,16 +3,21 @@
   inputs,
   pkgs,
   ...
-}: let
+}:
+let
   cpmbot-pkg = inputs.cpmbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in {
+in
+{
   age.secrets.cpmbot.file = ../../secrets/creds/cpmbot.age;
 
   systemd.services.cpmbot = {
-    after = ["network-online.target" "postgresql.service"];
-    wants = ["network-online.target"];
-    requires = ["postgresql.service"];
-    path = [cpmbot-pkg];
+    after = [
+      "network-online.target"
+      "postgresql.service"
+    ];
+    wants = [ "network-online.target" ];
+    requires = [ "postgresql.service" ];
+    path = [ cpmbot-pkg ];
     environment = {
       DATABASE_URL = "postgresql:///cpmbot";
     };
@@ -39,18 +44,18 @@ in {
       ProtectKernelModules = true;
       ProtectKernelLogs = true;
       ProtectControlGroups = true;
-      RestrictAddressFamilies = ["AF_UNIX AF_INET AF_INET6"];
+      RestrictAddressFamilies = [ "AF_UNIX AF_INET AF_INET6" ];
       LockPersonality = true;
       MemoryDenyWriteExecute = true;
       RestrictRealtime = true;
       RestrictSUIDSGID = true;
       PrivateMounts = true;
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
 
   services.postgresql = {
-    ensureDatabases = ["cpmbot"];
+    ensureDatabases = [ "cpmbot" ];
     ensureUsers = [
       {
         name = "cpmbot";
@@ -65,6 +70,6 @@ in {
       description = "CPM Bot";
       group = "cpmbot";
     };
-    groups.cpmbot = {};
+    groups.cpmbot = { };
   };
 }

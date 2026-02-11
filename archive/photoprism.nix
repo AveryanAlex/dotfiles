@@ -2,28 +2,34 @@
   config,
   pkgs,
   ...
-}: let
+}:
+let
   dockerImage = pkgs.dockerTools.pullImage {
     imageName = "photoprism/photoprism";
     finalImageTag = "latest";
     imageDigest = "sha256:b0d73530fd95c6e1f88b5b077a8690070a1eab7d33b8b8ea6b8410831dbc2f55";
     sha256 = "sha256-/AeOc954nX//Y/tI+eyk+SJktUkH/zfNuqyGtQlrlsg=";
   };
-in {
+in
+{
   age.secrets.photoprism.file = ../../secrets/intpass/photoprism.age;
 
   systemd.services."podman-photoprism" = {
-    requires = ["mysql.service"];
-    after = ["mysql.service"];
+    requires = [ "mysql.service" ];
+    after = [ "mysql.service" ];
   };
 
   fileSystems."/var/lib/photoprism" = {
     device = "UUID=bcfa404a-68de-4a25-9fb0-4e972c8f9423";
     fsType = "btrfs";
-    options = ["compress=zstd:7" "noatime" "subvol=@photoprism"];
+    options = [
+      "compress=zstd:7"
+      "noatime"
+      "subvol=@photoprism"
+    ];
   };
 
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [2342];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 2342 ];
 
   virtualisation.oci-containers = {
     containers = {
@@ -35,7 +41,7 @@ in {
           "/home/alex/tank/Import/PhotoPrism:/photoprism/import"
           "/var/lib/photoprism:/photoprism/storage"
         ];
-        extraOptions = ["--network=host"];
+        extraOptions = [ "--network=host" ];
         environment = {
           PHOTOPRISM_ADMIN_USER = "admin";
           PHOTOPRISM_AUTH_MODE = "password";
@@ -73,13 +79,13 @@ in {
           PHOTOPRISM_GID = "100";
           # PHOTOPRISM_UMASK: 0000
         };
-        environmentFiles = [config.age.secrets.photoprism.path];
+        environmentFiles = [ config.age.secrets.photoprism.path ];
       };
     };
   };
 
   services.mysql = {
-    ensureDatabases = ["photoprism"];
+    ensureDatabases = [ "photoprism" ];
     ensureUsers = [
       {
         name = "photoprism";

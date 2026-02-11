@@ -1,4 +1,5 @@
-{pkgs, ...}: let
+{ pkgs, ... }:
+let
   libraries = with pkgs; [
     glib
     nss
@@ -34,7 +35,8 @@
     libva
     mdk-sdk
   ];
-in {
+in
+{
   # environment.sessionVariables.LD_LIBRARY_PATH = "${lib.makeLibraryPath ([
   #     pkgs.stdenv.cc.cc
   #   ]

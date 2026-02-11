@@ -3,12 +3,12 @@
     enable = true;
     hydraURL = "https://hydra.averyan.ru";
     notificationSender = "hydra@localhost";
-    buildMachinesFiles = [];
+    buildMachinesFiles = [ ];
     useSubstitutes = true;
     port = 2875;
   };
 
-  nix.settings.allowed-users = ["hydra"];
+  nix.settings.allowed-users = [ "hydra" ];
 
   persist.state.dirs = [
     {
@@ -19,5 +19,5 @@
     }
   ];
 
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [2875];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 2875 ];
 }

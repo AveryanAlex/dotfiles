@@ -3,17 +3,24 @@
   inputs,
   pkgs,
   ...
-}: let
-  automm-pkg = inputs.automm.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (final: prev: {
-    RUSTFLAGS = "-Ctarget-cpu=neoverse-n1";
-  });
-in {
+}:
+let
+  automm-pkg = inputs.automm.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (
+    final: prev: {
+      RUSTFLAGS = "-Ctarget-cpu=neoverse-n1";
+    }
+  );
+in
+{
   age.secrets.automm.file = ../../secrets/creds/automm.age;
   systemd.services.automm = {
-    after = ["network-online.target" "influxdb2.service"];
-    wants = ["network-online.target"];
-    requires = ["influxdb2.service"];
-    path = [automm-pkg];
+    after = [
+      "network-online.target"
+      "influxdb2.service"
+    ];
+    wants = [ "network-online.target" ];
+    requires = [ "influxdb2.service" ];
+    path = [ automm-pkg ];
     # environment.RUST_LOG = "warn";
     serviceConfig = {
       EnvironmentFile = config.age.secrets.automm.path;
@@ -64,6 +71,6 @@ in {
       # ];
       UMask = "0077";
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
 }

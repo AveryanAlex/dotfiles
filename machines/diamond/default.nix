@@ -1,6 +1,8 @@
-{inputs, ...}: let
+{ inputs, ... }:
+let
   wan = "enp2s0";
-in {
+in
+{
   imports = [
     inputs.self.nixosModules.roles.server
 
@@ -26,7 +28,7 @@ in {
 
   systemd.network.networks = {
     "40-${wan}" = {
-      gateway = ["192.168.1.1"];
+      gateway = [ "192.168.1.1" ];
       name = "${wan}";
       routes = [
         {
@@ -66,14 +68,14 @@ in {
         "ip daddr 10.57.1.50 tcp dport { 443, 2022 } dnat to 192.168.12.50"
         "ip daddr 192.168.1.7 tcp dport 25565-25575 dnat to 192.168.12.50"
       ];
-      extraNatPostroutingRules = [''oifname "${wan}" masquerade''];
+      extraNatPostroutingRules = [ ''oifname "${wan}" masquerade'' ];
     };
 
-    firewall.interfaces."nebula.averyan".allowedTCPPorts = [443];
-    firewall.interfaces."vms".allowedTCPPorts = [3306];
+    firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 443 ];
+    firewall.interfaces."vms".allowedTCPPorts = [ 3306 ];
 
     bridges = {
-      vms.interfaces = [];
+      vms.interfaces = [ ];
     };
 
     interfaces = {

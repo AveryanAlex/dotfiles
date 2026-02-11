@@ -1,5 +1,6 @@
-{inputs, ...}: {
-  imports = [inputs.nix-flatpak.nixosModules.nix-flatpak];
+{ inputs, ... }:
+{
+  imports = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
 
   services.flatpak = {
     remotes = [
@@ -23,13 +24,13 @@
         };
       };
 
-      "org.onlyoffice.desktopeditors".Context.sockets = ["x11"];
-      "org.signal.Signal".Environment.SIGNAL_PASSWORD_STORE="gnome-libsecret";
+      "org.onlyoffice.desktopeditors".Context.sockets = [ "x11" ];
+      "org.signal.Signal".Environment.SIGNAL_PASSWORD_STORE = "gnome-libsecret";
     };
   };
 
   services.flatpak.enable = true;
   services.dbus.enable = true;
-  persist.state.dirs = ["/var/lib/flatpak"];
-  persist.state.homeDirs = [".var/app"];
+  persist.state.dirs = [ "/var/lib/flatpak" ];
+  persist.state.homeDirs = [ ".var/app" ];
 }

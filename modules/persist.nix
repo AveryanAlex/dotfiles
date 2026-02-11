@@ -3,13 +3,18 @@
   config,
   inputs,
   ...
-}: let
+}:
+let
   inherit (builtins) concatMap;
   inherit (lib) mkIf;
 
   cfg = config.persist;
 
-  persists = with cfg; [state derivative cache];
+  persists = with cfg; [
+    state
+    derivative
+    cache
+  ];
   takeAll = what: concatMap (x: x.${what});
 
   allHomeFiles = takeAll "homeFiles" persists;
@@ -17,63 +22,73 @@
 
   allSystemFiles = takeAll "files" persists;
   allSystemDirs = takeAll "dirs" persists;
-in {
-  options = let
-    inherit (lib) mkOption mkEnableOption;
-    inherit (lib.types) path listOf either str attrs bool;
+in
+{
+  options =
+    let
+      inherit (lib) mkOption mkEnableOption;
+      inherit (lib.types)
+        path
+        listOf
+        either
+        str
+        attrs
+        bool
+        ;
 
-    common = {
-      dirs = mkOption {
-        type = listOf (either str attrs);
-        default = [];
+      common = {
+        dirs = mkOption {
+          type = listOf (either str attrs);
+          default = [ ];
+        };
+        files = mkOption {
+          type = listOf (either str attrs);
+          default = [ ];
+        };
+        homeDirs = mkOption {
+          type = listOf (either str attrs);
+          default = [ ];
+        };
+        homeFiles = mkOption {
+          type = listOf (either str attrs);
+          default = [ ];
+        };
       };
-      files = mkOption {
-        type = listOf (either str attrs);
-        default = [];
-      };
-      homeDirs = mkOption {
-        type = listOf (either str attrs);
-        default = [];
-      };
-      homeFiles = mkOption {
-        type = listOf (either str attrs);
-        default = [];
+    in
+    {
+      persist = {
+        enable = mkEnableOption "tmpfs root with opt-in state";
+
+        linkNix = mkOption {
+          type = bool;
+          default = true;
+        };
+
+        hideMounts = mkOption {
+          type = bool;
+          default = false;
+        };
+
+        tmpfsSize = mkOption {
+          type = str;
+          default = "4G";
+        };
+
+        persistRoot = mkOption {
+          type = path;
+          default = "/persist";
+        };
+
+        username = mkOption {
+          type = str;
+          default = "user";
+        };
+
+        state = common;
+        derivative = common;
+        cache = common;
       };
     };
-  in {
-    persist = {
-      enable = mkEnableOption "tmpfs root with opt-in state";
-
-      linkNix = mkOption {
-        type = bool;
-        default = true;
-      };
-
-      hideMounts = mkOption {
-        type = bool;
-        default = false;
-      };
-
-      tmpfsSize = mkOption {
-        type = str;
-        default = "4G";
-      };
-
-      persistRoot = mkOption {
-        type = path;
-        default = "/persist";
-      };
-
-      username = mkOption {
-        type = str;
-        default = "user";
-      };
-
-      state = common;
-      derivative = common;
-      cache = common;
-    };
-  };
 
   imports = [
     inputs.impermanence.nixosModules.impermanence
@@ -93,7 +108,11 @@ in {
 
     fileSystems."/" = {
       device = "none";
-      options = ["defaults" "size=${cfg.tmpfsSize}" "mode=755"];
+      options = [
+        "defaults"
+        "size=${cfg.tmpfsSize}"
+        "mode=755"
+      ];
       fsType = "tmpfs";
     };
 

@@ -3,8 +3,9 @@
   pkgs,
   inputs,
   ...
-}: {
-  imports = [inputs.lanzaboote.nixosModules.lanzaboote];
+}:
+{
+  imports = [ inputs.lanzaboote.nixosModules.lanzaboote ];
 
   boot.loader.systemd-boot.enable = lib.mkForce false;
 
@@ -17,5 +18,5 @@
     pkgs.sbctl
   ];
 
-  persist.state.dirs = ["/etc/secureboot"];
+  persist.state.dirs = [ "/etc/secureboot" ];
 }

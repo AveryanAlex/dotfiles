@@ -2,7 +2,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   hm = {
     home.packages = [
       pkgs.cliphist

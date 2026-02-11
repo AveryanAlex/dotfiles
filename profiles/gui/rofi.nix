@@ -1,9 +1,10 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home-manager.users.alex = {
     programs.rofi = {
       enable = true;
       package = pkgs.rofi-wayland;
-      plugins = [pkgs.rofi-emoji];
+      plugins = [ pkgs.rofi-emoji ];
       terminal = "alacritty";
       extraConfig = {
         modi = "drun,run,ssh,filebrowser";

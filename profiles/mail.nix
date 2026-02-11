@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   age.secrets.account-mail = {
     file = ../secrets/accounts/mail.age;
     owner = "alex";
@@ -51,5 +52,5 @@
     # ];
   };
 
-  persist.state.homeDirs = [".thunderbird"]; # ".config/DeltaChat"
+  persist.state.homeDirs = [ ".thunderbird" ]; # ".config/DeltaChat"
 }

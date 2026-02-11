@@ -15,8 +15,11 @@
     yggdrasil.enable = true;
   };
 
-  networking.firewall.allowedTCPPorts = [17283 15728];
-  networking.firewall.allowedUDPPorts = [17283];
+  networking.firewall.allowedTCPPorts = [
+    17283
+    15728
+  ];
+  networking.firewall.allowedUDPPorts = [ 17283 ];
 
   persist.state.dirs = [
     {

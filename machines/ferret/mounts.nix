@@ -2,7 +2,7 @@
   fileSystems."/persist" = {
     device = "/dev/ferret/data";
     fsType = "ext4";
-    options = ["discard"];
+    options = [ "discard" ];
   };
 
   fileSystems."/boot" = {

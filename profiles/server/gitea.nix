@@ -26,10 +26,13 @@
       mode = "u=rwx,g=rx,o=";
     }
   ];
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [3816 7322];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [
+    3816
+    7322
+  ];
 
   systemd.services.gitea = {
-    requires = ["postgresql.service"];
-    after = ["postgresql.service"];
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
   };
 }

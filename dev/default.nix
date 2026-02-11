@@ -12,40 +12,40 @@
 
   # nixpkgs.overlays = [ inputs.fenix.overlays.default ];
 
-  hm.home.packages =
-    [
-      ((import ./python.nix) pkgs)
-    ]
-    ++ (with pkgs; [
-      nixd
-      nil
-      nixfmt
+  hm.home.packages = [
+    ((import ./python.nix) pkgs)
+  ]
+  ++ (with pkgs; [
+    nixd
+    nil
+    nixfmt
+    nixfmt-tree
 
-      # clang
-      llvmPackages.libclang
-      llvm.dev
-      # clang-tools
-      lldb
-      gdb
+    # clang
+    llvmPackages.libclang
+    llvm.dev
+    # clang-tools
+    lldb
+    gdb
 
-      pkg-config
-      xorg.libX11
+    pkg-config
+    xorg.libX11
 
-      rustup
+    rustup
 
-      uv
+    uv
 
-      pnpm
-      nodejs_latest
+    pnpm
+    nodejs_latest
 
-      code-cursor
-      # antigravity
+    code-cursor
+    # antigravity
 
-      jdk
-      maven
+    jdk
+    maven
 
-      automake
-    ]);
+    automake
+  ]);
 
   persist.cache.homeDirs = [ ".local/share/uv" ];
 }

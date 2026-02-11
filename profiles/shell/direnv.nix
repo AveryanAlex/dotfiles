@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home-manager.users.alex = {
     programs.direnv = {
       enable = true;
@@ -7,8 +8,8 @@
       nix-direnv.enable = true;
     };
 
-    home.packages = [pkgs.devenv];
+    home.packages = [ pkgs.devenv ];
   };
 
-  persist.state.homeDirs = [".local/share/direnv"];
+  persist.state.homeDirs = [ ".local/share/direnv" ];
 }

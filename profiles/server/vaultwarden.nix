@@ -21,15 +21,15 @@
       mode = "u=rwx,g=,o=";
     }
   ];
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [8222];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 8222 ];
 
   systemd.services.vaultwarden = {
-    requires = ["postgresql.service"];
-    after = ["postgresql.service"];
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
   };
 
   services.postgresql = {
-    ensureDatabases = ["vaultwarden"];
+    ensureDatabases = [ "vaultwarden" ];
     ensureUsers = [
       {
         name = "vaultwarden";

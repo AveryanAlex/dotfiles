@@ -1,6 +1,7 @@
-{modulesPath, ...}: {
+{ modulesPath, ... }:
+{
   # QEMU
-  imports = [(modulesPath + "/profiles/qemu-guest.nix")];
+  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
   services.qemuGuest.enable = true;
   hardware.enableRedistributableFirmware = false;
 
@@ -13,7 +14,7 @@
   ];
 
   # AMD
-  boot.kernelModules = ["kvm-amd"];
+  boot.kernelModules = [ "kvm-amd" ];
 
   # Bootloader
   boot.loader.grub.enable = true;

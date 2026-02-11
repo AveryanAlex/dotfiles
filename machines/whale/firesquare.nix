@@ -2,9 +2,11 @@
   inputs,
   config,
   ...
-}: let
+}:
+let
   firesquare-module = inputs.firesquare-servers.nixosModules.default;
-in {
+in
+{
   age.secrets.wg-key-firesquare.file = ../../secrets/wireguard/firesquare.age;
   networking.wireguard.interfaces = {
     wg-firesquare = {
@@ -13,7 +15,7 @@ in {
       peers = [
         {
           publicKey = "h+76esMcmPLakUN/1vDlvGGf2Ovmw/IDKKxFtqXCdm8=";
-          allowedIPs = ["0.0.0.0/0"];
+          allowedIPs = [ "0.0.0.0/0" ];
           endpoint = "vpn.averyan.ru:51820";
           persistentKeepalive = 25;
         }
@@ -31,8 +33,16 @@ in {
   };
 
   systemd.services."container@firesquare" = {
-    requires = ["wireguard-wg-firesquare.service" "wireguard-wg-firesquare.target" "setup-firesquare-dirs.service"];
-    after = ["wireguard-wg-firesquare.service" "wireguard-wg-firesquare.target" "setup-firesquare-dirs.service"];
+    requires = [
+      "wireguard-wg-firesquare.service"
+      "wireguard-wg-firesquare.target"
+      "setup-firesquare-dirs.service"
+    ];
+    after = [
+      "wireguard-wg-firesquare.service"
+      "wireguard-wg-firesquare.target"
+      "setup-firesquare-dirs.service"
+    ];
   };
 
   age.secrets.firesquare-passwords.file = ../../secrets/creds/firesquare.age;
@@ -42,7 +52,7 @@ in {
     ephemeral = true;
 
     privateNetwork = true;
-    interfaces = ["wg-firesquare"];
+    interfaces = [ "wg-firesquare" ];
 
     bindMounts = {
       "/var/lib/mysql/" = {
@@ -53,7 +63,7 @@ in {
     };
 
     config = {
-      imports = [firesquare-module];
+      imports = [ firesquare-module ];
       system.stateVersion = "22.11";
 
       networking = {
@@ -69,7 +79,12 @@ in {
         };
         firewall.enable = false;
         useHostResolvConf = false;
-        nameservers = ["9.9.9.9" "8.8.8.8" "1.1.1.1" "77.88.8.8"];
+        nameservers = [
+          "9.9.9.9"
+          "8.8.8.8"
+          "1.1.1.1"
+          "77.88.8.8"
+        ];
       };
       services.resolved.enable = true;
     };

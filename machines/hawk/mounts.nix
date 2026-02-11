@@ -7,6 +7,6 @@
   fileSystems."/persist" = {
     device = "/dev/vda3";
     fsType = "ext4";
-    options = ["discard"];
+    options = [ "discard" ];
   };
 }

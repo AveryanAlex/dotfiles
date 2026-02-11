@@ -2,7 +2,8 @@
   lib,
   config,
   ...
-}: {
+}:
+{
   hm = {
     programs.waybar = {
       enable = true;
@@ -131,7 +132,9 @@
         {
           height = 30;
           layer = "top";
-          tray = {spacing = 10;};
+          tray = {
+            spacing = 10;
+          };
           modules-left = [
             "tray"
             "hyprland/workspaces"
@@ -170,7 +173,9 @@
             format = "{usage}% ";
             tooltip = false;
           };
-          memory = {format = "{}% ";};
+          memory = {
+            format = "{}% ";
+          };
           network = {
             format-wifi = "{essid} ({signalStrength}%) ";
             format-ethernet = "{ipaddr}/{cidr} ";
@@ -193,14 +198,22 @@
               phone = "";
               portable = "";
               car = "";
-              default = ["" "" ""];
+              default = [
+                ""
+                ""
+                ""
+              ];
             };
             on-click = "pavucontrol";
           };
           temperature = {
             critical-threshold = 80;
             format = "{temperatureC}°C {icon}";
-            format-icons = ["" "" ""];
+            format-icons = [
+              ""
+              ""
+              ""
+            ];
           };
           "wlr/workspaces" = {
             "format" = "{icon}";

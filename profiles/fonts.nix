@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [
@@ -17,7 +18,7 @@
     fontconfig = {
       enable = true;
       defaultFonts = {
-        monospace = ["MesloLGS NF"];
+        monospace = [ "MesloLGS NF" ];
       };
     };
   };

@@ -3,7 +3,8 @@
   pkgs,
   config,
   ...
-}: {
+}:
+{
   home-manager.users.alex = {
     programs.bash.enable = true;
     programs.bash.profileExtra = ''
@@ -12,7 +13,7 @@
       fi
     '';
 
-    home.packages = [pkgs.pulseaudio];
+    home.packages = [ pkgs.pulseaudio ];
 
     wayland.windowManager.sway = {
       enable = true;
@@ -38,7 +39,7 @@
             dwt = "disabled";
           };
         };
-        bars = [];
+        bars = [ ];
         focus = {
           followMouse = "always";
           # mouseWarping = "container";
@@ -52,9 +53,10 @@
         workspaceAutoBackAndForth = true;
 
         bindkeysToCode = true;
-        keybindings = let
-          cfg = config.home-manager.users.alex.wayland.windowManager.sway.config;
-        in
+        keybindings =
+          let
+            cfg = config.home-manager.users.alex.wayland.windowManager.sway.config;
+          in
           lib.mkOptionDefault {
             "${cfg.modifier}+q" = "kill";
 
@@ -73,8 +75,10 @@
             # "XF86MonBrightnessDown" = "exec brillo -u 10000 -U 10";
             # "XF86MonBrightnessUp" = "exec brillo -u 10000 -A 10";
 
-            "Print" = ''exec grim -g "$(slurp -d)" - | tee "Pictures/Screenshots/$(date --rfc-3339=seconds).png" | wl-copy -t image/png'';
-            "Shift+Print" = ''exec grim - | tee "Pictures/Screenshots/$(date --rfc-3339=seconds).png" | wl-copy -t image/png'';
+            "Print" =
+              ''exec grim -g "$(slurp -d)" - | tee "Pictures/Screenshots/$(date --rfc-3339=seconds).png" | wl-copy -t image/png'';
+            "Shift+Print" =
+              ''exec grim - | tee "Pictures/Screenshots/$(date --rfc-3339=seconds).png" | wl-copy -t image/png'';
             # TODO: screenshot focused window
             # "Mod1+Print" = ''exec ${pkgs.grim}/bin/grim -g "$(${pkgs.sway}/bin/swaymsg -t get_tree | ${pkgs.jq}/bin/jq -j '.. | select(.type?) | select(.focused).rect | "\(.x),\(.y) \(.width)x\(.height)"')" - | tee "Pictures/Screenshots/$(date --rfc-3339=seconds).png" | wl-copy -t image/png'';
             # TODO: setup flameshot

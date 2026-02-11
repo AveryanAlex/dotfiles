@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   services.openssh = {
     enable = true;
     openFirewall = false;
@@ -8,11 +9,11 @@
     };
   };
 
-  systemd.services.openssh.after = ["nebula@averyan.service"];
+  systemd.services.openssh.after = [ "nebula@averyan.service" ];
 
-  environment.systemPackages = [pkgs.mosh];
+  environment.systemPackages = [ pkgs.mosh ];
   networking.firewall = {
-    interfaces."nebula.averyan".allowedTCPPorts = [22];
+    interfaces."nebula.averyan".allowedTCPPorts = [ 22 ];
     allowedUDPPortRanges = [
       {
         from = 60000;

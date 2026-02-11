@@ -6,16 +6,15 @@
   ...
 }:
 {
-  imports =
-    [
-      (modulesPath + "/installer/scan/not-detected.nix")
-    ]
-    ++ (with inputs.self.nixosModules.hardware; [
-      physical
-      sdboot
-      cpu.amd
-      gpu.amd
-    ]);
+  imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
+  ]
+  ++ (with inputs.self.nixosModules.hardware; [
+    physical
+    sdboot
+    cpu.amd
+    gpu.amd
+  ]);
 
   # STORAGE
   boot.initrd.availableKernelModules = [

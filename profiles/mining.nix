@@ -3,8 +3,9 @@
   pkgs,
   lib,
   ...
-}: {
-  environment.systemPackages = [pkgs.xmrig];
+}:
+{
+  environment.systemPackages = [ pkgs.xmrig ];
 
   services.xmrig = {
     enable = true;
@@ -26,5 +27,5 @@
     };
   };
 
-  systemd.services.xmrig.wantedBy = lib.mkForce [];
+  systemd.services.xmrig.wantedBy = lib.mkForce [ ];
 }

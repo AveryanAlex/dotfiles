@@ -1,4 +1,5 @@
-{inputs, ...}: {
+{ inputs, ... }:
+{
   imports = [
     inputs.self.nixosModules.hardware.aeza
     inputs.self.nixosModules.roles.minimal
@@ -51,8 +52,8 @@
     };
 
     nat.externalInterface = "ens3";
-    nat.internalInterfaces = ["wgvpn"];
+    nat.internalInterfaces = [ "wgvpn" ];
 
-    firewall.allowedUDPPorts = [51820];
+    firewall.allowedUDPPorts = [ 51820 ];
   };
 }

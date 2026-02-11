@@ -288,7 +288,7 @@
         magnifier-zoom-in = [ ];
         magnifier-zoom-out = [ ];
         screenreader = [ ];
-        screensaver = ["<Super>l" ];
+        screensaver = [ "<Super>l" ];
       };
       "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
@@ -394,7 +394,7 @@
           package = gsconnect;
         }
         {
-        package = appindicator;
+          package = appindicator;
         }
       ];
     };

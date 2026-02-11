@@ -1,11 +1,13 @@
-{pkgs, ...}: let
+{ pkgs, ... }:
+let
   dockerImage = pkgs.dockerTools.pullImage {
     imageName = "wordpress";
     finalImageTag = "latest";
     imageDigest = "sha256:d2d062bf3903cd7b73442a5266acff12f00ed66b48808f9b0d269e8d775b429f";
     sha256 = "u8P1PE8R4v6rncL8PvZktj2ExxD+TXIARg9JqIk6wY0=";
   };
-in {
+in
+{
   systemd.tmpfiles.rules = [
     "d /persist/cosmovert 755 33 33 - -"
   ];
@@ -61,8 +63,8 @@ in {
         volumes = [
           "/persist/cosmovert:/var/www/html"
         ];
-        ports = ["127.0.0.1:8527:80"];
-        extraOptions = ["--network=slirp4netns"];
+        ports = [ "127.0.0.1:8527:80" ];
+        extraOptions = [ "--network=slirp4netns" ];
         environment = {
           TZ = "Europe/Moscow";
           ENABLE_HTTPS = "true";

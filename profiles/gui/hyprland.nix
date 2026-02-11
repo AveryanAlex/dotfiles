@@ -2,7 +2,8 @@
   pkgs,
   config,
   ...
-}: {
+}:
+{
   programs.hyprland.enable = true;
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
@@ -30,23 +31,24 @@
 
       settings = {
         "$mod" = "SUPER";
-        bind = let
-          hyprgamemode = pkgs.writeShellScript "hyprgamemode.sh" ''
-            HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
-            if [ "$HYPRGAMEMODE" = 1 ] ; then
-              hyprctl --batch "\
-                keyword animations:enabled 0;\
-                keyword decoration:drop_shadow 0;\
-                keyword decoration:blur:enabled 0;\
-                keyword general:gaps_in 0;\
-                keyword general:gaps_out 0;\
-                keyword general:border_size 1;\
-                keyword decoration:rounding 0"
-              exit
-            fi
-            hyprctl reload
-          '';
-        in
+        bind =
+          let
+            hyprgamemode = pkgs.writeShellScript "hyprgamemode.sh" ''
+              HYPRGAMEMODE=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
+              if [ "$HYPRGAMEMODE" = 1 ] ; then
+                hyprctl --batch "\
+                  keyword animations:enabled 0;\
+                  keyword decoration:drop_shadow 0;\
+                  keyword decoration:blur:enabled 0;\
+                  keyword general:gaps_in 0;\
+                  keyword general:gaps_out 0;\
+                  keyword general:border_size 1;\
+                  keyword decoration:rounding 0"
+                exit
+              fi
+              hyprctl reload
+            '';
+          in
           [
             ", Print, exec, grimblast copy area"
             "$mod, Q, killactive,"
@@ -66,20 +68,22 @@
             # "$mod, TAB, overview:toggle,"
             # "$mod, grave, hyprexpo:expo, toggle"
           ]
-          ++ (
-            builtins.concatLists (builtins.genList (
-                x: let
-                  ws = let
+          ++ (builtins.concatLists (
+            builtins.genList (
+              x:
+              let
+                ws =
+                  let
                     c = (x + 1) / 10;
                   in
-                    builtins.toString (x + 1 - (c * 10));
-                in [
-                  "$mod, ${ws}, workspace, ${toString (x + 1)}"
-                  "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
-                ]
-              )
-              10)
-          );
+                  builtins.toString (x + 1 - (c * 10));
+              in
+              [
+                "$mod, ${ws}, workspace, ${toString (x + 1)}"
+                "$mod SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
+              ]
+            ) 10
+          ));
         # bindm = ["ALT, mouse:272, movewindow"];
 
         monitor = ",preferred,auto,1";

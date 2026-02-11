@@ -3,14 +3,18 @@
   inputs,
   pkgs,
   ...
-}: let
+}:
+let
   bvilovebot-pkg = inputs.bvilovebot.packages.${pkgs.stdenv.hostPlatform.system}.default;
   bvilovebot-beta-pkg = inputs.bvilovebot-beta.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   commonService = {
-    after = ["network-online.target" "postgresql.service"];
-    wants = ["network-online.target"];
-    requires = ["postgresql.service"];
+    after = [
+      "network-online.target"
+      "postgresql.service"
+    ];
+    wants = [ "network-online.target" ];
+    requires = [ "postgresql.service" ];
     serviceConfig = {
       Restart = "always";
 
@@ -30,51 +34,51 @@
       ProtectKernelModules = true;
       ProtectKernelLogs = true;
       ProtectControlGroups = true;
-      RestrictAddressFamilies = ["AF_UNIX AF_INET AF_INET6"];
+      RestrictAddressFamilies = [ "AF_UNIX AF_INET AF_INET6" ];
       LockPersonality = true;
       MemoryDenyWriteExecute = true;
       RestrictRealtime = true;
       RestrictSUIDSGID = true;
       PrivateMounts = true;
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
-in {
+in
+{
   age.secrets.bvilove.file = ../../secrets/creds/bvilove.age;
   age.secrets.bvilove-beta.file = ../../secrets/creds/bvilove-beta.age;
 
-  systemd.services.bvilovebot =
-    commonService
-    // {
-      path = [bvilovebot-pkg];
-      environment = {
-        DATABASE_URL = "postgresql:///bvilove";
-      };
-      serviceConfig = {
-        User = "bvilove";
-        Group = "bvilove";
-        EnvironmentFile = config.age.secrets.bvilove.path;
-        ExecStart = "${bvilovebot-pkg}/bin/bvilovebot";
-      };
+  systemd.services.bvilovebot = commonService // {
+    path = [ bvilovebot-pkg ];
+    environment = {
+      DATABASE_URL = "postgresql:///bvilove";
     };
+    serviceConfig = {
+      User = "bvilove";
+      Group = "bvilove";
+      EnvironmentFile = config.age.secrets.bvilove.path;
+      ExecStart = "${bvilovebot-pkg}/bin/bvilovebot";
+    };
+  };
 
-  systemd.services.bvilovebot-beta =
-    commonService
-    // {
-      path = [bvilovebot-beta-pkg];
-      environment = {
-        DATABASE_URL = "postgresql:///bvilovebeta";
-      };
-      serviceConfig = {
-        User = "bvilovebeta";
-        Group = "bvilovebeta";
-        EnvironmentFile = config.age.secrets.bvilove-beta.path;
-        ExecStart = "${bvilovebot-beta-pkg}/bin/bvilovebot";
-      };
+  systemd.services.bvilovebot-beta = commonService // {
+    path = [ bvilovebot-beta-pkg ];
+    environment = {
+      DATABASE_URL = "postgresql:///bvilovebeta";
     };
+    serviceConfig = {
+      User = "bvilovebeta";
+      Group = "bvilovebeta";
+      EnvironmentFile = config.age.secrets.bvilove-beta.path;
+      ExecStart = "${bvilovebot-beta-pkg}/bin/bvilovebot";
+    };
+  };
 
   services.postgresql = {
-    ensureDatabases = ["bvilove" "bvilovebeta"];
+    ensureDatabases = [
+      "bvilove"
+      "bvilovebeta"
+    ];
     ensureUsers = [
       {
         name = "bvilove";
@@ -93,12 +97,12 @@ in {
       description = "BVI Love";
       group = "bvilove";
     };
-    groups.bvilove = {};
+    groups.bvilove = { };
     users.bvilovebeta = {
       isSystemUser = true;
       description = "BVI Love Beta";
       group = "bvilovebeta";
     };
-    groups.bvilovebeta = {};
+    groups.bvilovebeta = { };
   };
 }

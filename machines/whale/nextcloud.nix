@@ -2,7 +2,8 @@
   pkgs,
   config,
   ...
-}: {
+}:
+{
   services.nextcloud = {
     package = pkgs.nextcloud30;
     hostName = "cloud.neutrino.su";

@@ -8,7 +8,7 @@
   # users.users.alex.extraGroups = ["libvirtd"];
 
   networking = {
-    bridges.virbr0.interfaces = [];
+    bridges.virbr0.interfaces = [ ];
     interfaces.virbr0 = {
       ipv4 = {
         addresses = [
@@ -19,7 +19,7 @@
         ];
       };
     };
-    nat.internalInterfaces = ["virbr0"];
+    nat.internalInterfaces = [ "virbr0" ];
   };
   systemd.network.networks."40-virbr0" = {
     networkConfig = {
@@ -36,5 +36,5 @@
     };
   };
 
-  persist.state.dirs = ["/var/lib/libvirt"];
+  persist.state.dirs = [ "/var/lib/libvirt" ];
 }

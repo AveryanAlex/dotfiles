@@ -64,7 +64,7 @@ in
         ];
         # quic = lib.mkForce false;
         forceSSL = lib.mkForce false;
-        extraConfig = lib.mkForce '''';
+        extraConfig = lib.mkForce "";
       };
 
       virtualHosts."_" = {

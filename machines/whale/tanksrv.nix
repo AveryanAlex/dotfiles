@@ -8,8 +8,8 @@
   };
 
   networking.firewall.interfaces."nebula.averyan" = {
-    allowedTCPPorts = [2049];
-    allowedUDPPorts = [2049];
+    allowedTCPPorts = [ 2049 ];
+    allowedUDPPorts = [ 2049 ];
   };
 
   # services.samba = {

@@ -21,7 +21,7 @@
       ];
     };
   };
-  networking.firewall.allowedTCPPorts = [4372];
+  networking.firewall.allowedTCPPorts = [ 4372 ];
 
   services.snowflake-proxy.enable = true;
   systemd.services.snowflake-proxy.serviceConfig.MemoryMax = "256M";

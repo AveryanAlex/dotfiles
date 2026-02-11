@@ -5,7 +5,8 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.xrayNat;
   ifacesStr = concatStringsSep ", " cfg.interfaces;
   skipPrivateRules = ''

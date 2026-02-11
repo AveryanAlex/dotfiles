@@ -3,7 +3,8 @@
   modulesPath,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     (modulesPath + "/profiles/headless.nix")
   ];
@@ -23,11 +24,17 @@
     boot.extraModulePackages = [
       config.boot.kernelPackages.ena
     ];
-    boot.initrd.kernelModules = ["xen-blkfront"];
-    boot.initrd.availableKernelModules = ["nvme"];
-    boot.kernelParams = ["console=ttyS0,115200n8" "random.trust_cpu=on"];
+    boot.initrd.kernelModules = [ "xen-blkfront" ];
+    boot.initrd.availableKernelModules = [ "nvme" ];
+    boot.kernelParams = [
+      "console=ttyS0,115200n8"
+      "random.trust_cpu=on"
+    ];
 
-    boot.blacklistedKernelModules = ["nouveau" "xen_fbfront"];
+    boot.blacklistedKernelModules = [
+      "nouveau"
+      "xen_fbfront"
+    ];
 
     boot.loader.grub.device = "nodev";
     boot.loader.grub.efiSupport = true;
@@ -40,9 +47,9 @@
     '';
 
     systemd.services."serial-getty@ttyS0".enable = true;
-    services.udev.packages = [pkgs.amazon-ec2-utils];
-    environment.systemPackages = [pkgs.cryptsetup];
-    networking.timeServers = ["169.254.169.123"];
+    services.udev.packages = [ pkgs.amazon-ec2-utils ];
+    environment.systemPackages = [ pkgs.cryptsetup ];
+    networking.timeServers = [ "169.254.169.123" ];
     services.udisks2.enable = false;
   };
 }

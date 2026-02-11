@@ -37,12 +37,12 @@
   };
 
   systemd.services.grafana = {
-    requires = ["postgresql.service"];
-    after = ["postgresql.service"];
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
   };
 
   services.postgresql = {
-    ensureDatabases = ["grafana"];
+    ensureDatabases = [ "grafana" ];
     ensureUsers = [
       {
         name = "grafana";
@@ -51,7 +51,7 @@
     ];
   };
 
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [3729];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 3729 ];
 
   services.prometheus = {
     enable = true;
@@ -63,7 +63,7 @@
         scrape_interval = "1m";
         static_configs = [
           {
-            targets = ["localhost:9090"];
+            targets = [ "localhost:9090" ];
           }
         ];
       }

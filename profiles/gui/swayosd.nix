@@ -2,7 +2,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   home-manager.users.alex = {
     home.packages = [
       pkgs.swayosd

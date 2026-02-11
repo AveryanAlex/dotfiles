@@ -4,9 +4,11 @@
   pkgs,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.networking.nebula-frsqr;
-in {
+in
+{
   options = {
     networking.nebula-frsqr = {
       enable = mkOption {
@@ -30,7 +32,7 @@ in {
             }
           ];
           description = "Firewall rules for outbound traffic.";
-          example = [];
+          example = [ ];
         };
         inbound = mkOption {
           type = types.listOf types.attrs;
@@ -42,7 +44,7 @@ in {
             }
           ];
           description = "Firewall rules for inbound traffic.";
-          example = [];
+          example = [ ];
         };
       };
     };
@@ -62,7 +64,10 @@ in {
 
       isLighthouse = cfg.isLighthouse;
 
-      lighthouses = mkIf (!cfg.isLighthouse) ["10.3.7.10" "10.3.7.11"];
+      lighthouses = mkIf (!cfg.isLighthouse) [
+        "10.3.7.10"
+        "10.3.7.11"
+      ];
       staticHostMap = {
         "10.3.7.10" = [
           "185.112.83.178:4242"
@@ -84,7 +89,10 @@ in {
         };
         relay = {
           am_relay = cfg.isLighthouse;
-          relays = mkIf (!cfg.isLighthouse) ["10.3.7.10" "10.3.7.11"];
+          relays = mkIf (!cfg.isLighthouse) [
+            "10.3.7.10"
+            "10.3.7.11"
+          ];
         };
       };
 

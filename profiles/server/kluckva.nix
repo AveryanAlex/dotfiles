@@ -3,13 +3,15 @@
   inputs,
   pkgs,
   ...
-}: let
-  infinitytgadminsbot-pkg = inputs.infinitytgadminsbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
+}:
+let
+  infinitytgadminsbot-pkg =
+    inputs.infinitytgadminsbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   makeService = name: {
-    after = ["network-online.target"];
-    wants = ["network-online.target"];
-    path = [infinitytgadminsbot-pkg];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    path = [ infinitytgadminsbot-pkg ];
     environment.RUST_LOG = "info";
     serviceConfig = {
       EnvironmentFile = config.age.secrets."infinitytgadminsbot-${name}".path;
@@ -54,9 +56,10 @@
       ];
       UMask = "0077";
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
-in {
+in
+{
   age.secrets.infinitytgadminsbot-kluckva.file = ../../secrets/creds/kluckva.age;
   systemd.services.infinitytgadminsbot-kluckva = makeService "kluckva";
 

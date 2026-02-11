@@ -3,15 +3,18 @@
   inputs,
   pkgs,
   ...
-}: let
-  aplusmuz-music-scraper-pkg = inputs.aplusmuz-music-scraper.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in {
+}:
+let
+  aplusmuz-music-scraper-pkg =
+    inputs.aplusmuz-music-scraper.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
+{
   age.secrets.aplusmuz-music-scraper.file = ../../secrets/creds/aplusmuz-music-scraper.age;
 
   systemd.services.aplusmuz-music-scraper = {
-    after = ["network-online.target"];
-    wants = ["network-online.target"];
-    path = [aplusmuz-music-scraper-pkg];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    path = [ aplusmuz-music-scraper-pkg ];
 
     serviceConfig = {
       User = "aplusmuz-music-scraper";
@@ -38,14 +41,14 @@ in {
       ProtectKernelModules = true;
       ProtectKernelLogs = true;
       ProtectControlGroups = true;
-      RestrictAddressFamilies = ["AF_UNIX AF_INET AF_INET6"];
+      RestrictAddressFamilies = [ "AF_UNIX AF_INET AF_INET6" ];
       LockPersonality = true;
       MemoryDenyWriteExecute = true;
       RestrictRealtime = true;
       RestrictSUIDSGID = true;
       PrivateMounts = true;
     };
-    wantedBy = ["multi-user.target"];
+    wantedBy = [ "multi-user.target" ];
   };
 
   users = {

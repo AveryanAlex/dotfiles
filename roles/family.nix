@@ -2,9 +2,14 @@
   inputs,
   lib,
   ...
-}: {
-  imports = with inputs.self.nixosModules.modules;
-    [persist nebula-averyan]
+}:
+{
+  imports =
+    with inputs.self.nixosModules.modules;
+    [
+      persist
+      nebula-averyan
+    ]
     ++ (with inputs.self.nixosModules.profiles; [
       agenix
       boot

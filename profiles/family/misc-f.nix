@@ -12,5 +12,5 @@
     };
   };
 
-  persist.state.homeDirs = [".thunderbird"];
+  persist.state.homeDirs = [ ".thunderbird" ];
 }

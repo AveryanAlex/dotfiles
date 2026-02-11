@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   hm.home.packages = [
     (pkgs.writeShellScriptBin "deployapp" ''
       APP=$1
