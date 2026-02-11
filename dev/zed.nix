@@ -40,6 +40,38 @@
       inlay_hints = {
         enabled = true;
       };
+
+      language_models = {
+        openai_compatible = {
+          Synthetic = {
+            api_url = "https://code.fob.wtf/syn/openai/v1";
+            available_models = [
+              {
+                name = "hf:moonshotai/Kimi-K2.5";
+                max_tokens = 256000;
+                max_output_tokens = 32000;
+                max_completion_tokens = 200000;
+                capabilities = {
+                  tools = true;
+                  images = true;
+                  parallel_tool_calls = true;
+                  prompt_cache_key = true;
+                  chat_completions = true;
+                };
+              }
+            ];
+          };
+        };
+      };
+
+      agent = {
+        default_model = {
+          provider = "Synthetic";
+          model = "hf:moonshotai/Kimi-K2.5";
+        };
+        favorite_models = [ ];
+        model_parameters = [ ];
+      };
     };
   };
 
