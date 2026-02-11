@@ -26,7 +26,7 @@ in {
 
   networking.nat.forwardPorts = let
     mkRule = port: {
-      destination = "192.168.12.36:${builtins.toString port}";
+      destination = "192.168.12.36:${toString port}";
       sourcePort = port;
       proto = "tcp";
       loopbackIPs = ["95.165.105.90"];
@@ -34,7 +34,6 @@ in {
   in [
     (mkRule 25)
     (mkRule 465)
-    (mkRule 587)
     (mkRule 993)
   ];
 
@@ -130,7 +129,7 @@ in {
       services.dovecot2.sieve.extensions = ["fileinto"];
 
       mailserver = {
-        stateVersion = 1;
+        stateVersion = 3;
         enable = true;
         fqdn = "whale.averyan.ru";
         domains = ["averyan.ru"];
@@ -147,9 +146,10 @@ in {
 
         useFsLayout = true;
 
-        certificateScheme = "manual";
-        certificateFile = certDir + "/fullchain.pem";
-        keyFile = certDir + "/key.pem";
+		x509 = {
+			certificateFile = certDir + "/fullchain.pem";
+			privateKeyFile = certDir + "/key.pem";
+		};
 
         dkimKeyBits = 2048;
 

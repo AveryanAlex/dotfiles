@@ -39,8 +39,12 @@
             "browser.newtabpage.activity-stream.showSponsored" = false;
             "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
 
+            "network.proxy.http" = "127.0.0.1";
+            "network.proxy.http_port" = 8080;
+            "network.proxy.ssl" = "127.0.0.1";
+            "network.proxy.ssl_port" = 8080;
             "network.proxy.socks" = "127.0.0.1";
-            "network.proxy.socks_port" = 10808;
+            "network.proxy.socks_port" = 1080;
             "network.proxy.type" = 1;
           };
         };

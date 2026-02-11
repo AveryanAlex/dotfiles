@@ -1,34 +1,46 @@
-{pkgs, ...}: let
-  dockerImage = pkgs.dockerTools.pullImage {
-    imageName = "berkut174/webtlo";
-    finalImageTag = "latest";
-    imageDigest = "sha256:c6c4c7395dba1fba97381be484634b2aa37053c558a9ebb0e98558c65a26dda2";
-    sha256 = "sha256-TyChsTuR6JuRSeAJlER2zkvyOWLqB+zlz7FiVh0aPnI=";
-  };
-in {
-  virtualisation.oci-containers = {
-    containers = {
-      webtlo = {
-        image = "berkut174/webtlo";
-        imageFile = dockerImage;
-        volumes = [
-          "/var/lib/webtlo:/data"
-        ];
-        ports = ["1844:80"];
-        extraOptions = ["--network=slirp4netns"];
+{
+  config,
+  ...
+}:
+{
+  virtualisation.quadlet =
+    let
+      inherit (config.virtualisation.quadlet) networks;
+    in
+    {
+      containers = {
+        webtlo = {
+          containerConfig = {
+            image = "docker.io/berkut174/webtlo:latest";
+            autoUpdate = "registry";
+            volumes = [ "/var/lib/webtlo:/data" ];
+            networks = [ networks.webtlo.ref ];
+            ip = "10.90.26.2";
+            gidMaps = [ "0:100000:100000" ];
+            uidMaps = [ "0:100000:100000" ];
+          };
+        };
+      };
+      networks = {
+        webtlo.networkConfig = {
+          subnets = [ "10.90.26.0/24" ];
+          podmanArgs = [ "--interface-name=pme-webtlo" ];
+        };
       };
     };
-  };
 
-  networking.firewall.extraInputRules = ''
-    ip saddr { 10.57.1.40, 10.57.1.41 } tcp dport 1844 accept
-  '';
+  networking.firewall.interfaces.pme-webtlo.allowedTCPPorts = [
+    8173 # qbittorrent
+    8080 # http proxy
+  ];
+
+  # access with ssh -L 1844:10.90.26.2:80 whale
 
   persist.state.dirs = [
     {
       directory = "/var/lib/webtlo";
-      user = "1000";
-      group = "1000";
+      user = "101000";
+      group = "101000";
       mode = "u=rwx,g=,o=";
     }
   ];

@@ -8,6 +8,7 @@
       # fractal-next # gtk matrix client
       # webcord-vencord # discord client
       # telegram-desktop # telegram client
+      ayugram-desktop
 
       # Creativity
       # libsForQt5.kdenlive # video editor
@@ -20,14 +21,15 @@
 
       # Notes
       # joplin-desktop # markdown notes
-      # obsidian
+      obsidian
       # openboard # qt whiteboard
       # rnote # gtk whiteboard
       # xournalpp
 
       # LaTeX
       # texstudio
-      # texlive.combined.scheme-full
+      pandoc
+      texlive.combined.scheme-full
       hunspell
       hunspellDicts.en-us
       hunspellDicts.ru-ru
@@ -35,6 +37,7 @@
       # File viewers
       # gthumb # gtk image viewer
       evince # gnome document viewer
+      papers
       # f3d # simple 3d viewer
 
       # 3D modeling
@@ -63,9 +66,13 @@
       # betaflight-configurator
       # brave
       chromium
+      gamescope
+      # distrobox
       # ocrmypdf
       # remmina
       # openfortivpn
+      waypipe
+      ptyxis
     ];
 
     xdg.mimeApps = {
@@ -73,8 +80,8 @@
       defaultApplications = {
         "application/pdf" = "org.gnome.Evince.desktop";
         "text/html" = "com.brave.Browser.desktop";
-          "x-scheme-handler/http" = "com.brave.Browser.desktop";
-          "x-scheme-handler/https" = "com.brave.Browser.desktop";
+        "x-scheme-handler/http" = "com.brave.Browser.desktop";
+        "x-scheme-handler/https" = "com.brave.Browser.desktop";
         # "image/jpeg" = "org.gnome.gThumb.desktop";
       };
     };

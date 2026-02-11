@@ -1,25 +1,40 @@
+{ lib, ... }:
 {
   services.lvm.boot.thin.enable = true;
 
-  fileSystems."/persist" = {
+  fileSystems."/" = {
     device = "/dev/hamster/data";
     fsType = "btrfs";
-    options = ["discard=async" "compress=zstd" "subvol=@"];
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@"
+    ];
   };
 
-  fileSystems."/persist/home" = {
+  fileSystems."/home" = {
     device = "/dev/hamster/data";
     fsType = "btrfs";
-    options = ["discard=async" "compress=zstd" "subvol=@home"];
+    neededForBoot = true;
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@home"
+    ];
   };
 
   fileSystems."/nix" = {
     device = "/dev/hamster/data";
     fsType = "btrfs";
-    options = ["discard=async" "compress=zstd" "subvol=@nix"];
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@nix"
+    ];
   };
 
-  persist.linkNix = false;
+  # persist.linkNix = false;
+  persist.enable = lib.mkForce false;
 
   # services.beesd.filesystems = {
   #   tank = {
@@ -31,9 +46,9 @@
   # };
 
   services.snapper.configs = {
-    persist = {
-      SUBVOLUME = "/persist";
-      ALLOW_USERS = ["alex"];
+    home = {
+      SUBVOLUME = "/home";
+      ALLOW_USERS = [ "alex" ];
       TIMELINE_CREATE = true;
       TIMELINE_CLEANUP = true;
     };

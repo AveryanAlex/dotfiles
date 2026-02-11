@@ -4,8 +4,8 @@
   pkgs,
   ...
 }: let
-  bvilovebot-pkg = inputs.bvilovebot.packages.${pkgs.hostPlatform.system}.default;
-  bvilovebot-beta-pkg = inputs.bvilovebot-beta.packages.${pkgs.hostPlatform.system}.default;
+  bvilovebot-pkg = inputs.bvilovebot.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  bvilovebot-beta-pkg = inputs.bvilovebot-beta.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   commonService = {
     after = ["network-online.target" "postgresql.service"];

@@ -5,16 +5,17 @@
       enable = true;
       package = pkgs.mpv;
       config = {
-        # profile = "gpu-hq";
+        profile = "high-quality";
         ytdl-format = "bestvideo+bestaudio";
       };
       profiles = {
-        gpu-hq = {
-          # hwdec = "vaapi";
-          # vo = "gpu-next";
-          video-sync = "display-resample";
-          interpolation = true;
-          tscale = "oversample";
+        high-quality = {
+          hwdec = "vaapi";
+          ao = "pipewire";
+          vo = "dmabuf-wayland";
+          # video-sync = "display-resample";
+          # interpolation = true;
+          # tscale = "oversample";
         };
       };
     };

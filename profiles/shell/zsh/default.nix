@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   age.secrets.bash-init = {
     file = ../../../secrets/creds/bash-init.age;
     owner = "alex";
@@ -27,7 +28,7 @@
       enable = true;
       enableZshIntegration = true;
       enableBashIntegration = true;
-      flags = ["--disable-up-arrow"];
+      flags = [ "--disable-up-arrow" ];
       daemon.enable = true;
       settings = {
         enter_accept = false;
@@ -49,7 +50,7 @@
       #   path = "/home/alex/.local/state/zsh/history";
       # };
 
-      dotDir = ".config/zsh";
+      dotDir = "/home/alex/.config/zsh";
 
       autosuggestion.enable = true;
       enableCompletion = true;
@@ -90,6 +91,6 @@
     };
   };
 
-  environment.pathsToLink = ["/share/zsh"];
-  persist.state.homeDirs = [".local/share/atuin"];
+  environment.pathsToLink = [ "/share/zsh" ];
+  persist.state.homeDirs = [ ".local/share/atuin" ];
 }

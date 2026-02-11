@@ -2,18 +2,21 @@
   pkgs,
   lib,
   ...
-}: let
-  package = pkgs.angieQuic;
-in {
+}:
+let
+  package = pkgs.angie;
+in
+{
   options = {
     services.nginx.virtualHosts = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
-        config = {
-          quic = true;
-          forceSSL = true;
-          kTLS = true;
-        };
-      });
+      type = lib.types.attrsOf (
+        lib.types.submodule {
+          config = {
+            # quic = true;
+            forceSSL = true;
+          };
+        }
+      );
     };
   };
 
@@ -32,7 +35,7 @@ in {
       recommendedBrotliSettings = true;
       # recommendedZstdSettings = true;
 
-      enableQuicBPF = true;
+      # enableQuicBPF = true;
 
       appendHttpConfig = ''
         include ${package}/conf/prometheus_all.conf;
@@ -43,9 +46,8 @@ in {
         }
         add_header Strict-Transport-Security $hsts_header;
 
-        # QUIC
-        add_header Alt-Svc 'h3=":443"; ma=2592000; persist=1';
-        # add_header Alt-Svc 'h2=":443"; 'h3=":443"; ma=2592000; persist=1';
+        # Disable QUIC
+        add_header Alt-Svc "";
 
         proxy_buffering off;
       '';
@@ -60,19 +62,31 @@ in {
             port = 9114;
           }
         ];
-        quic = lib.mkForce false;
+        # quic = lib.mkForce false;
         forceSSL = lib.mkForce false;
-        kTLS = lib.mkForce false;
         extraConfig = lib.mkForce '''';
+      };
+
+      virtualHosts."_" = {
+        default = true;
+        rejectSSL = true;
+        # quic = lib.mkForce false;
+        forceSSL = lib.mkForce false;
+        locations."/".extraConfig = ''
+          return 404;
+        '';
       };
     };
 
-    users.users.nginx.extraGroups = ["acme"];
+    users.users.nginx.extraGroups = [ "acme" ];
 
     networking.firewall = {
-      allowedTCPPorts = [80 443];
-      allowedUDPPorts = [443];
-      interfaces."nebula.averyan".allowedTCPPorts = [9114];
+      allowedTCPPorts = [
+        80
+        443
+      ];
+      allowedUDPPorts = [ 443 ];
+      interfaces."nebula.averyan".allowedTCPPorts = [ 9114 ];
     };
 
     # services.prometheus.exporters.nginx.enable = true;

@@ -1,8 +1,8 @@
 {
   inputs,
-  lib,
   ...
-}: {
+}:
+{
   imports =
     (with inputs.self.nixosModules.modules; [
       nebula-averyan
@@ -12,16 +12,15 @@
       agenix
       boot
       filesystems
-      hosts
       locale
       logs
       misc-p
       monitoring
       nebula-averyan
-      nftables
       persist
       shell.eza
       shell.zsh
+      shell.ssh
       ssh-server
       sudo
       unfree
@@ -35,6 +34,9 @@
     ++ [
       inputs.nixcfg.nixosModules.default
       inputs.home-manager.nixosModules.default
+      ./network.nix
+      ./podman.nix
+      ./hosts.nix
     ];
 
   security.audit.enable = true;
@@ -43,27 +45,16 @@
   nixcfg.inputs = inputs;
   nixcfg.username = "alex";
 
-  services.resolved.enable = true;
-  # systemd.services.systemd-resolved.unitConfig.After = ["dbus.service"];
-
-  systemd.services.systemd-networkd.stopIfChanged = false;
-  systemd.services.systemd-resolved.stopIfChanged = false;
-
-  networking = {
-    nameservers = ["95.165.105.90#dns.neutrino.su"];
-    search = ["n.averyan.ru"];
-    useDHCP = false;
-    useNetworkd = true;
-  };
-  services.avahi.enable = false;
-  systemd.network.wait-online.enable = lib.mkDefault false;
-
   zramSwap = {
     enable = true;
-    memoryPercent = 40;
+    memoryPercent = 60;
   };
 
   time.timeZone = "Europe/Moscow";
 
   security.polkit.enable = true;
+
+  services.dbus.implementation = "broker";
+
+  services.irqbalance.enable = true;
 }

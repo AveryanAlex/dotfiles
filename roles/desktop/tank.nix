@@ -7,7 +7,7 @@
       mountConfig = {
         Options = "rw,noatime";
       };
-      what = "10.57.1.10:/home/alex/tank";
+      what = "whale:/home/alex/tank";
       where = "/tank";
       after = ["nebula@averyan.service"];
       wants = ["nebula@averyan.service"];

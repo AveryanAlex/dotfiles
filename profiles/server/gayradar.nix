@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  gayradarbot-pkg = inputs.gayradarbot.packages.${pkgs.hostPlatform.system}.default;
+  gayradarbot-pkg = inputs.gayradarbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   dockerImage = pkgs.dockerTools.pullImage {
     imageName = "averyanalex/gayradarai";

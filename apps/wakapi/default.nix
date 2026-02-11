@@ -12,78 +12,70 @@ in
     useACMEHost = "averyan.ru";
     forceSSL = true;
     locations."/" = {
-      proxyPass = "http://127.0.0.1:8562";
+      proxyPass = "http://10.90.86.2:3000";
       proxyWebsockets = true;
     };
   };
 
-  age.secrets."${name}" = {
-    file = ./wakapi.age;
-    mode = "600";
-    owner = "alex";
-  };
+  age.secrets."${name}".file = ./wakapi.age;
 
-  hm.services.podman = {
-    networks.${name} = { };
+  virtualisation.quadlet =
+    let
+      inherit (config.virtualisation.quadlet) networks;
+    in
+    {
+      containers = {
+        "${name}-db" = {
+          containerConfig = {
+            image = "docker.io/library/postgres:17";
+            autoUpdate = "registry";
+            networks = [ networks.${name}.ref ];
+            ip = "10.90.86.3";
+            volumes = [ "/persist/${name}/db:/var/lib/postgresql/data" ];
+            environments = {
+              POSTGRES_USER = "wakapi";
+              POSTGRES_PASSWORD = "wakapi";
+              POSTGRES_DB = "wakapi";
+            };
+            gidMaps = [ "0:100000:100000" ];
+            uidMaps = [ "0:100000:100000" ];
+          };
+        };
 
-    containers."${name}-server" = {
-      image = "ghcr.io/muety/wakapi:latest";
-      autoUpdate = "registry";
-      environmentFile = [ config.age.secrets."${name}".path ];
-      environment = {
-        WAKAPI_DB_TYPE = "postgres";
-        WAKAPI_DB_HOST = "${name}-db";
-        WAKAPI_DB_PORT = "5432";
-        WAKAPI_DB_USER = "wakapi";
-        WAKAPI_DB_PASSWORD = "wakapi";
-        WAKAPI_DB_NAME = "wakapi";
-
-        WAKAPI_LEADERBOARD_ENABLED = "false";
-
-        WAKAPI_ALLOW_SIGNUP = "true";
-        WAKAPI_PUBLIC_URL = "https://waka.averyan.ru";
+        "${name}-server" = {
+          containerConfig = {
+            image = "ghcr.io/muety/wakapi:latest";
+            autoUpdate = "registry";
+            networks = [ networks.${name}.ref ];
+            ip = "10.90.86.2";
+            volumes = [ "/persist/${name}/data:/data" ];
+            environments = {
+              WAKAPI_DB_TYPE = "postgres";
+              WAKAPI_DB_HOST = "${name}-db";
+              WAKAPI_DB_PORT = "5432";
+              WAKAPI_DB_USER = "wakapi";
+              WAKAPI_DB_PASSWORD = "wakapi";
+              WAKAPI_DB_NAME = "wakapi";
+              WAKAPI_LEADERBOARD_ENABLED = "false";
+              WAKAPI_ALLOW_SIGNUP = "true";
+              WAKAPI_PUBLIC_URL = "https://waka.averyan.ru";
+            };
+            environmentFiles = [ config.age.secrets."${name}".path ];
+            gidMaps = [ "0:100000:100000" ];
+            uidMaps = [ "0:100000:100000" ];
+          };
+          unitConfig = rec {
+            Requires = [ "${name}-db.service" ];
+            After = Requires;
+          };
+        };
       };
-      volumes = [ "/persist/${name}/data:/data" ];
-      ports = [ "127.0.0.1:8562:3000" ];
-      network = [ name ];
-      extraConfig = {
-        Unit = rec {
-          Requires = [
-            "podman-${name}-db.service"
-          ];
-          After = Requires;
-          X-SwitchMethod = "restart";
-        };
-        Container = {
-          GIDMap = "0:1:100000";
-          UIDMap = "0:1:100000";
-        };
-        Service = {
-          MemoryMax = "2G";
-        };
-      };
-    };
 
-    containers."${name}-db" = {
-      image = "docker.io/postgres:17";
-      autoUpdate = "registry";
-      environment = {
-        POSTGRES_USER = "wakapi";
-        POSTGRES_PASSWORD = "wakapi";
-        POSTGRES_DB = "wakapi";
-      };
-      volumes = [ "/persist/${name}/db:/var/lib/postgresql/data" ];
-      network = [ name ];
-      extraConfig = {
-        Unit.X-SwitchMethod = "restart";
-        Container = {
-          GIDMap = "0:1:100000";
-          UIDMap = "0:1:100000";
-        };
-        Service = {
-          MemoryMax = "2G";
+      networks = {
+        ${name}.networkConfig = {
+          subnets = [ "10.90.86.0/24" ];
+          podmanArgs = [ "--interface-name=pme-${name}" ];
         };
       };
     };
-  };
 }

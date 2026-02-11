@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  cpmbot-pkg = inputs.cpmbot.packages.${pkgs.hostPlatform.system}.default;
+  cpmbot-pkg = inputs.cpmbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
   age.secrets.cpmbot.file = ../../secrets/creds/cpmbot.age;
 

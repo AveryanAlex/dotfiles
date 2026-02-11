@@ -1,29 +1,29 @@
 pkgs:
-pkgs.python3.withPackages
-(
-  ps:
-    with ps; [
-      ipympl
-      ipython
-      jupyter
-      matplotlib
-      mypy
-      numpy
-      pandas
-      scipy
-      seaborn
-      tqdm
-      numba
-      sympy
-      olefile
-      z3-solver
-      flask
-      pillow
-      scikit-learn
-      scikit-image
-      black
-      ipython
-      tokenize-rt
-      piexif
-    ]
+pkgs.python3.withPackages (
+  ps: with ps; [
+    ipympl
+    ipython
+    jupyter
+    matplotlib
+    mypy
+    numpy
+    pandas
+    scipy
+    seaborn
+    tqdm
+    numba
+    sympy
+    olefile
+    z3-solver
+    flask
+    pillow
+    scikit-learn
+    scikit-image
+    black
+    ipython
+    tokenize-rt
+    piexif
+    soundfile
+    opencv-python
+  ]
 )

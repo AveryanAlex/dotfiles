@@ -5,4 +5,4 @@ if [ "$TYPE" == "" ]; then
   TYPE="switch"
 fi
 
-nixos-rebuild "$TYPE" --flake ".#$MACHINE" --target-host $MACHINE --build-host $MACHINE --use-remote-sudo --show-trace
+nixos-rebuild "$TYPE" --flake ".#$MACHINE" --target-host $MACHINE --build-host $MACHINE --sudo --show-trace

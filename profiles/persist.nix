@@ -1,3 +1,4 @@
+{ lib, config, ... }:
 {
   persist = {
     enable = true;
@@ -6,6 +7,7 @@
   };
 
   persist.state.dirs = [
+    "/var/lib/nixos"
     {
       directory = "/var/tmp";
       mode = "1777";
@@ -18,7 +20,7 @@
     }
   ];
 
-  services.openssh.hostKeys = [
+  services.openssh.hostKeys = lib.mkIf config.persist.enable [
     {
       bits = 4096;
       path = "/persist/etc/ssh/ssh_host_rsa_key";

@@ -5,41 +5,41 @@
     ++ (
       with inputs.self.nixosModules.profiles;
       with shell;
-        [
-          direnv
-          eza
-          fzf
-          git
-          gpg
-          misc-s
-          neovim
-          zoxide
-        ]
-        ++ [
-          # mining
-          # qemu
-          agenix
-          boot
-          filesystems
-          hosts
-          locale
-          logs
-          misc-p
-          monitoring
-          nebula-averyan
-          nftables
-          nix
-          persist
-          proxy
-          ssh-server
-          sudo
-          unfree
-          userdirs
-          users
-          vmvariant
-          xdg
-          yggdrasil
-        ]);
+      [
+        direnv
+        eza
+        fzf
+        git
+        gpg
+        misc-s
+        neovim
+        zoxide
+      ]
+      ++ [
+        # mining
+        # qemu
+        agenix
+        boot
+        filesystems
+        locale
+        logs
+        misc-p
+        monitoring
+        nebula-averyan
+        nix
+        persist
+        proxy
+        ssh-server
+        sudo
+        unfree
+        userdirs
+        users
+        vmvariant
+        xdg
+        yggdrasil
+        xray
+      ]
+    );
 
   hm.programs.tealdeer = {
     enable = true;

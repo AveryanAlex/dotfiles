@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  infinitytgadminsbot-pkg = inputs.infinitytgadminsbot.packages.${pkgs.hostPlatform.system}.default;
+  infinitytgadminsbot-pkg = inputs.infinitytgadminsbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   makeService = name: {
     after = ["network-online.target"];

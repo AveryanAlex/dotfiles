@@ -11,5 +11,7 @@
       "obsidian"
       "mdk-sdk"
       "cursor"
+      "antigravity"
+      "code"
     ];
 }

@@ -5,7 +5,7 @@
   ...
 }:
 let
-  gptoolsbot-pkg = inputs.gptoolsbot.packages.${pkgs.hostPlatform.system}.default;
+  gptoolsbot-pkg = inputs.gptoolsbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   age.secrets.gptoolsbot.file = ../../secrets/creds/gptoolsbot.age;
@@ -14,8 +14,7 @@ in
     wants = [ "network-online.target" ];
     path = [ gptoolsbot-pkg ];
     environment = {
-      HTTPS_PROXY = "http://127.0.0.1:8118";
-      HTTP_PROXY = "http://127.0.0.1:8118";
+      https_proxy = "http://127.0.0.1:8080";
     };
     serviceConfig = {
       EnvironmentFile = config.age.secrets.gptoolsbot.path;

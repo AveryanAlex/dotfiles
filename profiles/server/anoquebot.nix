@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  anoquebot-pkg = inputs.anoquebot.packages.${pkgs.hostPlatform.system}.default;
+  anoquebot-pkg = inputs.anoquebot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
   age.secrets.anoquebot.file = ../../secrets/creds/anoquebot.age;
 

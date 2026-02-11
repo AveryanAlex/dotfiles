@@ -4,9 +4,11 @@
     "d /persist/docker/data 700 0 0 - -"
   ];
 
+  xrayNat.interfaces = [ "dockerbr" ];
+
   networking = {
-    bridges.dockerbr.interfaces = [];
-    nat.internalInterfaces = ["dockerbr"];
+    bridges.dockerbr.interfaces = [ ];
+    nat.internalInterfaces = [ "dockerbr" ];
     interfaces.dockerbr = {
       ipv4 = {
         addresses = [
@@ -46,7 +48,10 @@
     hostBridge = "dockerbr";
     localAddress = "192.168.30.2/24";
 
-    extraFlags = ["--system-call-filter=@keyring" "--system-call-filter=bpf"];
+    extraFlags = [
+      "--system-call-filter=@keyring"
+      "--system-call-filter=bpf"
+    ];
 
     bindMounts = {
       "/var/lib/docker/" = {
@@ -63,29 +68,40 @@
       };
     };
 
-    config = {pkgs, ...}: {
-      system.stateVersion = "24.11";
+    config =
+      { pkgs, ... }:
+      {
+        system.stateVersion = "24.11";
 
-      environment.systemPackages = with pkgs; [micro curl wget];
+        environment.systemPackages = with pkgs; [
+          micro
+          curl
+          wget
+        ];
 
-      networking = {
-        defaultGateway = {
-          address = "192.168.30.1";
-          interface = "eth0";
+        networking = {
+          defaultGateway = {
+            address = "192.168.30.1";
+            interface = "eth0";
+          };
+          firewall.enable = true;
+          firewall.allowedTCPPorts = [ 2283 ];
+          useHostResolvConf = false;
+          nameservers = [
+            "9.9.9.9"
+            "8.8.8.8"
+            "1.1.1.1"
+            "77.88.8.8"
+          ];
         };
-        firewall.enable = true;
-        firewall.allowedTCPPorts = [2283];
-        useHostResolvConf = false;
-        nameservers = ["9.9.9.9" "8.8.8.8" "1.1.1.1" "77.88.8.8"];
-      };
-      services.resolved.enable = true;
+        services.resolved.enable = true;
 
-      virtualisation.docker = {
-        enable = true;
-        autoPrune = {
+        virtualisation.docker = {
           enable = true;
+          autoPrune = {
+            enable = true;
+          };
         };
       };
-    };
   };
 }

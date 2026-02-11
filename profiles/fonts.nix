@@ -8,7 +8,6 @@
       monaspace
       noto-fonts
       noto-fonts-cjk-sans
-      noto-fonts-extra
       roboto
       source-sans
       source-sans-pro

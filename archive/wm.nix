@@ -14,7 +14,7 @@
       gcr
     ];
 
-    services.gpg-agent.pinentryPackage = pkgs.pinentry-gnome3;
+    services.gpg-agent.pinentry.package = pkgs.pinentry-gnome3;
     services.gnome-keyring.enable = true;
 
     dconf.settings = {

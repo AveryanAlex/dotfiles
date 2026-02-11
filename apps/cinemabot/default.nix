@@ -1,76 +1,66 @@
 let
   name = "cinemabot";
 in
-  {config, ...}: {
-    systemd.tmpfiles.rules = [
-      "d /persist/${name}/data 700 100999 100999 - -"
-      "d /persist/${name}/searxng 700 100977 100977 - -"
-    ];
+{ config, ... }:
+{
+  systemd.tmpfiles.rules = [
+    "d /persist/${name}/data 700 100999 100999 - -"
+    "d /persist/${name}/searxng 700 100977 100977 - -"
+  ];
 
-    age.secrets."${name}-bot" = {
-      file = ./bot.age;
-      mode = "600";
-      owner = "alex";
-    };
+  age.secrets."${name}-bot".file = ./bot.age;
 
-    hm.services.podman = {
-      networks.${name} = {};
-
-      containers."${name}-bot" = {
-        image = "ghcr.io/averyanalex/cinemabot:latest";
-        autoUpdate = "registry";
-        environmentFile = [config.age.secrets."${name}-bot".path];
-        environment = {
-          APP__SEARXNG__URL = "http://${name}-searxng:8080/";
+  virtualisation.quadlet =
+    let
+      inherit (config.virtualisation.quadlet) networks;
+    in
+    {
+      containers = {
+        "${name}-searxng" = {
+          containerConfig = {
+            image = "docker.io/searxng/searxng:latest";
+            autoUpdate = "registry";
+            networks = [ networks.${name}.ref ];
+            ip = "10.90.87.3";
+            volumes = [ "/persist/${name}/searxng:/etc/searxng" ];
+            gidMaps = [ "0:100000:100000" ];
+            uidMaps = [ "0:100000:100000" ];
+          };
+          serviceConfig = {
+            MemoryMax = "8G";
+          };
         };
-        volumes = [
-          "/persist/${name}/data:/app/data"
-        ];
-        network = [
-          name
-        ];
-        extraConfig = {
-          Unit = rec {
-            Requires = [
-              "podman-${name}-searxng.service"
-            ];
+
+        "${name}-bot" = {
+          containerConfig = {
+            image = "ghcr.io/averyanalex/cinemabot:latest";
+            autoUpdate = "registry";
+            networks = [ networks.${name}.ref ];
+            ip = "10.90.87.2";
+            volumes = [ "/persist/${name}/data:/app/data" ];
+            environments = {
+              APP__SEARXNG__URL = "http://${name}-searxng:8080/";
+            };
+            environmentFiles = [ config.age.secrets."${name}-bot".path ];
+            gidMaps = [ "0:100000:100000" ];
+            uidMaps = [ "0:100000:100000" ];
+          };
+          unitConfig = rec {
+            Requires = [ "${name}-searxng.service" ];
             After = Requires;
-            X-SwitchMethod = "restart";
           };
-          Container = {
-            GIDMap = "0:1:100000";
-            UIDMap = "0:1:100000";
-          };
-          Service = {
-            MemoryHigh = "1G";
+          serviceConfig = {
             MemoryMax = "2G";
+            Environment = [ "REGISTRY_AUTH_FILE=${config.environment.sessionVariables.REGISTRY_AUTH_FILE}" ];
           };
         };
       };
 
-      containers."${name}-searxng" = {
-        image = "docker.io/searxng/searxng:latest";
-        autoUpdate = "registry";
-        volumes = [
-          "/persist/${name}/searxng:/etc/searxng"
-        ];
-        # ports = [
-        #   "0.0.0.0:8746:8080"
-        # ];
-        network = [
-          name
-        ];
-        extraConfig = {
-          Unit.X-SwitchMethod = "restart";
-          Container = {
-            GIDMap = "0:1:100000";
-            UIDMap = "0:1:100000";
-          };
-          # Service = {
-          #   MemoryHigh = "2G";
-          #   MemoryMax = "3G";
-          # };
+      networks = {
+        ${name}.networkConfig = {
+          subnets = [ "10.90.87.0/24" ];
+          podmanArgs = [ "--interface-name=pme-cine" ];
         };
       };
     };
-  }
+}

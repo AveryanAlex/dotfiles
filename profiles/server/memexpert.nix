@@ -3,20 +3,24 @@
   inputs,
   pkgs,
   ...
-}: let
-  memexpert-pkg = inputs.memexpert.packages.${pkgs.hostPlatform.system}.default;
-in {
+}:
+let
+  memexpert-pkg = inputs.memexpert.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
+{
   age.secrets.memexpert.file = ../../secrets/creds/memexpert.age;
 
   systemd.services.memexpert = {
-    after = ["network-online.target" "postgresql.service"];
-    wants = ["network-online.target"];
-    requires = ["postgresql.service"];
-    path = [memexpert-pkg];
+    after = [
+      "network-online.target"
+      "postgresql.service"
+    ];
+    wants = [ "network-online.target" ];
+    requires = [ "postgresql.service" ];
+    path = [ memexpert-pkg ];
     environment = {
       DATABASE_URL = "postgresql:///memexpert";
-      HTTPS_PROXY = "http://127.0.0.1:8118";
-      HTTP_PROXY = "http://127.0.0.1:8118";
+      https_proxy = "http://127.0.0.1:8080";
     };
     serviceConfig = {
       User = "memexpert";

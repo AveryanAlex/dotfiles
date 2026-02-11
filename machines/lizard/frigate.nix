@@ -1,43 +1,61 @@
-{pkgs, ...}: let
-  dockerImage = pkgs.dockerTools.pullImage {
-    imageName = "ghcr.io/blakeblackshear/frigate";
-    finalImageTag = "0.14.0";
-    imageDigest = "sha256:15ab24306f49389382f01d0e9b82b7d4a32f93d207202f518564753015216818";
-    sha256 = "0ONrcyeF+dtKgrFa2vXKWMSRg+j/0ngFX91o7oA4IAU=";
-  };
-in {
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [8971];
+let
+  name = "frigate";
+in
+{ config, ... }:
+{
+  systemd.tmpfiles.rules = [
+    "d /data/${name}/config 700 0 0 - -"
+    "d /data/${name}/media 700 0 0 - -"
+  ];
 
-  virtualisation.oci-containers = {
-    containers = {
-      frigate = {
-        image = "ghcr.io/blakeblackshear/frigate:0.14.0";
-        imageFile = dockerImage;
-        volumes = [
-          "/etc/localtime:/etc/localtime:ro"
-          "/var/lib/frigate/config:/config"
-          "/var/lib/frigate/storage:/media/frigate"
-        ];
-        ports = [
-          "5000:5000"
-          "8971:8971"
-          "8554:8554"
-          "8555:8555"
-        ];
-        extraOptions = [
-          "--network=slirp4netns"
-          "--privileged"
-          "--device=/dev/video11:/dev/video11"
-          "--shm-size=256m"
-        ];
+  networking.nftables.tables.portforward-nat = {
+    family = "inet";
+    content = ''
+      chain pre {
+        type nat hook prerouting priority dstnat; policy accept;
+        iifname nebula.averyan ip daddr 10.57.1.30 tcp dport 8971 dnat to 10.90.246.2:8971
+      }
+    '';
+  };
+
+  networking.firewall.interfaces."pme-frigate".allowedTCPPorts = [ 1883 ]; # mqtt
+
+  virtualisation.quadlet =
+    let
+      inherit (config.virtualisation.quadlet) networks;
+    in
+    {
+      containers = {
+        "${name}" = {
+          containerConfig = {
+            image = "ghcr.io/blakeblackshear/frigate:stable";
+            autoUpdate = "registry";
+            networks = [ networks.${name}.ref ];
+            ip = "10.90.246.2";
+            podmanArgs = [
+              "--privileged"
+            ];
+            volumes = [
+              "/etc/localtime:/etc/localtime:ro"
+              "/data/${name}/config:/config"
+              "/data/${name}/media:/media/frigate"
+            ];
+            mounts = [
+              "type=tmpfs,tmpfs-size=1024M,destination=/tmp/cache"
+            ];
+            devices = [
+              "/dev/video11:/dev/video11"
+            ];
+            shmSize = "512m";
+          };
+        };
+      };
+
+      networks = {
+        ${name}.networkConfig = {
+          subnets = [ "10.90.246.0/24" ];
+          podmanArgs = [ "--interface-name=pme-${name}" ];
+        };
       };
     };
-  };
-
-  persist.state.dirs = [
-    {
-      directory = "/var/lib/frigate";
-      mode = "u=rwx,g=rx,o=rx";
-    }
-  ];
 }

@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: let
-  package = inputs.avtor24bot.packages.${pkgs.hostPlatform.system}.default;
+  package = inputs.avtor24bot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
   users.users.avtor24bot = {
     uid = 721;

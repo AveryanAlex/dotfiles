@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   home-manager.users.alex = {
     home.packages = with pkgs; [
       xdg-ninja # clean home dir
@@ -47,5 +48,5 @@
     };
   };
 
-  environment.systemPackages = [config.boot.kernelPackages.perf];
+  environment.systemPackages = [ config.boot.kernelPackages.perf ];
 }

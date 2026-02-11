@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  automm-pkg = inputs.automm.packages.${pkgs.hostPlatform.system}.default.overrideAttrs (final: prev: {
+  automm-pkg = inputs.automm.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (final: prev: {
     RUSTFLAGS = "-Ctarget-cpu=neoverse-n1";
   });
 in {

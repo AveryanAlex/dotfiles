@@ -2,7 +2,7 @@
   hm = {
     services.gpg-agent = {
       enable = true;
-      enableSshSupport = true;
+      # enableSshSupport = true;
     };
 
     programs.gpg = {
@@ -17,6 +17,10 @@
         }
         {
           source = ./cofob.asc;
+          trust = 4;
+        }
+        {
+          source = ./qubes.asc;
           trust = 4;
         }
       ];

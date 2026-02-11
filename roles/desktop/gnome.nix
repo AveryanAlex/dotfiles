@@ -2,24 +2,29 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   nixcfg.gnome.enable = true;
   services.xserver = {
     xkb.layout = "us,ru";
-    # xkb.options = "grp:caps_toggle,grp_led:caps";
-    displayManager = {
-      gdm = {
-        enable = true;
-        wayland = true;
-      };
-    };
+    xkb.options = "grp:caps_toggle,grp_led:caps"; # but broken somehow
   };
+  services.displayManager.gdm = {
+    enable = true;
+    wayland = true;
+  };
+
+  # services.desktopManager.cosmic.enable = true;
+  # services.displayManager.cosmic-greeter.enable = true;
 
   services.displayManager.autoLogin.user = "alex";
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
 
-  environment.pathsToLink = ["/share/xdg-desktop-portal" "/share/applications"];
+  environment.pathsToLink = [
+    "/share/xdg-desktop-portal"
+    "/share/applications"
+  ];
 
   xdg.portal = {
     # extraPortals = [pkgs.xdg-desktop-portal-gnome];
@@ -75,18 +80,21 @@
       # gtop
     ];
 
-    services.gpg-agent.pinentryPackage = pkgs.pinentry-gnome3;
+    services.gpg-agent.pinentry.package = pkgs.pinentry-gnome3;
     services.gnome-keyring.enable = true;
 
     dconf.settings = {
       "org/gnome/desktop/interface" = {
         accent-color = "teal";
-        color-scheme = "prefer-dark";
+        # color-scheme = "prefer-dark";
         clock-show-seconds = true;
         show-battery-percentage = true;
       };
       "org/gnome/mutter" = {
-        experimental-features = ["scale-monitor-framebuffer" "x11-randr-fractional-scaling"];
+        experimental-features = [
+          "scale-monitor-framebuffer"
+          "xwayland-native-scaling"
+        ];
         edge-tiling = true;
         dynamic-workspaces = false;
       };
@@ -94,132 +102,130 @@
         tap-to-click = true;
         click-method = "areas";
       };
-      "org/gnome/desktop/wm/keybindings" =
-        {
-          activate-window-menu = [ ];
-          begin-move = [ ];
-          begin-resize = [ ];
-          close = [ "<Super>q" ];
-          cycle-group = [ ];
-          cycle-group-backward = [ ];
-          cycle-panels = [ ];
-          cycle-panels-backward = [ ];
-          cycle-windows = [ ];
-          cycle-windows-backward = [ ];
-          maximize = [ ];
-          minimize = [ ];
-          move-to-monitor-down = [ ];
-          move-to-monitor-left = [ ];
-          move-to-monitor-right = [ ];
-          move-to-monitor-up = [ ];
-          move-to-workspace-down = [ ];
-          move-to-workspace-last = [ ];
-          move-to-workspace-left = [ ];
-          move-to-workspace-right = [ ];
-          move-to-workspace-up = [ ];
-          panel-run-dialog = [ ];
-          switch-applications = [ ];
-          switch-applications-backward = [ ];
-          switch-group = [ ];
-          switch-group-backward = [ ];
-          switch-input-source = [ ];
-          switch-input-source-backward = [ ];
-          switch-panels = [ ];
-          switch-panels-backward = [ ];
-          switch-to-workspace-down = [ ];
-          switch-to-workspace-last = [ ];
-          switch-to-workspace-left = [ ];
-          switch-to-workspace-right = [ ];
-          switch-to-workspace-up = [ ];
-          toggle-maximized = [ "<Super>f" ];
-          unmaximize = [ ];
-        }
-        // (lib.listToAttrs (
-          map
-            (v: {
-          name = "move-to-workspace-${builtins.toString v}";
-              value = [ "<Super><Shift>${builtins.toString v}" ];
-            })
-            [
-              1
-              2
-              3
-              4
-              5
-              6
-              7
-              8
-              9
-            ]
-        ))
-        // (lib.listToAttrs (
-          map
-            (v: {
-          name = "switch-to-workspace-${builtins.toString v}";
-              value = [ "<Super>${builtins.toString v}" ];
-            })
-            [
-              1
-              2
-              3
-              4
-              5
-              6
-              7
-              8
-              9
-            ]
-        ));
+      "org/gnome/desktop/wm/keybindings" = {
+        activate-window-menu = [ ];
+        begin-move = [ ];
+        begin-resize = [ ];
+        close = [ "<Super>q" ];
+        cycle-group = [ ];
+        cycle-group-backward = [ ];
+        cycle-panels = [ ];
+        cycle-panels-backward = [ ];
+        cycle-windows = [ ];
+        cycle-windows-backward = [ ];
+        maximize = [ ];
+        minimize = [ ];
+        move-to-monitor-down = [ ];
+        move-to-monitor-left = [ ];
+        move-to-monitor-right = [ ];
+        move-to-monitor-up = [ ];
+        move-to-workspace-down = [ ];
+        move-to-workspace-last = [ ];
+        move-to-workspace-left = [ ];
+        move-to-workspace-right = [ ];
+        move-to-workspace-up = [ ];
+        panel-run-dialog = [ ];
+        switch-applications = [ ];
+        switch-applications-backward = [ ];
+        switch-group = [ ];
+        switch-group-backward = [ ];
+        switch-input-source = [ ];
+        switch-input-source-backward = [ ];
+        switch-panels = [ ];
+        switch-panels-backward = [ ];
+        switch-to-workspace-down = [ ];
+        switch-to-workspace-last = [ ];
+        switch-to-workspace-left = [ ];
+        switch-to-workspace-right = [ ];
+        switch-to-workspace-up = [ ];
+        toggle-maximized = [ "<Super>f" ];
+        unmaximize = [ ];
+      }
+      // (lib.listToAttrs (
+        map
+          (v: {
+            name = "move-to-workspace-${builtins.toString v}";
+            value = [ "<Super><Shift>${builtins.toString v}" ];
+          })
+          [
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+          ]
+      ))
+      // (lib.listToAttrs (
+        map
+          (v: {
+            name = "switch-to-workspace-${builtins.toString v}";
+            value = [ "<Super>${builtins.toString v}" ];
+          })
+          [
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+          ]
+      ));
       "org/gnome/desktop/wm/preferences" = {
         focus-mode = "sloppy";
         num-workspaces = 9;
       };
-      "org/gnome/shell/keybindings" =
-        {
-          focus-active-notification = [ ];
-          shift-overview-down = [ ];
-          shift-overview-up = [ ];
-          show-screen-recording-ui = [ ];
-          toggle-application-view = [ ];
-          toggle-message-tray = [ ];
-          toggle-quick-settings = [ ];
-        }
-        // (lib.listToAttrs (
-          map
-            (v: {
-          name = "open-new-window-application-${builtins.toString v}";
-              value = [ ];
-            })
-            [
-              1
-              2
-              3
-              4
-              5
-              6
-              7
-              8
-              9
-            ]
-        ))
-        // (lib.listToAttrs (
-          map
-            (v: {
-          name = "switch-to-application-${builtins.toString v}";
-              value = [ ];
-            })
-            [
-              1
-              2
-              3
-              4
-              5
-              6
-              7
-              8
-              9
-            ]
-        ));
+      "org/gnome/shell/keybindings" = {
+        focus-active-notification = [ ];
+        shift-overview-down = [ ];
+        shift-overview-up = [ ];
+        show-screen-recording-ui = [ ];
+        toggle-application-view = [ ];
+        toggle-message-tray = [ ];
+        toggle-quick-settings = [ ];
+      }
+      // (lib.listToAttrs (
+        map
+          (v: {
+            name = "open-new-window-application-${builtins.toString v}";
+            value = [ ];
+          })
+          [
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+          ]
+      ))
+      // (lib.listToAttrs (
+        map
+          (v: {
+            name = "switch-to-application-${builtins.toString v}";
+            value = [ ];
+          })
+          [
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+          ]
+      ));
       "org/gnome/mutter/keybindings" = {
         cancel-input-capture = [ ];
         switch-monitor = [ "XF86Display" ];
@@ -282,7 +288,7 @@
         magnifier-zoom-in = [ ];
         magnifier-zoom-out = [ ];
         screenreader = [ ];
-        screensaver = [ ];
+        screensaver = ["<Super>l" ];
       };
       "org/gnome/settings-daemon/plugins/media-keys".custom-keybindings = [
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
@@ -372,17 +378,36 @@
         {
           package = blur-my-shell;
         }
-        {
-          package = forge;
-        }
+        # {
+        #   package = forge;
+        # }
+        # {
+        #   package = paperwm;
+        # }
         {
           package = astra-monitor;
         }
         {
           package = caffeine;
         }
+        {
+          package = gsconnect;
+        }
+        {
+        package = appindicator;
+        }
       ];
     };
+  };
+
+  networking.firewall = rec {
+    allowedTCPPortRanges = [
+      {
+        from = 1714;
+        to = 1764;
+      }
+    ];
+    allowedUDPPortRanges = allowedTCPPortRanges;
   };
 
   persist.state.homeDirs = [ ".local/share/keyrings" ];
@@ -390,11 +415,7 @@
   programs.dconf.enable = true;
 
   environment.gnome.excludePackages = with pkgs; [
-    geary
-    gnome-calendar
     epiphany
-    gnome-contacts
-    totem
     gnome-tour
   ];
 

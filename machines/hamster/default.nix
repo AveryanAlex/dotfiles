@@ -1,8 +1,8 @@
 {
   inputs,
-  pkgs,
   ...
-}: {
+}:
+{
   imports = [
     inputs.self.nixosModules.roles.desktop
 
@@ -18,20 +18,26 @@
     ./mounts.nix
   ];
 
+  # networking.firewall.extraForwardRules = ''
+  #   iifname wlp0s20f3 accept
+  # '';
+  # networking.nat.internalInterfaces = ["wlp0s20f3"];
+
   persist.tmpfsSize = "6G";
 
+  # services.power-profiles-daemon.enable = false;
   services.tlp = {
     # enable = true;
     settings = {
-      STOP_CHARGE_THRESH_BAT0 = 0;
+      STOP_CHARGE_THRESH_BAT0 = 1;
     };
   };
 
-  services.logind.extraConfig = ''
-    HandlePowerKey=hibernate
-    HandleLidSwitch=suspend-then-hibernate
-    HandleLidSwitchExternalPower=ignore
-  '';
+  # services.logind.extraConfig = ''
+  #   HandlePowerKey=hibernate
+  #   HandleLidSwitch=suspend-then-hibernate
+  #   HandleLidSwitchExternalPower=ignore
+  # ''; # TODO: port
 
   systemd.sleep.extraConfig = ''
     HibernateDelaySec=30m

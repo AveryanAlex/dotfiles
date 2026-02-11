@@ -4,8 +4,8 @@
     "iommu=pt"
   ];
 
-  virtualisation.libvirtd.enable = true;
-  users.users.alex.extraGroups = ["libvirtd"];
+  # virtualisation.libvirtd.enable = true;
+  # users.users.alex.extraGroups = ["libvirtd"];
 
   networking = {
     bridges.virbr0.interfaces = [];

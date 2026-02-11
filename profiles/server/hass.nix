@@ -1,120 +1,105 @@
-{pkgs, ...}: let
-  # overlay-hass = final: prev: {
-  #   home-assistant = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.home-assistant;
-  # };
-  dockerImageAMD64 = pkgs.dockerTools.pullImage {
-    imageName = "esphome/esphome";
-    finalImageTag = "latest";
-    imageDigest = "sha256:40d3c269cafeebce030e64f58908bfe74cb4a1a81ccc2a23ff78a0a070fe63d7";
-    sha256 = "hLy531wi5zkIDqdNjHVEjjyBTeazQFolFVPezf4FohQ=";
-  };
-  dockerImageARM64 = pkgs.dockerTools.pullImage {
-    imageName = "esphome/esphome";
-    finalImageTag = "latest";
-    imageDigest = "sha256:39edbb81b0591d8293c80fa938d3543603f842af9a744a483af75dcde74fe7bf";
-    sha256 = "3aGEEeVaLU97PmmopqDzoDpJiATYg8xGD5TpGmGnfbU=";
-  };
-  dockerImage =
-    if pkgs.hostPlatform.system == "aarch64-linux"
-    then dockerImageARM64
-    else dockerImageAMD64;
-in {
-  # nixpkgs.overlays = [overlay-hass];
-  # disabledModules = [
-  #   "services/home-automation/home-assistant.nix"
-  # ];
-  # imports = [
-  #   (inputs.nixpkgs-unstable + "/nixos/modules/services/home-automation/home-assistant.nix")
-  # ];
-
-  nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.1.1w"
+{ config, ... }:
+{
+  systemd.tmpfiles.rules = [
+    "d /persist/hass/config 700 100000 100000 - -"
+    "d /persist/hass/db 700 100999 100999 - -"
   ];
 
-  services.home-assistant = {
-    enable = true;
-    extraComponents = [
-      "airvisual"
-      "co2signal"
-      "esphome"
-      "met"
-      "roomba"
-      "samsungtv"
-      "utility_meter"
-      "zha"
-      "ping"
-    ];
-    extraPackages = python3Packages:
-      with python3Packages; [
-        aiogithubapi
-        google-api-python-client
-        moonraker-api
-        protobuf
-        psycopg2
-        securetar
-        ulid-transform
-        # getmac
-      ];
-    config = {
-      default_config = {};
-      http = {
-        trusted_proxies = ["10.57.1.10" "::1" "127.0.0.1"];
-        use_x_forwarded_for = true;
+  virtualisation.quadlet =
+    let
+      inherit (config.virtualisation.quadlet) networks;
+    in
+    {
+      containers = {
+        hass = {
+          containerConfig = {
+            image = "ghcr.io/home-assistant/home-assistant:stable";
+            autoUpdate = "registry";
+            networks = [ networks.hass.ref ];
+            ip = "10.90.18.2";
+            volumes = [
+              "/persist/hass/config:/config"
+              # "/run/dbus:/run/dbus:ro"
+              # "/dev:/dev"
+            ];
+            devices = [
+              "/dev/serial/by-id/usb-ITEAD_SONOFF_Zigbee_3.0_USB_Dongle_Plus_V2_20221201192411-if00"
+            ];
+            addCapabilities = [
+              "NET_RAW"
+              "NET_ADMIN"
+            ];
+            environments = {
+              TZ = "Europe/Moscow";
+            };
+            gidMaps = [ "0:100000:100000" ];
+            uidMaps = [ "0:100000:100000" ];
+          };
+          unitConfig = rec {
+            Requires = [ "hass-db.service" ];
+            After = Requires;
+          };
+        };
+
+        hass-db = {
+          containerConfig = {
+            image = "docker.io/library/postgres:17";
+            autoUpdate = "registry";
+            networks = [ networks.hass.ref ];
+            ip = "10.90.18.3";
+            volumes = [ "/persist/hass/db:/var/lib/postgresql/data" ];
+            environments = {
+              POSTGRES_USER = "hass";
+              POSTGRES_PASSWORD = "hass";
+              POSTGRES_DB = "hass";
+            };
+            gidMaps = [ "0:100000:100000" ];
+            uidMaps = [ "0:100000:100000" ];
+          };
+        };
+
+        esphome = {
+          containerConfig = {
+            image = "ghcr.io/esphome/esphome:latest";
+            autoUpdate = "registry";
+            volumes = [
+              "/etc/localtime:/etc/localtime:ro"
+              "/var/lib/esphome:/config"
+            ];
+            # ports = [ "whale:6052:6052" ];
+            networks = [ networks.esphome.ref ];
+            ip = "10.90.19.2";
+            environments = {
+              ESPHOME_DASHBOARD_USE_PING = "true";
+              TZ = "Europe/Moscow";
+            };
+            # gidMaps = [ "0:100000:100000" ];
+            # uidMaps = [ "0:100000:100000" ];
+          };
+          # unitConfig = rec {
+          #   Requires = [ "postgresql.service" ];
+          #   After = Requires;
+          # };
+        };
       };
-      recorder.db_url = "postgresql://@/hass";
-      automation = "!include automations.yaml";
-      scene = "!include scenes.yaml";
-      script = "!include scripts.yaml";
-      notify = [
-        {
-          name = "ntfy";
-          platform = "rest";
-          method = "POST_JSON";
-          data.topic = "!secret ntfy_topic";
-          title_param_name = "title";
-          message_param_name = "message";
-          resource = "https://ntfy.averyan.ru";
-        }
-      ];
-    };
-  };
-
-  systemd.services.home-assistant = {
-    requires = ["postgresql.service"];
-    after = ["postgresql.service"];
-  };
-
-  # users = {
-  #   users.esphome = {
-  #     isSystemUser = true;
-  #     description = "ESPHome";
-  #     home = "/var/lib/esphome";
-  #     group = "esphome";
-  #     uid = 782;
-  #   };
-  #   groups.esphome.gid = 782;
-  # };
-
-  users.users.hass.extraGroups = ["dialout"];
-
-  virtualisation.oci-containers = {
-    containers = {
-      esphome = {
-        image = "esphome/esphome";
-        imageFile = dockerImage;
-        volumes = [
-          "/etc/localtime:/etc/localtime:ro"
-          "/var/lib/esphome:/config"
-        ];
-        ports = ["6052:6052"];
-        extraOptions = ["--network=slirp4netns" "--privileged"];
-        environment = {
-          ESPHOME_DASHBOARD_USE_PING = "true";
-          TZ = "Europe/Moscow";
+      networks = {
+        hass.networkConfig = {
+          subnets = [ "10.90.18.0/24" ];
+          podmanArgs = [ "--interface-name=pme-hass" ];
+        };
+        esphome.networkConfig = {
+          subnets = [ "10.90.19.0/24" ];
+          podmanArgs = [ "--interface-name=pme-esphome" ];
         };
       };
     };
-  };
+
+  networking.firewall.extraForwardRules = ''
+    iifname { pme-esphome, pme-hass } oifname lan0 accept
+  '';
+
+  xrayNat.interfaces = [ "pme-hass" ];
+
   # systemd.services."podman-esphome".after = ["network-online.target"];
   # services.esphome = {
   #   enable = true;
@@ -128,23 +113,23 @@ in {
   #   RestrictSUIDSGID = true;
   # };
 
-  services.postgresql = {
-    ensureDatabases = ["hass"];
-    ensureUsers = [
-      {
-        name = "hass";
-        ensureDBOwnership = true;
-      }
-    ];
-  };
+  # services.postgresql = {
+  #   ensureDatabases = [ "hass" ];
+  #   ensureUsers = [
+  #     {
+  #       name = "hass";
+  #       ensureDBOwnership = true;
+  #     }
+  #   ];
+  # };
 
   persist.state.dirs = [
-    {
-      directory = "/var/lib/hass";
-      user = "hass";
-      group = "hass";
-      mode = "u=rwx,g=,o=";
-    }
+    # {
+    #   directory = "/var/lib/hass";
+    #   user = "hass";
+    #   group = "hass";
+    #   mode = "u=rwx,g=,o=";
+    # }
     {
       directory = "/var/lib/esphome";
       user = "esphome";
@@ -153,5 +138,8 @@ in {
     }
   ];
 
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [8123 6052];
+  # networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [
+  #   8123
+  #   6052
+  # ];
 }

@@ -26,7 +26,7 @@ in
     inputs.self.nixosModules.profiles.server.anoquebot
     inputs.self.nixosModules.profiles.server.picsav
     inputs.self.nixosModules.profiles.server.acme
-    inputs.self.nixosModules.profiles.server.blog
+    # inputs.self.nixosModules.profiles.server.blog
     # inputs.self.nixosModules.profiles.server.bvilove
     # inputs.self.nixosModules.profiles.server.gitea
     inputs.self.nixosModules.profiles.server.hass
@@ -46,12 +46,11 @@ in
     # inputs.self.nixosModules.profiles.server.meilisearch
     inputs.self.nixosModules.profiles.server.memexpert
     inputs.self.nixosModules.profiles.server.gptoolsbot
-    inputs.self.nixosModules.profiles.server.avtor24bot
+    # inputs.self.nixosModules.profiles.server.avtor24bot
     # inputs.self.nixosModules.profiles.server.aibox
 
     inputs.self.nixosModules.profiles.libvirt
     inputs.self.nixosModules.profiles.persist-yggdrasil
-    inputs.self.nixosModules.profiles.podman
     inputs.self.nixosModules.profiles.remote-builder-host
     inputs.self.nixosModules.profiles.sync
 
@@ -67,8 +66,11 @@ in
     # ./yacy.nix
     # ./tor.nix
     ./i2p.nix
-    # ./lidarr.nix
-    ./ups.nix
+    ../../apps/lidarr
+    ../../apps/slskd
+    ../../apps/navidrome
+    ../../apps/prowlarr
+    # ./ups.nix
     # ./ipfs.nix
     ./mail.nix
     ./matrix.nix
@@ -78,10 +80,20 @@ in
     ./borgserve.nix
     ./printing.nix
     ./docker.nix
+    ./hao-woodpecker.nix
+    ./xray.nix
+    ./xray-nat.nix
 
-    ../../apps/cinemabot
+    # ../../apps/cinemabot
     ../../apps/wakapi
+    # ../../apps/s2sbot
+    ../../apps/reelsgen
+    ../../apps/nextcloud
+    ../../apps/newsrelay
   ];
+
+  virtualisation.libvirtd.enable = true;
+  users.users.alex.extraGroups = [ "libvirtd" ];
 
   system.stateVersion = "22.05";
 
@@ -116,6 +128,7 @@ in
   #   '';
   # };
 
+  # enable hardware beeper
   boot.kernelModules = [ "pcspkr" ];
 
   # NETWORKING
@@ -132,26 +145,36 @@ in
   services.nginx.virtualHosts = {
     "bw.averyan.ru" = makeAveryanHost "http://whale:8222";
     "dacha.averyan.ru" = makeAveryanHost "http://lizard:8123";
+    "dacha-frigate.averyan.ru" = makeAveryanHost "http://lizard:8971";
+    "xartik-home.averyan.ru" = makeAveryanHost "http://[201:2e23:9bf2:f5c5:a9c8:7607:e359:2ea6]:8123";
+    "xartik-immich.averyan.ru" = makeAveryanHost "http://[201:2e23:9bf2:f5c5:a9c8:7607:e359:2ea6]:2283";
     "dav.averyan.ru" = makeAveryanHost "http://[::1]:5232";
     "git.averyan.ru" = makeAveryanHost "http://whale:3816";
     "grafana.averyan.ru" = makeAveryanHost "http://whale:3729";
-    "home.averyan.ru" = makeAveryanHost "http://whale:8123";
+    "home.averyan.ru" = makeAveryanHost "http://10.90.18.2:8123" // {
+      extraConfig = ''
+        proxy_read_timeout 600;
+        proxy_connect_timeout 60;
+        proxy_send_timeout 600;
+      '';
+    };
     "hydra.averyan.ru" = makeAveryanHost "http://whale:2875";
     "ntfy.averyan.ru" = makeAveryanHost "http://127.0.0.1:8163";
     "olsearch.averyan.ru" = makeAveryanHost "http://whale:8739";
     "prism.averyan.ru" = makeAveryanHost "http://whale:2342";
     "search.averyan.ru" = makeAveryanHost "http://127.0.0.1:8278";
-    "lidarr.averyan.ru" = makeAveryanHost "http://127.0.0.1:8686";
     "yacy.averyan.ru" = makeAveryanHost "http://whale:8627";
     "lab.averyan.ru" = makeAveryanHost "http://127.0.0.1:8874";
-    "memexpert.xyz" = {
-      globalRedirect = "memexpert.net";
-      useACMEHost = "memexpert.xyz";
+    "memexpert.net" = makeHost "http://127.0.0.1:3000" // {
+      useACMEHost = "memexpert.net";
     };
-    "memexpert.net" = makeHost "http://127.0.0.1:3000" // {useACMEHost = "memexpert.net";};
 
-    "git.neutrino.su" = makeHost "http://whale:3826" // {useACMEHost = "neutrino.su";};
-    "bw.neutrino.su" = makeHost "http://whale:8222" // {useACMEHost = "neutrino.su";};
+    "git.neutrino.su" = makeHost "http://whale:3826" // {
+      useACMEHost = "neutrino.su";
+    };
+    "bw.neutrino.su" = makeHost "http://whale:8222" // {
+      useACMEHost = "neutrino.su";
+    };
 
     "ptero.averyan.ru" = makeAveryanHost "http://192.168.12.50:80";
     "whale-ptero.averyan.ru" = makeAveryanHost "http://192.168.12.50:443";

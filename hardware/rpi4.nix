@@ -1,24 +1,33 @@
 {
   inputs,
-  lib,
+  pkgs,
   ...
-}: {
-  imports = with inputs.self.nixosModules.hardware;
+}:
+{
+  imports =
+    with inputs.self.nixosModules.hardware;
     [
       physical
     ]
-    ++ [inputs.nixos-hardware.nixosModules.raspberry-pi-4];
+    ++ [ inputs.nixos-hardware.nixosModules.raspberry-pi-4 ];
 
-  # hardware.raspberry-pi."4".fkms-3d.enable = true;
-  services.xserver.videoDrivers = lib.mkBefore [
-    "modesetting" # Prefer the modesetting driver in X11
-    "fbdev" # Fallback to fbdev
-  ];
-  hardware.graphics = {
-    enable = true;
+  hardware.raspberry-pi."4" = {
+    apply-overlays-dtmerge.enable = true;
+    fkms-3d.enable = true;
+    bluetooth.enable = true;
   };
 
-  # boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_1;
+  boot.initrd.systemd.tpm2.enable = false; # WORKAROUND: modprobe: FATAL: Module tpm-crb not found in directory /nix/store/cjas9kxgiv518yx3qk35cwykasn7pic0-linux-rpi-6.6.51-stable_20241008-modules/lib/modules/6.6.51
 
-  boot.kernelParams = ["console=ttyS0,115200n8" "console=ttyAMA0,115200n8" "console=tty0"];
+  console.enable = true;
+  boot.kernelParams = [
+    "console=ttyS0,115200n8"
+    "console=ttyAMA0,115200n8"
+    "console=tty0"
+  ];
+
+  environment.systemPackages = with pkgs; [
+    libraspberrypi
+    raspberrypi-eeprom
+  ];
 }

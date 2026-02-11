@@ -7,9 +7,9 @@
   systemd = {
     enableEmergencyMode = false;
 
-    watchdog = {
-      runtimeTime = "30s";
-      rebootTime = "10m";
+    settings = {
+      Manager.RebootWatchdogSec = "10m";
+      Manager.RuntimeWatchdogSec = "30s";
     };
 
     sleep.extraConfig = ''

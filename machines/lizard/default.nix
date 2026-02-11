@@ -1,19 +1,25 @@
-{inputs, ...}: {
+{ inputs, lib, ... }:
+{
   imports = [
     inputs.self.nixosModules.roles.minimal
 
     # inputs.self.nixosModules.profiles.server.hass
     # inputs.self.nixosModules.profiles.server.pgsql
 
-    inputs.self.nixosModules.profiles.netman
-    inputs.self.nixosModules.profiles.podman
-
     inputs.self.nixosModules.hardware.rpi4
 
     ./mounts.nix
-    # ./hass.nix
+    ./network.nix
+
+    ./mqtt.nix
+
+    ./hass.nix
     ./frigate.nix
   ];
 
-  system.stateVersion = "24.05";
+  hardware.bluetooth.enable = true;
+
+  persist.enable = lib.mkForce false;
+
+  system.stateVersion = "25.05";
 }

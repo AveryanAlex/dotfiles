@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  picsavbot-pkg = inputs.picsavbot.packages.${pkgs.hostPlatform.system}.default;
+  picsavbot-pkg = inputs.picsavbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   dockerImage = pkgs.dockerTools.pullImage {
     imageName = "averyanalex/picsavai";

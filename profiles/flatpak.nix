@@ -19,11 +19,12 @@
 
         Environment = {
           # XCURSOR_PATH = "/run/host/user-share/icons:/run/host/share/icons";
-          GTK_THEME = "Adwaita:dark";
+          # GTK_THEME = "Adwaita:dark";
         };
       };
 
       "org.onlyoffice.desktopeditors".Context.sockets = ["x11"];
+      "org.signal.Signal".Environment.SIGNAL_PASSWORD_STORE="gnome-libsecret";
     };
   };
 

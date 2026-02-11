@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  aplusmuz-music-scraper-pkg = inputs.aplusmuz-music-scraper.packages.${pkgs.hostPlatform.system}.default;
+  aplusmuz-music-scraper-pkg = inputs.aplusmuz-music-scraper.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
   age.secrets.aplusmuz-music-scraper.file = ../../secrets/creds/aplusmuz-music-scraper.age;
 

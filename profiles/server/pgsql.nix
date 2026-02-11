@@ -1,15 +1,16 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql_14;
-    extensions = with pkgs.postgresql_14.pkgs; [pgvector];
+    extensions = with pkgs.postgresql_14.pkgs; [ pgvector ];
   };
 
   services.prometheus.exporters.postgres = {
     enable = true;
     runAsLocalSuperUser = true;
   };
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [9187];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 9187 ];
 
   persist.state.dirs = [
     {

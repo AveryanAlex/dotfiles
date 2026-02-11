@@ -10,7 +10,6 @@
     ];
 
     consoleLogLevel = 3;
-    kernel.sysctl."vm.swappiness" = 0;
     kernel.sysctl."kernel/sysrq" = 1;
   };
 
