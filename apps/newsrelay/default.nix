@@ -27,7 +27,6 @@ in
             ip = "10.90.89.2";
             environments = {
               TZ = "Europe/Moscow";
-              https_proxy = "http://10.90.89.1:8080";
             };
             volumes = [ "/persist/${name}/data:/data" ];
             environmentFiles = [ config.age.secrets."${name}-bot".path ];
@@ -44,6 +43,4 @@ in
         };
       };
     };
-
-  networking.firewall.interfaces."pme-${name}".allowedTCPPorts = [ 8080 ];
 }
