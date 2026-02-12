@@ -29,7 +29,7 @@
     gdb
 
     pkg-config
-    xorg.libX11
+    libx11
 
     rustup
 
