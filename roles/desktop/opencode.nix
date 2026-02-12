@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   hm.programs.opencode = {
     enable = true;
@@ -12,6 +13,10 @@
       };
     };
   };
+
+  hm.home.packages = with pkgs; [
+    mcp-nixos
+  ];
 
   hm.programs.mcp = {
     enable = true;
