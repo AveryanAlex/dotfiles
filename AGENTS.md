@@ -9,19 +9,15 @@ This is a NixOS system configuration using flakes. It defines multiple machines 
 ## Commands
 
 ### Build/Deploy
-- `nixos-rebuild switch --flake .#<hostname>` - Deploy to local machine
-- `nixos-rebuild build --flake .#<hostname>` - Build without switching
+- `nh os build` - Build without switching
+- `nh os switch` - Deploy to local machine
+- `./deploy.sh <hostname>` - Deploy to remote machine
 - `nix flake check` - Evaluate flake for errors
 - `nix flake update --commit-lock-file` - Update all inputs and commit lock file
 
 ### Formatting
-- `nixfmt -c .` - Check formatting
-- `nixfmt .` - Auto-format all .nix files
-- `nix run nixpkgs#nixfmt -- -c .` - Run formatter without installing
-
-### Development
-- `direnv allow` - Load dev shell (auto-loads with `use flake`)
-- `colmena apply` - Deploy to remote hosts via colmena
+- `treefmt --ci` - Check formatting for all files
+- `treefmt` - Auto-format all files
 
 ## Code Style
 
@@ -71,7 +67,7 @@ in
   - `hardware.nix` - Hardware-specific settings
   - `mounts.nix` - Filesystem mounts
   - `system.txt` - System architecture (e.g., "x86_64-linux")
-- `profiles/` - Reusable configuration units (bluetooth, shell, etc.)
+- `profiles/` - Reusable, but machine-specific configuration units (bluetooth, openrgb, etc.)
 - `modules/` - Custom NixOS modules with options
 - `roles/` - High-level role definitions (desktop, server, minimal)
 - `hardware/` - Hardware-specific modules
@@ -81,10 +77,6 @@ in
 - Store encrypted secrets in `secrets/` directory
 - Reference secrets via `age.secrets.<name>.file`
 - Never commit unencrypted secrets
-
-### State Management
-- Use `persist.state.files` and `persist.state.directories` for impermanence
-- Mark machine-specific state in profiles/persist*.nix
 
 ### Git Conventions
 - Commit lock file updates with: `nix flake update --commit-lock-file`
@@ -105,17 +97,16 @@ GitHub Actions workflows:
 
 ## Common Patterns
 
-### Adding a new machine
-1. Create `machines/<hostname>/` directory
-2. Add `system.txt` with architecture
-3. Create `default.nix`, `hardware.nix` (import from nixos-hardware if available)
-4. Import relevant profiles and roles
-5. Test with `nixos-rebuild build --flake .#<hostname>`
+### Adding a new module
 
-### Adding a profile
-1. Create file in `profiles/` or subdirectory
-2. Use standard module structure if providing options
-3. Import in machine or role files as needed
+Determine where to place a new module based on reusability:
+
+- **Hardware-specific** (reusable across similar hardware) → Place in `hardware/`
+- **General reusable** (not hardware-specific) → Place in `profiles/`
+- **Role-specific** (e.g., all machines, desktops only, servers only) → Place in `roles/`, prefer this over `profiles/` when you can
+- **Not reusable** (machine-specific) → Place in `machines/<hostname>/`
+
+Import the module where needed (in machine configurations or roles).
 
 ### Using home-manager
 - Available via `inputs.home-manager`
