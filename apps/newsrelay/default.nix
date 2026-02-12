@@ -11,7 +11,7 @@ in
     file = ./bot.age;
   };
 
-  xrayNat.interfaces = [ "pme-${name}" ];
+  networking.tproxy.forward.interfaces = [ "pme-${name}" ];
 
   virtualisation.quadlet =
     let

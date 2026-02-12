@@ -1,5 +1,5 @@
 {
-  inputs,
+  secrets,
   pkgs,
   ...
 }:
@@ -33,29 +33,13 @@
     # ./opensnitch.nix
   ];
 
-  networking.nftables.tables.xray-nat = {
-    family = "inet";
-    content =
-      let
-        rule = ''
-          ip daddr { 0.0.0.0/8, 10.0.0.0/8, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12, 192.168.0.0/16, 224.0.0.0/4, 240.0.0.0/4 } return
-          ip6 daddr { ::1/128, fc00::/7, fe80::/10, ff00::/8 } return
-          tcp dport { 80, 443 } meta mark != 18298 redirect to :18298
-          udp dport { 443 } meta mark != 18298 redirect to :18298
-          # ip protocol tcp meta mark != 18298 redirect to :18298
-          # ip protocol udp meta mark != 18298 redirect to :18298
-        '';
-      in
-      ''
-        chain out {
-          type nat hook output priority mangle - 10; policy accept;
-          ${rule}
-        }
-
-        chain pre {
-          type nat hook prerouting priority dstnat - 10; policy accept;
-        }
-      '';
+  # Enable transparent proxy for outbound traffic on desktops
+  networking.tproxy = {
+    output.enable = true;
+    backend = {
+      enable = true;
+      configFile = "${secrets}/xray/desktop.age";
+    };
   };
 
   # networking.firewall.allowedTCPPorts = [18298];

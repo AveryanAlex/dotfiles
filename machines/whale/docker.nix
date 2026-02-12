@@ -4,7 +4,7 @@
     "d /persist/docker/data 700 0 0 - -"
   ];
 
-  xrayNat.interfaces = [ "dockerbr" ];
+  networking.tproxy.forward.interfaces = [ "dockerbr" ];
 
   networking = {
     bridges.dockerbr.interfaces = [ ];

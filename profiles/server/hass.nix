@@ -98,7 +98,7 @@
     iifname { pme-esphome, pme-hass } oifname lan0 accept
   '';
 
-  xrayNat.interfaces = [ "pme-hass" ];
+  networking.tproxy.forward.interfaces = [ "pme-hass" ];
 
   # systemd.services."podman-esphome".after = ["network-online.target"];
   # services.esphome = {

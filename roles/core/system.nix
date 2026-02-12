@@ -20,6 +20,5 @@
     ../../profiles/vmvariant.nix
     ../../profiles/xdg.nix
     ../../profiles/yggdrasil.nix
-    ../../profiles/xray.nix
   ];
 }

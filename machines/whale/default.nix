@@ -83,7 +83,6 @@ in
     ./docker.nix
     ./hao-woodpecker.nix
     ./xray.nix
-    ./xray-nat.nix
 
     # ../../apps/cinemabot
     ../../apps/wakapi

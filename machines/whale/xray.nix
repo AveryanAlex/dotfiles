@@ -1,5 +1,4 @@
 {
-  lib,
   secrets,
   ...
 }:
@@ -29,5 +28,9 @@
     '';
   };
 
-  age.secrets."xray-config.jsonc".file = lib.mkForce "${secrets}/xray/whale.age";
+  # Whale uses its own xray config
+  networking.tproxy.backend = {
+    enable = true;
+    configFile = "${secrets}/xray/whale.age";
+  };
 }

@@ -9,6 +9,7 @@
     inputs.quadlet-nix.nixosModules.quadlet
     inputs.self.nixosModules.modules.nebula-averyan
     inputs.self.nixosModules.modules.persist
+    inputs.self.nixosModules.modules.tproxy
     ./network.nix
     ./podman.nix
     ./hosts.nix
@@ -35,6 +36,8 @@
   services.dbus.implementation = "broker";
 
   services.irqbalance.enable = true;
+
+  networking.tproxy.enable = true;
 
   # Tealdeer
   hm.programs.tealdeer = {
