@@ -6,7 +6,7 @@
 {
   imports = [
     ../full.nix
-    ../../dev
+    ../dev
     ../../profiles/apps/wezterm.nix
     ./gnome.nix
     ./compat.nix
@@ -14,7 +14,6 @@
     ./tuning.nix
     ./tank.nix
     ./distrobox.nix
-    ./opencode.nix
   ]
   ++ (
     with inputs.self.nixosModules.profiles;

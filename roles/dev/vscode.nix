@@ -6,7 +6,7 @@
 }:
 {
   age.secrets.account-wakatime = {
-    file = ../secrets/accounts/wakatime.age;
+    file = ../../secrets/accounts/wakatime.age;
     owner = "alex";
     group = "users";
     path = "/home/alex/.wakatime.cfg";

@@ -8,6 +8,8 @@
     ./zed.nix
     ./nbconvert.nix
     ./docker.nix
+    ./opencode.nix
+    ./mcp.nix
   ];
 
   # nixpkgs.overlays = [ inputs.fenix.overlays.default ];
