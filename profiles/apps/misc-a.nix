@@ -79,9 +79,10 @@
       enable = true;
       defaultApplications = {
         "application/pdf" = "org.gnome.Evince.desktop";
-        "text/html" = "com.brave.Browser.desktop";
-        "x-scheme-handler/http" = "com.brave.Browser.desktop";
-        "x-scheme-handler/https" = "com.brave.Browser.desktop";
+        "text/html" = "firefox.desktop";
+        "x-scheme-handler/http" = "firefox.desktop";
+        "x-scheme-handler/https" = "firefox.desktop";
+        "x-scheme-handler/about" = "firefox.desktop";
         # "image/jpeg" = "org.gnome.gThumb.desktop";
       };
     };
