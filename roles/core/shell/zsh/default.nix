@@ -2,11 +2,12 @@
   config,
   pkgs,
   lib,
+  secrets,
   ...
 }:
 {
   age.secrets.bash-init = {
-    file = ../../../secrets/creds/bash-init.age;
+    file = "${secrets}/creds/bash-init.age";
     owner = "alex";
     group = "users";
   };

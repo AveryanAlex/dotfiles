@@ -1,7 +1,7 @@
 { inputs, lib, ... }:
 {
   imports = [
-    inputs.self.nixosModules.roles.minimal
+    ../../roles/core
 
     # inputs.self.nixosModules.profiles.server.hass
     # inputs.self.nixosModules.profiles.server.pgsql

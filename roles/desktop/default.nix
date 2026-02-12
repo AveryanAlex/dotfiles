@@ -5,43 +5,33 @@
 }:
 {
   imports = [
-    ../full.nix
+    ../core
     ../dev
-    ../../profiles/apps/wezterm.nix
+    ./apps/wezterm.nix
+    ./apps/alacritty.nix
+    ./apps/firefox.nix
+    ./apps/misc-a.nix
+    ./apps/mpv.nix
     ./gnome.nix
     ./compat.nix
     ./deployapp.nix
     ./tuning.nix
     ./tank.nix
     ./distrobox.nix
-  ]
-  ++ (
-    with inputs.self.nixosModules.profiles;
-    with apps;
-    [
-      alacritty
-      firefox
-      misc-a
-      mpv
-    ]
-    ++ [
-      # jupyter
-      # autologin
-      embedded
-      filemanager
-      flatpak
-      fonts
-      kernel
-      light
-      mail
-      music
-      printing
-      sdr
-      sync
-      # waydroid
-      # opensnitch
-    ]
-  );
+    ../../profiles/embedded.nix
+    ../../profiles/filemanager.nix
+    ../../profiles/flatpak.nix
+    ../../profiles/fonts.nix
+    ../../profiles/kernel.nix
+    ../../profiles/light.nix
+    ../../profiles/mail.nix
+    ../../profiles/music.nix
+    ../../profiles/printing.nix
+    ../../profiles/sdr.nix
+    ../../profiles/sync.nix
+    # ./waydroid.nix
+    # ./opensnitch.nix
+  ];
 
   networking.nftables.tables.xray-nat = {
     family = "inet";

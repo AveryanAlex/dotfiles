@@ -18,41 +18,41 @@ let
 in
 {
   imports = [
-    inputs.self.nixosModules.roles.server
+    ../../roles/server.nix
 
-    inputs.self.nixosModules.profiles.server.qbit
+    ../../profiles/server/qbit.nix
     # inputs.self.nixosModules.profiles.server.cpmbot
-    inputs.self.nixosModules.profiles.server.gayradar
-    inputs.self.nixosModules.profiles.server.anoquebot
-    inputs.self.nixosModules.profiles.server.picsav
-    inputs.self.nixosModules.profiles.server.acme
+    ../../profiles/server/gayradar.nix
+    ../../profiles/server/anoquebot.nix
+    ../../profiles/server/picsav.nix
+    ../../profiles/server/acme.nix
     # inputs.self.nixosModules.profiles.server.blog
     # inputs.self.nixosModules.profiles.server.bvilove
     # inputs.self.nixosModules.profiles.server.gitea
-    inputs.self.nixosModules.profiles.server.hass
+    ../../profiles/server/hass.nix
     # inputs.self.nixosModules.profiles.server.hydra
-    inputs.self.nixosModules.profiles.server.kluckva
+    ../../profiles/server/kluckva.nix
     # inputs.self.nixosModules.profiles.server.mqtt
-    inputs.self.nixosModules.profiles.server.mysql
-    inputs.self.nixosModules.profiles.server.nginx
-    inputs.self.nixosModules.profiles.server.ntfy-sh
-    inputs.self.nixosModules.profiles.server.pgsql
-    inputs.self.nixosModules.profiles.server.radicale
-    inputs.self.nixosModules.profiles.server.forgejo
-    inputs.self.nixosModules.profiles.server.searx
-    inputs.self.nixosModules.profiles.server.vaultwarden
-    inputs.self.nixosModules.profiles.server.matomo
-    inputs.self.nixosModules.profiles.server.qdrant
+    ../../profiles/server/mysql.nix
+    ../../profiles/server/nginx.nix
+    ../../profiles/server/ntfy-sh.nix
+    ../../profiles/server/pgsql.nix
+    ../../profiles/server/radicale.nix
+    ../../profiles/server/forgejo.nix
+    ../../profiles/server/searx.nix
+    ../../profiles/server/vaultwarden.nix
+    ../../profiles/server/matomo.nix
+    ../../profiles/server/qdrant.nix
     # inputs.self.nixosModules.profiles.server.meilisearch
-    inputs.self.nixosModules.profiles.server.memexpert
-    inputs.self.nixosModules.profiles.server.gptoolsbot
+    ../../profiles/server/memexpert.nix
+    ../../profiles/server/gptoolsbot.nix
     # inputs.self.nixosModules.profiles.server.avtor24bot
     # inputs.self.nixosModules.profiles.server.aibox
 
-    inputs.self.nixosModules.profiles.libvirt
-    inputs.self.nixosModules.profiles.persist-yggdrasil
-    inputs.self.nixosModules.profiles.remote-builder-host
-    inputs.self.nixosModules.profiles.sync
+    ../../profiles/libvirt.nix
+    ../../profiles/persist-yggdrasil.nix
+    ../../profiles/remote-builder-host.nix
+    ../../profiles/sync.nix
 
     ./hardware.nix
     ./mounts.nix

@@ -1,0 +1,25 @@
+{
+  imports = [
+    ../../profiles/agenix.nix
+    ../../profiles/boot.nix
+    ../../profiles/filesystems.nix
+    ../../profiles/locale.nix
+    ../../profiles/logs.nix
+    ../../profiles/misc-p.nix
+    ../../profiles/monitoring.nix
+    ../../profiles/nebula-averyan.nix
+    ../../profiles/nix.nix
+    ../../profiles/persist.nix
+    ../../profiles/proxy.nix
+    ../../profiles/ssh-server.nix
+    ../../profiles/sudo.nix
+    ../../profiles/unfree.nix
+    ../../profiles/unsecure.nix
+    ../../profiles/userdirs.nix
+    ../../profiles/users.nix
+    ../../profiles/vmvariant.nix
+    ../../profiles/xdg.nix
+    ../../profiles/yggdrasil.nix
+    ../../profiles/xray.nix
+  ];
+}

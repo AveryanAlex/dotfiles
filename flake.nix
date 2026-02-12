@@ -180,11 +180,9 @@
           )
         );
     in
-    rec {
+    {
       nixosModules.hardware = builtins.listToAttrs (findModules ./hardware);
       nixosModules.modules = builtins.listToAttrs (findModules ./modules);
-      nixosModules.profiles = builtins.listToAttrs (findModules ./profiles);
-      nixosModules.roles = builtins.listToAttrs (findModules ./roles);
 
       nixosConfigurations =
         with nixpkgs.lib;
@@ -205,7 +203,10 @@
               extraModules = [
                 inputs.colmena.nixosModules.deploymentOptions
               ];
-              specialArgs = { inherit inputs; };
+              specialArgs = {
+                inherit inputs;
+                secrets = ./secrets;
+              };
             };
         in
         genAttrs hosts mkHost
@@ -260,7 +261,6 @@
               buildInputs = [
                 ragenix.packages.${system}.ragenix
                 inputs.colmena.packages.${system}.colmena
-                pkgs.alejandra
                 pkgs.nebula
                 pkgs.wireguard-tools
               ];

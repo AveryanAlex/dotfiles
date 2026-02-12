@@ -2,10 +2,10 @@
 {
   imports = [
     # inputs.self.nixosModules.roles.desktop
-    inputs.self.nixosModules.roles.family
+    ../../roles/family.nix
 
-    inputs.self.nixosModules.profiles.bluetooth
-    inputs.self.nixosModules.profiles.netman
+    ../../profiles/bluetooth.nix
+    ../../profiles/netman.nix
     # inputs.self.nixosModules.profiles.remote-builder-client
 
     inputs.self.nixosModules.hardware.thinkbook

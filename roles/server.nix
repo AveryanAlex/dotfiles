@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   imports = [
-    ./full.nix
+    ./core
   ];
 
   systemd = {
