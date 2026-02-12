@@ -1,13 +1,14 @@
 {
   inputs,
   config,
+  secrets,
   ...
 }:
 let
   firesquare-module = inputs.firesquare-servers.nixosModules.default;
 in
 {
-  age.secrets.wg-key-firesquare.file = ../../secrets/wireguard/firesquare.age;
+  age.secrets.wg-key-firesquare.file = "${secrets}/wireguard/firesquare.age";
   networking.wireguard.interfaces = {
     wg-firesquare = {
       allowedIPsAsRoutes = false;
@@ -45,7 +46,7 @@ in
     ];
   };
 
-  age.secrets.firesquare-passwords.file = ../../secrets/creds/firesquare.age;
+  age.secrets.firesquare-passwords.file = "${secrets}/creds/firesquare.age";
 
   containers.firesquare = {
     autoStart = true;

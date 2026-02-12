@@ -1,6 +1,10 @@
-{ config, ... }:
 {
-  age.secrets.creds-cloudflare.file = ../../secrets/creds/cloudflare.age;
+  config,
+  secrets,
+  ...
+}:
+{
+  age.secrets.creds-cloudflare.file = "${secrets}/creds/cloudflare.age";
 
   security.acme = {
     acceptTerms = true;

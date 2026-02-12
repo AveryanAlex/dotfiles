@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  secrets,
   ...
 }:
 let
@@ -41,8 +42,8 @@ in
       (common // { proto = "udp"; })
     ];
 
-  age.secrets.pterodactyl-panel-passwords.file = ../../secrets/intpass/pterodactyl-panel.age;
-  age.secrets.pterodactyl-redis-password.file = ../../secrets/intpass/pterodactyl-redis.age;
+  age.secrets.pterodactyl-panel-passwords.file = "${secrets}/intpass/pterodactyl-panel.age";
+  age.secrets.pterodactyl-redis-password.file = "${secrets}/intpass/pterodactyl-redis.age";
 
   containers.pterodactyl = {
     autoStart = true;

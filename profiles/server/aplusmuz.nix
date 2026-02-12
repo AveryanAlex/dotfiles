@@ -2,6 +2,7 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
@@ -9,7 +10,7 @@ let
     inputs.aplusmuz-music-scraper.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
-  age.secrets.aplusmuz-music-scraper.file = ../../secrets/creds/aplusmuz-music-scraper.age;
+  age.secrets.aplusmuz-music-scraper.file = "${secrets}/creds/aplusmuz-music-scraper.age";
 
   systemd.services.aplusmuz-music-scraper = {
     after = [ "network-online.target" ];

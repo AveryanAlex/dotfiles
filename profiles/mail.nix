@@ -1,11 +1,12 @@
 {
   config,
   pkgs,
+  secrets,
   ...
 }:
 {
   age.secrets.account-mail = {
-    file = ../secrets/accounts/mail.age;
+    file = "${secrets}/accounts/mail.age";
     owner = "alex";
     group = "users";
   };

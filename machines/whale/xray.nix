@@ -1,4 +1,8 @@
-{ lib, ... }:
+{
+  lib,
+  secrets,
+  ...
+}:
 {
   services.nginx = {
     defaultSSLListenPort = 3443;
@@ -25,5 +29,5 @@
     '';
   };
 
-  age.secrets."xray-config.jsonc".file = lib.mkForce ../../secrets/xray/whale.age;
+  age.secrets."xray-config.jsonc".file = lib.mkForce "${secrets}/xray/whale.age";
 }

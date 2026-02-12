@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, secrets, ... }:
 {
   nix.buildMachines = [
     {
@@ -24,5 +24,5 @@
   ];
   nix.distributedBuilds = true;
 
-  age.secrets.remote-builder-ssh-key.file = ../secrets/remote-builder-ssh-key.age;
+  age.secrets.remote-builder-ssh-key.file = "${secrets}/remote-builder-ssh-key.age";
 }

@@ -2,13 +2,14 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
   gptoolsbot-pkg = inputs.gptoolsbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
-  age.secrets.gptoolsbot.file = ../../secrets/creds/gptoolsbot.age;
+  age.secrets.gptoolsbot.file = "${secrets}/creds/gptoolsbot.age";
   systemd.services.gptoolsbot = {
     after = [ "network-online.target" ];
     wants = [ "network-online.target" ];

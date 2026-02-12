@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  secrets,
   ...
 }:
 let
@@ -54,7 +55,7 @@ in
   };
 
   age.secrets.matrix = {
-    file = ../../secrets/creds/matrix.age;
+    file = "${secrets}/creds/matrix.age";
     owner = "matrix-synapse";
     group = "matrix-synapse";
   };
@@ -146,7 +147,7 @@ in
 
   # Telegram bridge
   age.secrets.mautrix-telegram = {
-    file = ../../secrets/creds/mautrix-telegram.age;
+    file = "${secrets}/creds/mautrix-telegram.age";
     owner = "mautrix-telegram";
     group = "mautrix-telegram";
   };
@@ -245,7 +246,7 @@ in
   ];
 
   # Discord bridge
-  age.secrets.matrix-appservice-discord.file = ../../secrets/creds/matrix-appservice-discord.age;
+  age.secrets.matrix-appservice-discord.file = "${secrets}/creds/matrix-appservice-discord.age";
 
   services.matrix-appservice-discord = {
     # enable = true;

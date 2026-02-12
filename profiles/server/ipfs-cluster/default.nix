@@ -2,13 +2,14 @@
   pkgs,
   lib,
   config,
+  secrets,
   ...
 }:
 let
   serviceConfig = lib.importJSON ./service.json;
 in
 {
-  age.secrets.credentials-ipfs-cluster.file = ../../../secrets/creds/ipfs-cluster.age;
+  age.secrets.credentials-ipfs-cluster.file = "${secrets}/creds/ipfs-cluster.age";
 
   systemd.services.ipfs-cluster = {
     path = [ pkgs.ipfs-cluster ];

@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  secrets,
   ...
 }:
 with lib;
@@ -54,15 +55,15 @@ in
     users.users.nebula-averyan.uid = 864;
 
     age.secrets.nebula-averyan-ca = {
-      file = ../secrets/nebula/ca-crt.age;
+      file = "${secrets}/nebula/ca-crt.age";
       owner = "nebula-averyan";
     };
     age.secrets.nebula-averyan-key = {
-      file = ../secrets/nebula + "/${config.networking.hostName}-key.age";
+      file = "${secrets}/nebula" + "/${config.networking.hostName}-key.age";
       owner = "nebula-averyan";
     };
     age.secrets.nebula-averyan-crt = {
-      file = ../secrets/nebula + "/${config.networking.hostName}-crt.age";
+      file = "${secrets}/nebula" + "/${config.networking.hostName}-crt.age";
       owner = "nebula-averyan";
     };
 

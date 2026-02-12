@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  secrets,
   ...
 }:
 {
@@ -22,7 +23,7 @@
   # };
 
   age.secrets.yggdrasil-keys = {
-    file = ../secrets/yggdrasil/${config.networking.hostName}.age;
+    file = "${secrets}/yggdrasil/${config.networking.hostName}.age";
     # owner = "yggdrasil";
     # group = "yggdrasil";
   };

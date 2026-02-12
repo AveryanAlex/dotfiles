@@ -2,6 +2,7 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
@@ -45,8 +46,8 @@ let
   };
 in
 {
-  age.secrets.bvilove.file = ../../secrets/creds/bvilove.age;
-  age.secrets.bvilove-beta.file = ../../secrets/creds/bvilove-beta.age;
+  age.secrets.bvilove.file = "${secrets}/creds/bvilove.age";
+  age.secrets.bvilove-beta.file = "${secrets}/creds/bvilove-beta.age";
 
   systemd.services.bvilovebot = commonService // {
     path = [ bvilovebot-pkg ];

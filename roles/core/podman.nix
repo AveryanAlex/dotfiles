@@ -2,6 +2,7 @@
   lib,
   config,
   inputs,
+  secrets,
   ...
 }:
 {
@@ -61,7 +62,7 @@
 
   # registry auth file for root user and podman group
   age.secrets.podman-auth = {
-    file = ../../secrets/creds/podman.age;
+    file = "${secrets}/creds/podman.age";
     mode = "440";
     owner = "root";
     group = "podman";

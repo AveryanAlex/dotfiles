@@ -2,13 +2,14 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
   memexpert-pkg = inputs.memexpert.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
-  age.secrets.memexpert.file = ../../secrets/creds/memexpert.age;
+  age.secrets.memexpert.file = "${secrets}/creds/memexpert.age";
 
   systemd.services.memexpert = {
     after = [

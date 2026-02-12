@@ -1,6 +1,10 @@
-{ config, ... }:
 {
-  age.secrets.mqtt-password.file = ../../secrets/intpass/mqtt-password.age;
+  config,
+  secrets,
+  ...
+}:
+{
+  age.secrets.mqtt-password.file = "${secrets}/intpass/mqtt-password.age";
 
   networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 1883 ];
 

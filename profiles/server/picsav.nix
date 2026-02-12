@@ -2,6 +2,7 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
@@ -15,7 +16,7 @@ let
   };
 in
 {
-  age.secrets.picsav.file = ../../secrets/creds/picsavbot.age;
+  age.secrets.picsav.file = "${secrets}/creds/picsavbot.age";
 
   virtualisation.oci-containers = {
     containers = {

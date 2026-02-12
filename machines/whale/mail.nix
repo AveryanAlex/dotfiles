@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  secrets,
   ...
 }:
 let
@@ -42,17 +43,17 @@ in
     ];
 
   age.secrets.mail-alex = {
-    file = ../../secrets/mail/alex.age;
+    file = "${secrets}/mail/alex.age";
     path = "/run/mail-passwords/alex";
     symlink = false;
   };
   age.secrets.mail-sonya8128 = {
-    file = ../../secrets/mail/sonya8128.age;
+    file = "${secrets}/mail/sonya8128.age";
     path = "/run/mail-passwords/sonya8128";
     symlink = false;
   };
   age.secrets.mail-cofob = {
-    file = ../../secrets/mail/cofob.age;
+    file = "${secrets}/mail/cofob.age";
     path = "/run/mail-passwords/cofob";
     symlink = false;
   };

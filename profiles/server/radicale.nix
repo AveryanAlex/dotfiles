@@ -1,7 +1,7 @@
-{ config, ... }:
+{ config, secrets, ... }:
 {
   age.secrets.radicale-password = {
-    file = ../../secrets/accounts/radicale.age;
+    file = "${secrets}/accounts/radicale.age";
     owner = "radicale";
     group = "radicale";
   };

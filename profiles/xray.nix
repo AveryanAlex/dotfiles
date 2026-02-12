@@ -1,11 +1,12 @@
 {
   config,
   lib,
+  secrets,
   ...
 }:
 {
   age.secrets."xray-config.jsonc" = {
-    file = ../secrets/xray/desktop.age;
+    file = "${secrets}/xray/desktop.age";
     owner = "xray";
     group = "xray";
   };

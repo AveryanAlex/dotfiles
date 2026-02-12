@@ -1,6 +1,10 @@
-{ config, ... }:
 {
-  age.secrets.password-alex.file = ../secrets/passwords/alex.age;
+  config,
+  secrets,
+  ...
+}:
+{
+  age.secrets.password-alex.file = "${secrets}/passwords/alex.age";
 
   users = {
     mutableUsers = false;

@@ -2,6 +2,7 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
@@ -60,9 +61,9 @@ let
   };
 in
 {
-  age.secrets.infinitytgadminsbot-kluckva.file = ../../secrets/creds/kluckva.age;
+  age.secrets.infinitytgadminsbot-kluckva.file = "${secrets}/creds/kluckva.age";
   systemd.services.infinitytgadminsbot-kluckva = makeService "kluckva";
 
-  age.secrets.infinitytgadminsbot-eye210.file = ../../secrets/creds/infinitytgadminsbot-eye210.age;
+  age.secrets.infinitytgadminsbot-eye210.file = "${secrets}/creds/infinitytgadminsbot-eye210.age";
   systemd.services.infinitytgadminsbot-eye210 = makeService "eye210";
 }

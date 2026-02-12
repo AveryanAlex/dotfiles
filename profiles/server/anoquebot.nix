@@ -2,13 +2,14 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
   anoquebot-pkg = inputs.anoquebot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
-  age.secrets.anoquebot.file = ../../secrets/creds/anoquebot.age;
+  age.secrets.anoquebot.file = "${secrets}/creds/anoquebot.age";
 
   systemd.services.anoquebot = {
     after = [

@@ -2,6 +2,7 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
@@ -15,7 +16,7 @@ let
   };
 in
 {
-  age.secrets.gayradar.file = ../../secrets/creds/gayradar.age;
+  age.secrets.gayradar.file = "${secrets}/creds/gayradar.age";
 
   virtualisation.oci-containers = {
     containers = {

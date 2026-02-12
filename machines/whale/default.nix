@@ -1,6 +1,7 @@
 {
   inputs,
   config,
+  secrets,
   ...
 }:
 let
@@ -274,7 +275,7 @@ in
     };
   };
 
-  age.secrets.wg-key-averyan.file = ../../secrets/wireguard/whale.age;
+  age.secrets.wg-key-averyan.file = "${secrets}/wireguard/whale.age";
   networking.wireguard.interfaces = {
     wgav = {
       allowedIPsAsRoutes = false;

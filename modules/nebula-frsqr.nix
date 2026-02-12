@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  secrets,
   ...
 }:
 with lib;
@@ -51,9 +52,9 @@ in
   };
 
   config = mkIf cfg.enable {
-    age.secrets.nebula-ca.file = ../secrets/nebula-frsqr/ca-crt.age;
-    age.secrets.nebula-key.file = ../secrets/nebula-frsqr + "/${config.networking.hostName}-key.age";
-    age.secrets.nebula-crt.file = ../secrets/nebula-frsqr + "/${config.networking.hostName}-crt.age";
+    age.secrets.nebula-ca.file = "${secrets}/nebula-frsqr/ca-crt.age";
+    age.secrets.nebula-key.file = "${secrets}/nebula-frsqr" + "/${config.networking.hostName}-key.age";
+    age.secrets.nebula-crt.file = "${secrets}/nebula-frsqr" + "/${config.networking.hostName}-crt.age";
 
     services.nebula.networks.frsqr = {
       package = pkgs.nebula;

@@ -2,13 +2,14 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
   cpmbot-pkg = inputs.cpmbot.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
-  age.secrets.cpmbot.file = ../../secrets/creds/cpmbot.age;
+  age.secrets.cpmbot.file = "${secrets}/creds/cpmbot.age";
 
   systemd.services.cpmbot = {
     after = [

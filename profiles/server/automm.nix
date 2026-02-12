@@ -2,6 +2,7 @@
   config,
   inputs,
   pkgs,
+  secrets,
   ...
 }:
 let
@@ -12,7 +13,7 @@ let
   );
 in
 {
-  age.secrets.automm.file = ../../secrets/creds/automm.age;
+  age.secrets.automm.file = "${secrets}/creds/automm.age";
   systemd.services.automm = {
     after = [
       "network-online.target"

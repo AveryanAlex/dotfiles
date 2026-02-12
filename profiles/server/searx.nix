@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  secrets,
   ...
 }:
 {
@@ -15,5 +16,5 @@
     environmentFile = config.age.secrets.searx.path;
   };
 
-  age.secrets.searx.file = ../../secrets/creds/searx.age;
+  age.secrets.searx.file = "${secrets}/creds/searx.age";
 }
