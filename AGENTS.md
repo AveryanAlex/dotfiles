@@ -258,3 +258,262 @@ GitHub Actions workflows:
 1. Create `profiles/server/<service>.nix`
 2. Import in `machines/whale/default.nix` with `../../profiles/server/<service>.nix`
 3. Follow existing patterns for secrets, networking, etc.
+
+## Containerized Applications (Docker/Podman)
+
+This repository uses Podman with Quadlet for container orchestration. Apps are defined in the `apps/` directory.
+
+### Container App Structure
+
+Each app is a directory under `apps/<appname>/` containing:
+- `default.nix` - Main configuration with containers, networks, nginx
+- `*.age` files (optional) - Encrypted secrets
+- `config.yml` or other config files (optional)
+
+### Key Patterns
+
+#### Network Configuration
+- Use dedicated `/24` subnet per app in the `10.90.X.0/24` range
+- IP `.2` for main app container, `.3` for database, `.4` for cache, etc.
+- Network interface naming: `pme-${appname}` (external/with internet)
+- Reference network in containers: `networks.${name}.ref`
+
+#### Directory and Permissions
+- Data stored in `/persist/${appname}/`
+- Create directories with `systemd.tmpfiles.rules`
+- Set ownership based on container's UID/GID mapping:
+  - Standard rootless: `100999:100999` (subuid 999)
+  - Host user access: `1000:100` (alex:users)
+
+#### Container Definitions
+- Use `let name = "appname"; in` pattern for consistency
+- Container naming: `${name}-app`, `${name}-db`, `${name}-redis`
+- Always set:
+  - `autoUpdate = "registry"` for automatic image updates
+  - `gidMaps` and `uidMaps` for rootless containers
+  - Network reference and static IP
+- Use `unitConfig.Requires` and `unitConfig.After` for dependencies
+
+#### Secrets Integration
+- Reference secrets via `config.age.secrets.<name>.path`
+- Mount as `environmentFiles` for environment variables
+- For single secret: `age.secrets.${name}.file = ./<appname>.age`
+- For multiple secrets: `age.secrets."${name}-db".file = ./db.age`
+
+#### Nginx Reverse Proxy
+- All web services get nginx virtual hosts
+- Use `useACMEHost = "averyan.ru"` for SSL
+- Always set `forceSSL = true`
+- Proxy to container IP: `proxyPass = "http://10.90.X.2:<port>"`
+- Enable websockets if needed: `proxyWebsockets = true`
+
+### Example: Simple Single Container App
+
+```nix
+let
+  name = "myapp";
+in
+{ config, ... }:
+{
+  systemd.tmpfiles.rules = [
+    "d /persist/${name}/data 700 100999 100999 - -"
+  ];
+
+  services.nginx.virtualHosts."${name}.averyan.ru" = {
+    useACMEHost = "averyan.ru";
+    forceSSL = true;
+    locations."/" = {
+      proxyPass = "http://10.90.X.2:8080";
+      proxyWebsockets = true;
+    };
+  };
+
+  virtualisation.quadlet =
+    let
+      inherit (config.virtualisation.quadlet) networks;
+    in
+    {
+      networks.${name}.networkConfig = {
+        subnets = [ "10.90.X.0/24" ];
+        podmanArgs = [ "--interface-name=pme-${name}" ];
+      };
+
+      containers.${name} = {
+        containerConfig = {
+          image = "docker.io/library/myapp:latest";
+          autoUpdate = "registry";
+          networks = [ networks.${name}.ref ];
+          ip = "10.90.X.2";
+          volumes = [ "/persist/${name}/data:/data" ];
+          gidMaps = [ "0:100000:100000" ];
+          uidMaps = [ "0:100000:100000" ];
+        };
+        serviceConfig = {
+          MemoryMax = "1G";
+        };
+      };
+    };
+}
+```
+
+### Example: Multi-Container App with Database
+
+```nix
+let
+  name = "myapp";
+in
+{ config, ... }:
+{
+  systemd.tmpfiles.rules = [
+    "d /persist/${name}/db 700 100999 100999 - -"
+    "d /persist/${name}/data 700 100999 100999 - -"
+  ];
+
+  age.secrets.${name}.file = ./myapp.age;
+
+  services.nginx.virtualHosts."${name}.averyan.ru" = {
+    useACMEHost = "averyan.ru";
+    forceSSL = true;
+    locations."/" = {
+      proxyPass = "http://10.90.X.2:3000";
+      proxyWebsockets = true;
+    };
+  };
+
+  virtualisation.quadlet =
+    let
+      inherit (config.virtualisation.quadlet) networks;
+    in
+    {
+      networks.${name}.networkConfig = {
+        subnets = [ "10.90.X.0/24" ];
+        podmanArgs = [ "--interface-name=pme-${name}" ];
+      };
+
+      containers."${name}-db" = {
+        containerConfig = {
+          image = "docker.io/library/postgres:17";
+          autoUpdate = "registry";
+          networks = [ networks.${name}.ref ];
+          ip = "10.90.X.3";
+          environments = {
+            POSTGRES_DB = name;
+            POSTGRES_USER = name;
+            POSTGRES_PASSWORD = name;
+          };
+          volumes = [ "/persist/${name}/db:/var/lib/postgresql/data" ];
+          gidMaps = [ "0:100000:100000" ];
+          uidMaps = [ "0:100000:100000" ];
+        };
+      };
+
+      containers."${name}-app" = {
+        containerConfig = {
+          image = "docker.io/myorg/myapp:latest";
+          autoUpdate = "registry";
+          networks = [ networks.${name}.ref ];
+          ip = "10.90.X.2";
+          environments = {
+            DATABASE_URL = "postgresql://${name}:${name}@${name}-db:5432/${name}";
+          };
+          environmentFiles = [ config.age.secrets.${name}.path ];
+          volumes = [ "/persist/${name}/data:/app/data" ];
+          gidMaps = [ "0:100000:100000" ];
+          uidMaps = [ "0:100000:100000" ];
+        };
+        unitConfig = rec {
+          Requires = [ "${name}-db.service" ];
+          After = Requires;
+        };
+        serviceConfig = {
+          MemoryMax = "512M";
+        };
+      };
+    };
+}
+```
+
+### Example: Host User Access (File Permissions)
+
+For containers that need to access host files:
+
+```nix
+{
+  systemd.tmpfiles.rules = [
+    "d /persist/${name}/data 700 1000 100 - -"  # alex:users
+  ];
+
+  containers.${name} = {
+    containerConfig = {
+      user = "1000:100";  # Run as alex:users inside container
+      volumes = [
+        "/persist/${name}/data:/data"
+        "/home/alex/tank:/tank:ro"  # Read-only access to tank
+      ];
+      # Map container root to subuid, 1000 to host 1000
+      gidMaps = [
+        "0:100000:100"    # root -> subgid 100000-100099
+        "100:100:1"       # group 100 (users) -> host 100
+        "101:100101:98999"
+      ];
+      uidMaps = [
+        "0:100000:1000"   # root -> subuid 100000-100999
+        "1000:1000:1"     # user 1000 (alex) -> host 1000
+        "1001:101001:98999"
+      ];
+    };
+  };
+}
+```
+
+### Deploying a New Container App
+
+1. **Create directory:**
+   ```bash
+   mkdir -p apps/<appname>
+   ```
+
+2. **Pick a subnet:**
+   - Check existing apps to find unused `/24` in `10.90.X.0/24`
+   - Common assignments:
+     - 10.90.88.0/24 - nextcloud
+     - 10.90.92.0/24 - navidrome
+     - 10.90.95.0/24 - litellm
+   - Use `.2` for app, `.3` for db, `.4` for cache
+
+3. **Create `apps/<appname>/default.nix`:**
+   - Use the patterns above
+   - See `apps/litellm/default.nix` for database pattern
+   - See `apps/navidrome/default.nix` for multiple instances
+   - See `apps/nextcloud/default.nix` for complex multi-container setup
+
+4. **Add secrets (if needed):**
+   ```bash
+   ragenix edit apps/<appname>/myapp.age
+   ```
+
+5. **Import in whale config:**
+   Edit `machines/whale/default.nix`:
+   ```nix
+   {
+     imports = [
+       ../../apps/<appname>
+     ];
+   }
+   ```
+
+6. **Deploy:**
+   ```bash
+   ./deploy.sh whale
+   ```
+
+### Container Best Practices
+
+- **Resource limits:** Set `serviceConfig.MemoryMax` to prevent runaway containers
+- **Auto-updates:** Always use `autoUpdate = "registry"` for latest security patches
+- **Network isolation:** Each app gets its own isolated network
+- **Static IPs:** Assign static IPs for predictable service discovery
+- **Dependency ordering:** Use `unitConfig.Requires` and `After` for startup order
+- **Secrets:** Never hardcode credentials; always use agenix
+- **Backups:** Ensure `/persist` is backed up; document what needs persistence
+- **Logging:** Containers log to journald automatically via Quadlet

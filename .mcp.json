@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "nixos": {
+      "command": "mcp-nixos",
+      "args": []
+    }
+  }
+}
