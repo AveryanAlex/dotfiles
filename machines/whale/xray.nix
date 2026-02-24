@@ -9,6 +9,7 @@
     streamConfig = ''
       map $ssl_preread_server_name $backend {
         t.tb.ru xray;
+        musicstream.averyan.ru mtproto;
         default local;
       }
 
@@ -18,6 +19,10 @@
 
       upstream xray {
         server 127.0.0.1:7443;
+      }
+
+      upstream mtproto {
+        server 10.90.94.2:443;
       }
 
       server {

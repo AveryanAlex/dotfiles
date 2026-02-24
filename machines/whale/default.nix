@@ -60,7 +60,7 @@ in
 
     # ./firesquare.nix
     ./hass.nix
-    ./monitoring.nix
+    # ./monitoring.nix
     # ./photoprism.nix
     ./pterodactyl.nix
     ./tanksrv.nix
@@ -90,6 +90,8 @@ in
     ../../apps/reelsgen
     ../../apps/nextcloud
     ../../apps/newsrelay
+    # ../../apps/litellm
+    # ../../apps/mtproto
   ];
 
   networking.tproxy.output.enable = true;
@@ -183,6 +185,11 @@ in
     "ptero.averyan.ru" = makeAveryanHost "http://192.168.12.50:80";
     "whale-ptero.averyan.ru" = makeAveryanHost "http://192.168.12.50:443";
     "diamond-ptero.averyan.ru" = makeAveryanHost "http://diamond:443";
+    "codefob.averyan.ru" = makeAveryanHost "https://code.fob.wtf" // {
+      extraConfig = ''
+        proxy_buffering off;
+      '';
+    };
   };
 
   networking.nebula-averyan.isLighthouse = true;

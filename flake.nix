@@ -259,8 +259,8 @@
           {
             devShells.default = pkgs.mkShell {
               buildInputs = [
-                ragenix.packages.${system}.ragenix
                 inputs.colmena.packages.${system}.colmena
+                pkgs.ragenix
                 pkgs.nebula
                 pkgs.wireguard-tools
               ];

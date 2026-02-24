@@ -34,12 +34,10 @@
   ];
 
   # Enable transparent proxy for outbound traffic on desktops
-  networking.tproxy = {
-    output.enable = true;
-    backend = {
-      enable = true;
-      configFile = "${secrets}/xray/desktop.age";
-    };
+  networking.tproxy.output.enable = true;
+  services.xray-tproxy = {
+    enable = true;
+    configFile = "${secrets}/xray/desktop.age";
   };
 
   # networking.firewall.allowedTCPPorts = [18298];

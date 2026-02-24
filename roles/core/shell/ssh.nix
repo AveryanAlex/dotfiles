@@ -19,8 +19,8 @@
     matchBlocks."serv1.asc.rssi.ru" = {
       forwardAgent = true;
       user = "averyan";
-      hostname = "localhost";
-      port = 3122;
+      # hostname = "localhost";
+      # port = 3122;
     };
 
     matchBlocks."circles.averyan.ru" = {

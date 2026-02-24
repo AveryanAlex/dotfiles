@@ -15,5 +15,6 @@
       "cursor"
       "antigravity"
       "code"
+      "claude-code"
     ];
 }
