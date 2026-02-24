@@ -92,6 +92,10 @@ in
     ../../apps/newsrelay
   ];
 
+  networking.tproxy.output.enable = true;
+
+  # networking.tproxy.forward.interfaces = [lan];
+
   virtualisation.libvirtd.enable = true;
   users.users.alex.extraGroups = [ "libvirtd" ];
 

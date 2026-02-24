@@ -29,7 +29,7 @@
   };
 
   # Whale uses its own xray config
-  networking.tproxy.backend = {
+  services.xray-tproxy = {
     enable = true;
     configFile = "${secrets}/xray/whale.age";
   };

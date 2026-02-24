@@ -1,9 +1,8 @@
-# Transparent proxy module (currently xray-based, implementation-agnostic)
-# Provides traffic redirection for both forwarded and local traffic
+# Transparent proxy module
+# Provides traffic redirection for both forwarded and local traffic using nftables
 {
   lib,
   config,
-  secrets,
   ...
 }:
 with lib;
@@ -162,21 +161,6 @@ in
         description = "UDP ports to redirect from forwarded interfaces through proxy.";
       };
     };
-
-    # Backend configuration (currently xray)
-    backend = {
-      enable = mkEnableOption "xray backend for transparent proxy";
-
-      configFile = mkOption {
-        type = types.nullOr types.path;
-        default = null;
-        description = ''
-          Path to the xray configuration file (jsonc format).
-          When null, no secret is created and xray uses default config.
-          Example: ''${secrets}/xray/desktop.age
-        '';
-      };
-    };
   };
 
   config = mkIf cfg.enable {
@@ -218,35 +202,5 @@ in
     networking.firewall.interfaces = mkMerge (
       map (iface: { ${iface}.allowedTCPPorts = [ cfg.port ]; }) cfg.forward.interfaces
     );
-
-    # Xray backend configuration
-    services.xray = mkIf cfg.backend.enable {
-      enable = true;
-      settingsFile = mkIf (cfg.backend.configFile != null) config.age.secrets."xray-config.jsonc".path;
-    };
-
-    age.secrets."xray-config.jsonc" = mkIf (cfg.backend.enable && cfg.backend.configFile != null) {
-      file = cfg.backend.configFile;
-      owner = "xray";
-      group = "xray";
-    };
-
-    systemd.services.xray = mkIf cfg.backend.enable {
-      serviceConfig = {
-        DynamicUser = mkForce false;
-        User = "xray";
-      };
-    };
-
-    users.users.xray = mkIf cfg.backend.enable {
-      isSystemUser = true;
-      description = "XRay";
-      group = "xray";
-      uid = 745;
-    };
-
-    users.groups.xray = mkIf cfg.backend.enable {
-      gid = 745;
-    };
   };
 }
