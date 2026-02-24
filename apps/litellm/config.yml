@@ -1,0 +1,49 @@
+model_list:
+  - model_name: "openai/*"
+    litellm_params:
+      model: openai/*
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: "anthropic/*"
+    litellm_params:
+      model: anthropic/*
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: "groq/*"
+    litellm_params:
+      model: groq/*
+      api_key: os.environ/GROQ_API_KEY
+
+  - model_name: "gemini/*"
+    litellm_params:
+      model: gemini/*
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: "openrouter/*"
+    litellm_params:
+      model: openrouter/*
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: "perplexity/*"
+    litellm_params:
+      model: perplexity/*
+      api_key: os.environ/PERPLEXITY_API_KEY
+
+general_settings:
+  master_key: os.environ/GENERAL_MASTER_KEY
+  store_model_in_db: true
+  proxy_batch_write_at: 60
+  database_connection_pool_limit: 10
+
+litellm_settings:
+  request_timeout: 600
+  set_verbose: false
+  json_logs: true
+
+  max_internal_user_budget: 10
+  internal_user_budget_duration: "1mo"
+
+  default_internal_user_params:
+    user_role: "internal_user"
+    max_budget: 10
+    budget_duration: 30d
