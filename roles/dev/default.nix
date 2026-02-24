@@ -1,5 +1,6 @@
 {
   pkgs,
+  inputs,
   ...
 }:
 {
@@ -13,7 +14,11 @@
     ./mcp.nix
   ];
 
-  # nixpkgs.overlays = [ inputs.fenix.overlays.default ];
+  nixpkgs.overlays = [
+    (final: prev: {
+      gt = inputs.gastown.packages.${prev.system}.gt;
+    })
+  ];
 
   hm.home.packages = [
     ((import ./python.nix) pkgs)
@@ -42,7 +47,7 @@
     nodejs_latest
 
     code-cursor
-    devcontainer
+    # devcontainer TODO: re-add once fixed
     # antigravity
 
     jdk
@@ -52,6 +57,8 @@
 
     bun
     openssl
+
+    gt
   ]);
 
   persist.cache.homeDirs = [ ".local/share/uv" ];

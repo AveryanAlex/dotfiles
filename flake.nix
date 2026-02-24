@@ -130,6 +130,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    gastown = {
+      url = "github:averyanalex/gastown/fix-nix-package";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
     deploy-rs.url = "github:serokell/deploy-rs";
 
     colmena = {
