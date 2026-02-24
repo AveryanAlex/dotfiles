@@ -136,6 +136,12 @@
       inputs.flake-utils.follows = "flake-utils";
     };
 
+    beads = {
+      url = "github:averyanalex/beads/fix-nix-package";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
+
     deploy-rs.url = "github:serokell/deploy-rs";
 
     colmena = {

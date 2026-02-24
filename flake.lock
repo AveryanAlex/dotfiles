@@ -86,6 +86,30 @@
     },
     "beads": {
       "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771967337,
+        "narHash": "sha256-Z89hKPmuyqSABgwfkOWW9JaAmEscxhOJfguIGL/PmU8=",
+        "owner": "averyanalex",
+        "repo": "beads",
+        "rev": "28ebebb7bbcf96e750f360356d9ed87895da2271",
+        "type": "github"
+      },
+      "original": {
+        "owner": "averyanalex",
+        "ref": "fix-nix-package",
+        "repo": "beads",
+        "type": "github"
+      }
+    },
+    "beads_2": {
+      "inputs": {
         "flake-utils": "flake-utils_9",
         "nixpkgs": [
           "gastown",
@@ -805,7 +829,7 @@
     },
     "gastown": {
       "inputs": {
-        "beads": "beads",
+        "beads": "beads_2",
         "flake-utils": [
           "flake-utils"
         ],
@@ -2078,6 +2102,7 @@
         "anoquebot": "anoquebot",
         "averyanalex-blog": "averyanalex-blog",
         "avtor24bot": "avtor24bot",
+        "beads": "beads",
         "colmena": "colmena",
         "cpmbot": "cpmbot",
         "deploy-rs": "deploy-rs",
