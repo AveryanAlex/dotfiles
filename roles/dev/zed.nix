@@ -14,6 +14,7 @@
       "typst"
       "latex"
       "git-firefly"
+      "assembly"
     ];
     userSettings = {
       autosave = "on_focus_change";

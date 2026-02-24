@@ -9,6 +9,7 @@
     ./nbconvert.nix
     ./docker.nix
     ./opencode.nix
+    ./claudecode.nix
     ./mcp.nix
   ];
 
@@ -41,12 +42,16 @@
     nodejs_latest
 
     code-cursor
+    devcontainer
     # antigravity
 
     jdk
     maven
 
     automake
+
+    bun
+    openssl
   ]);
 
   persist.cache.homeDirs = [ ".local/share/uv" ];
