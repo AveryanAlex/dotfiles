@@ -4,7 +4,7 @@
     enableDefaultPackages = true;
     packages = with pkgs; [
       corefonts # Proprietary: Times New Roman, etc
-      jetbrains-mono
+      # jetbrains-mono TODO: re-add once fixed
       meslo-lgs-nf
       monaspace
       noto-fonts

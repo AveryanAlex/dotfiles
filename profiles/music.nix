@@ -16,7 +16,7 @@
     };
 
     programs.ncmpcpp = {
-      enable = true;
+      # enable = true; TODO: re-add once fixed
     };
 
     dconf.settings."io/github/Rirusha/Cassette/application".application-state = "online";

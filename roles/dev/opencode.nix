@@ -62,7 +62,7 @@
   };
 
   hm.home.packages = with pkgs; [
-    mcp-nixos
+    # mcp-nixos TODO: re-add once fixed
     libnotify
   ];
 }
