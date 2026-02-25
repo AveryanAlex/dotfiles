@@ -838,11 +838,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771958840,
-        "narHash": "sha256-Y9srbNHauaFP/T9woSt3sW7ePWBrZ7UKZG/duY3zAEg=",
+        "lastModified": 1772026848,
+        "narHash": "sha256-ycvDvNDLDlJ7bs9SEmqFzamiFtAaket8nSicd2h88z0=",
         "owner": "averyanalex",
         "repo": "gastown",
-        "rev": "1c30faa20788175024df3b54600716c055f07a83",
+        "rev": "fa1bacb5c40e25453249c89e8413021a86125150",
         "type": "github"
       },
       "original": {
