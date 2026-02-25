@@ -17,6 +17,8 @@
     programs.bash.enable = true;
     programs.bash.initExtra = ''
       source ${config.age.secrets.bash-init.path}
+      # Gas Town shell integration
+      [[ -f "$HOME/.config/gastown/shell-hook.sh" ]] && source "$HOME/.config/gastown/shell-hook.sh"
       if [[ "$(tty)" != /dev/tty* && $(ps --no-header --pid=$PPID --format=comm) != "zsh" && -z $BASH_EXECUTION_STRING ]]; then
         exec zsh
       fi
@@ -76,6 +78,11 @@
           "git"
         ];
       };
+
+      initExtra = ''
+        # Gas Town shell integration
+        [[ -f "$HOME/.config/gastown/shell-hook.sh" ]] && source "$HOME/.config/gastown/shell-hook.sh"
+      '';
 
       plugins = [
         {
