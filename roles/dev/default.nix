@@ -71,6 +71,8 @@
     bun
     openssl
 
+    tmux
+
     beads
     dolt
     gastown
