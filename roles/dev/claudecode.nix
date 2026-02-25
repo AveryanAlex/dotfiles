@@ -14,6 +14,7 @@ in
   hm.programs.claude-code = {
     enable = true;
     settings = {
+      skipDangerousModePermissionPrompt = true;
       enabledPlugins = {
         "claude-code-wakatime@wakatime" = true;
         "rust-analyzer-lsp@claude-plugins-official" = true;
