@@ -33,11 +33,11 @@
     };
   };
 
-  # services.logind.extraConfig = ''
-  #   HandlePowerKey=hibernate
-  #   HandleLidSwitch=suspend-then-hibernate
-  #   HandleLidSwitchExternalPower=ignore
-  # ''; # TODO: port
+  services.logind.settings.Login = {
+    HandlePowerKey = "hibernate";
+    HandleLidSwitch = "suspend-then-hibernate";
+    HandleLidSwitchExternalPower = "ignore";
+  };
 
   systemd.sleep.extraConfig = ''
     HibernateDelaySec=30m
