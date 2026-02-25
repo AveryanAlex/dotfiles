@@ -6,6 +6,8 @@
       enableZshIntegration = true;
 
       nix-direnv.enable = true;
+
+      config.whitelist.prefix = [ "~/gt" ];
     };
 
     home.packages = [ pkgs.devenv ];
