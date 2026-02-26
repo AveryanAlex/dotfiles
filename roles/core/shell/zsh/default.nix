@@ -79,7 +79,7 @@
         ];
       };
 
-      initExtra = ''
+      initContent = ''
         # Gas Town shell integration
         [[ -f "$HOME/.config/gastown/shell-hook.sh" ]] && source "$HOME/.config/gastown/shell-hook.sh"
       '';
