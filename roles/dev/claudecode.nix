@@ -15,9 +15,20 @@ in
     enable = true;
     settings = {
       skipDangerousModePermissionPrompt = true;
+      attribution = {
+        commit = "";
+        pr = "";
+      };
+      includeCoAuthoredBy = false;
+      git = {
+        includeCoAuthor = false;
+        includePRFooter = false;
+      };
       enabledPlugins = {
         "claude-code-wakatime@wakatime" = true;
-        "rust-analyzer-lsp@claude-plugins-official" = true;
+        # "rust-analyzer-lsp@claude-plugins-official" = true;
+        "beads@beads-marketplace" = true;
+        "frontend-design@claude-code-plugins" = true;
       };
       permissions.additionalDirectories = [ "~/.cargo" ];
     };
