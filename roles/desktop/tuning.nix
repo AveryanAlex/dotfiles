@@ -24,60 +24,6 @@
     enable = true;
     package = pkgs.ananicy-cpp;
     rulesProvider = pkgs.ananicy-rules-cachyos;
-    extraRules = [
-      {
-        name = "gcc";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "cc1";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "cc1plus";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "c++";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "as";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "ld";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "ld.lld";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "lld";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "rustc";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "cargo";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "make";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "ninja";
-        type = "BG_CPUIO";
-      }
-      {
-        name = "cmake";
-        type = "BG_CPUIO";
-      }
-    ];
   };
 
   services.scx = {
