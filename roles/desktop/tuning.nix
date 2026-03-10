@@ -77,10 +77,6 @@
         name = "cmake";
         type = "BG_CPUIO";
       }
-      {
-        name = "nix";
-        type = "BG_CPUIO";
-      }
     ];
   };
 
