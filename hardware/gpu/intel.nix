@@ -9,4 +9,16 @@
       intel-compute-runtime
     ];
   };
+
+  environment.systemPackages = with pkgs; [
+    ocl-icd
+    clinfo
+  ];
+
+  users.users.alex = {
+    extraGroups = [
+      "video"
+      "render"
+    ];
+  };
 }

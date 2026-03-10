@@ -6,12 +6,12 @@
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
+    ./gpu/intel.nix
   ]
   ++ (with inputs.self.nixosModules.hardware; [
     physical
     sdboot
     cpu.intel
-    gpu.intel
   ]);
 
   # Storage
