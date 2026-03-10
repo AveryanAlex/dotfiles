@@ -1,47 +1,45 @@
 { pkgs, ... }:
 let
+  best = {
+    model = "anthropic/claude-opus-4-6";
+    variant = "max";
+  };
+  alt-best = {
+    model = "openai/gpt-5.4";
+    variant = "xhigh";
+  };
+  normal = {
+    model = "anthropic/claude-opus-4-6";
+    variant = "medium";
+  };
+  fast = {
+    model = "anthropic/claude-opus-4-6";
+    variant = "low";
+  };
   ohMyOpencodeVersion = "3.11.2";
   ohMyOpencodeConfig = {
     "$schema" =
       "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json";
     agents = {
-      sisyphus = {
-        model = "anthropic/claude-opus-4-6";
-        variant = "max";
-      };
+      sisyphus = best;
       hephaestus = {
         model = "openai/gpt-5.3-codex";
         variant = "medium";
       };
-      oracle = {
-        model = "openai/gpt-5.4";
-        variant = "high";
-      };
+      oracle = alt-best;
       librarian.model = "anthropic/claude-sonnet-4-6";
       explore.model = "anthropic/claude-sonnet-4-6";
-      "multimodal-looker" = {
+      multimodal-looker = {
         model = "openai/gpt-5.4";
         variant = "medium";
       };
-      prometheus = {
-        model = "anthropic/claude-opus-4-6";
-        variant = "max";
-      };
-      metis = {
-        model = "anthropic/claude-opus-4-6";
-        variant = "max";
-      };
-      momus = {
-        model = "openai/gpt-5.4";
-        variant = "xhigh";
-      };
-      atlas.model = "anthropic/claude-sonnet-4-6";
+      prometheus = best;
+      metis = best;
+      momus = alt-best;
+      atlas = normal;
     };
     categories = {
-      "visual-engineering" = {
-        model = "anthropic/claude-opus-4-6";
-        variant = "max";
-      };
+      visual-engineering = best;
       ultrabrain = {
         model = "openai/gpt-5.3-codex";
         variant = "xhigh";
@@ -50,13 +48,13 @@ let
         model = "openai/gpt-5.3-codex";
         variant = "medium";
       };
-      quick.model = "anthropic/claude-sonnet-4-6";
-      "unspecified-low".model = "anthropic/claude-sonnet-4-6";
-      "unspecified-high" = {
+      quick = fast;
+      unspecified-low.model = fast;
+      unspecified-high = {
         model = "openai/gpt-5.4";
         variant = "high";
       };
-      writing.model = "anthropic/claude-sonnet-4-6";
+      writing.model = normal;
     };
   };
 in
