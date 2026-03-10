@@ -19,6 +19,9 @@ in
     '';
     settings = {
       skipDangerousModePermissionPrompt = true;
+
+      effortLevel = "high";
+
       attribution = {
         commit = "";
         pr = "";
@@ -28,6 +31,7 @@ in
         includeCoAuthor = false;
         includePRFooter = false;
       };
+
       enabledPlugins = {
         "claude-code-wakatime@wakatime" = true;
         # "rust-analyzer-lsp@claude-plugins-official" = true;
