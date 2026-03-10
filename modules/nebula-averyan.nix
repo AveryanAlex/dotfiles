@@ -67,6 +67,9 @@ in
       owner = "nebula-averyan";
     };
 
+    systemd.services."nebula@averyan".before = [ "network-online.target" ];
+    systemd.services."nebula@averyan".wantedBy = [ "network-online.target" ];
+
     services.nebula.networks.averyan = {
       package = pkgs.nebula;
 

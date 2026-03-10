@@ -43,7 +43,15 @@
         }
       '';
   };
-  systemd.services.coredns.serviceConfig.SupplementaryGroups = [ "acme" ];
+  systemd.services.coredns = {
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      SupplementaryGroups = [ "acme" ];
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+  };
 
   networking.firewall.allowedUDPPorts = [ 53 ];
   networking.firewall.allowedTCPPorts = [

@@ -185,11 +185,19 @@ in
     "ptero.averyan.ru" = makeAveryanHost "http://192.168.12.50:80";
     "whale-ptero.averyan.ru" = makeAveryanHost "http://192.168.12.50:443";
     "diamond-ptero.averyan.ru" = makeAveryanHost "http://diamond:443";
-    "codefob.averyan.ru" = makeAveryanHost "https://code.fob.wtf" // {
-      extraConfig = ''
-        proxy_buffering off;
-      '';
-    };
+    # "codefob.averyan.ru" = makeAveryanHost "https://code.fob.wtf" // {
+    #   extraConfig = ''
+    #     proxy_buffering off;
+    #   '';
+    # };
+  };
+
+  systemd.network.wait-online = {
+    enable = true;
+    extraArgs = [
+      "--interface=wan0"
+      "--interface=lan0"
+    ];
   };
 
   networking.nebula-averyan.isLighthouse = true;
