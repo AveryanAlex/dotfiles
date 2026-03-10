@@ -7,3 +7,4 @@ result
 .runtime/
 .claude/commands/
 .logs/
+.sisyphus/
