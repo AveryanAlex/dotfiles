@@ -78,5 +78,10 @@
     gastown
   ]);
 
-  persist.cache.homeDirs = [ ".local/share/uv" ];
+  hm.home.sessionVariables.CARGO_TARGET_DIR = "/home/alex/.cargo/target";
+
+  persist.cache.homeDirs = [
+    ".local/share/uv"
+    ".cargo/target"
+  ];
 }
