@@ -83,6 +83,10 @@
       initContent = ''
         # Gas Town shell integration
         # [[ -f "$HOME/.config/gastown/shell-hook.sh" ]] && source "$HOME/.config/gastown/shell-hook.sh"
+
+        if [[ -o interactive ]] && command -v fastfetch >/dev/null; then
+          fastfetch
+        fi
       '';
 
       plugins = [

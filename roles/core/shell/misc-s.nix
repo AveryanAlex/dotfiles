@@ -17,7 +17,7 @@
       traceroute # show route trace to host
       unzip # unarchive zip
       # rmlint # find dupes
-      neofetch # I am hacker
+      fastfetch # system info
       ripgrep # fast grep
       stable.ripgrep-all # grep any file type
       iotop # disk usage monitor
