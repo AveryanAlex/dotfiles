@@ -39,10 +39,10 @@
   #   HandleLidSwitchExternalPower=ignore
   # ''; # TODO: port
 
-  systemd.sleep.extraConfig = ''
-    HibernateDelaySec=30m
-    SuspendEstimationSec=15m
-  '';
+  systemd.sleep.settings.Sleep = {
+    HibernateDelaySec = "30m";
+    SuspendEstimationSec = "15m";
+  };
 
   system.stateVersion = "24.11";
 }

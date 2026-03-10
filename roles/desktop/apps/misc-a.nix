@@ -61,7 +61,7 @@
       # kleopatra # gpg gui
       # spek # audio file spectrogram
       # kmplot
-      helvum
+      crosspipe
       # gyroflow
       # betaflight-configurator
       # brave

@@ -12,10 +12,10 @@
       Manager.RuntimeWatchdogSec = "30s";
     };
 
-    sleep.extraConfig = ''
-      AllowSuspend=no
-      AllowHibernation=no
-    '';
+    sleep.settings.Sleep = {
+      AllowSuspend = "no";
+      AllowHibernation = "no";
+    };
   };
 
   systemd.targets.network-online.wantedBy = [ "multi-user.target" ];
