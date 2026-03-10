@@ -14,6 +14,9 @@
         "opencode-wakatime"
         "@mohak34/opencode-notifier@latest"
         "opencode-devcontainers"
+        "cc-safety-net"
+        "@simonwjackson/opencode-direnv"
+        "opencode-beads"
       ];
       permission = {
         bash = {

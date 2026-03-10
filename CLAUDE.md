@@ -1,8 +1,18 @@
-# AveryanAlex's personal NixOS config
+# Agent Instructions
+
+This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+
+## Quick Reference
+
+```bash
+bd ready              # Find available work
+bd show <id>          # View issue details
+bd update <id> --status in_progress  # Claim work
+bd close <id>         # Complete work
+bd sync               # Sync with git
+```
 
 ## Overview
-
-Use 'bd' for task tracking
 
 This is a NixOS system configuration using flakes. It defines multiple machines (whale, lizard, alligator, hamster, ferret, etc.) with shared profiles, modules, and roles.
 
