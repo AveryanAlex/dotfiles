@@ -79,6 +79,8 @@
   ]);
 
   hm.home.sessionVariables.CARGO_TARGET_DIR = "/home/alex/.cargo/target";
+  hm.home.sessionVariables.MYPY_CACHE_DIR = "/home/alex/.cache/mypy";
+  hm.home.sessionVariables.RUFF_CACHE_DIR = "/home/alex/.cache/ruff";
 
   persist.cache.homeDirs = [
     ".local/share/uv"
