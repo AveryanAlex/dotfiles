@@ -1458,11 +1458,11 @@
         "srvos": "srvos"
       },
       "locked": {
-        "lastModified": 1769683374,
-        "narHash": "sha256-lsURKoynb9i2CEu0UsMt+PWOLXx+sxvXfmhAFJeOSAM=",
+        "lastModified": 1773177820,
+        "narHash": "sha256-wlMC/5S9xXGS6Ky5wgZ0ffeTjntT6HVOpnZ60VguTWk=",
         "owner": "averyanalex",
         "repo": "nixcfg",
-        "rev": "14b71f5fbd51b26504ffd5150e58bb09c7685a7a",
+        "rev": "83af336037b848d39c98970a22d03d0427895770",
         "type": "github"
       },
       "original": {
