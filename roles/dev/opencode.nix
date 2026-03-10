@@ -22,6 +22,7 @@ let
       "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json";
     agents = {
       sisyphus = best;
+      sisyphus-junior = normal;
       hephaestus = {
         model = "openai/gpt-5.3-codex";
         variant = "medium";
