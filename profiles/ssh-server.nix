@@ -13,7 +13,7 @@
 
   environment.systemPackages = [ pkgs.mosh ];
   networking.firewall = {
-    interfaces."nebula.averyan".allowedTCPPorts = [ 22 ];
+    allowedTCPPorts = [ 22 ];
     allowedUDPPortRanges = [
       {
         from = 60000;
