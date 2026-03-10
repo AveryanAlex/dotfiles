@@ -26,7 +26,7 @@
     matchBlocks."circles.averyan.ru" = {
       forwardAgent = true;
       user = "ubuntu";
-      hostname = "195.209.214.27";
+      hostname = "195.209.218.189";
     };
   };
 }
