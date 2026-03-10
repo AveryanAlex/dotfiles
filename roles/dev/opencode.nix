@@ -12,7 +12,7 @@
       provider.synthetic.options.baseURL = "https://code.fob.wtf/syn/openai/v1";
       plugin = [
         "opencode-wakatime"
-        "@mohak34/opencode-notifier@latest"
+        # "@mohak34/opencode-notifier@latest"
         "opencode-devcontainers"
         "cc-safety-net"
         "@simonwjackson/opencode-direnv"
