@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   ...
 }:
@@ -48,5 +47,5 @@
     };
   };
 
-  environment.systemPackages = [ config.boot.kernelPackages.perf ];
+  environment.systemPackages = [ pkgs.perf ];
 }
