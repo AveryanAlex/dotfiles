@@ -58,6 +58,7 @@
 
     pnpm
     nodejs_latest
+    typescript-language-server
 
     code-cursor
     # devcontainer TODO: re-add once fixed
