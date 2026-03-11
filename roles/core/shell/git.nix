@@ -8,6 +8,8 @@
       key = "3C23C7BD99452036";
     };
 
+    ignores = [ ".sisyphus" ];
+
     settings = {
       user.name = "AveryanAlex";
       user.email = "alex@averyan.ru";
