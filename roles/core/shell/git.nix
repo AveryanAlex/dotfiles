@@ -1,7 +1,4 @@
-{ pkgs, ... }:
 {
-  hm.home.packages = [ pkgs.git-filter-repo ];
-
   hm.programs.git = {
     enable = true;
     lfs.enable = true;
