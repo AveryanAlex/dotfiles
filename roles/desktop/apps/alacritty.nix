@@ -1,8 +1,19 @@
 {
+  ...
+}:
+{
   home-manager.users.alex = {
     programs.alacritty = {
       enable = true;
       settings = {
+        # terminal.shell = {
+        #   program = "${pkgs.zsh}/bin/zsh";
+        #   args = [
+        #     "--login"
+        #     "-c"
+        #     "tmux-auto alacritty"
+        #   ];
+        # };
         window = {
           padding = {
             x = 5;

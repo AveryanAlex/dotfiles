@@ -84,6 +84,10 @@
         # Gas Town shell integration
         # [[ -f "$HOME/.config/gastown/shell-hook.sh" ]] && source "$HOME/.config/gastown/shell-hook.sh"
 
+        # if [[ -o interactive ]] && [[ -n "$SSH_CONNECTION" ]] && [[ -z "$TMUX" ]]; then
+        #   exec tmux-auto ssh
+        # fi
+
         if [[ -o interactive ]] && command -v fastfetch >/dev/null; then
           fastfetch
         fi
