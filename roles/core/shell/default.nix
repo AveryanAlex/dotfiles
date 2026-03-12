@@ -1,13 +1,17 @@
 {
   imports = [
+    ./asciinema.nix
     ./direnv.nix
     ./eza.nix
     ./fzf.nix
+    ./gh.nix
     ./git.nix
     ./gpg
+    ./jq.nix
     ./misc-s.nix
     ./neovim
     ./ssh.nix
+    ./tmux.nix
     ./zoxide.nix
     ./zsh
   ];
