@@ -48,6 +48,10 @@
     # clang-tools
     lldb
     gdb
+    gcc
+    cmake
+    gnumake
+    automake
 
     pkg-config
     libx11
@@ -68,12 +72,10 @@
     jdk
     maven
 
-    automake
-
     bun
     openssl
-
-    tmux
+    sqlite
+    typst
 
     beads
     dolt
