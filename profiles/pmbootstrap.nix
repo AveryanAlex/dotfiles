@@ -6,7 +6,7 @@
 {
   home-manager.users.alex = {
     home.packages = [
-      # pmbootstrap
+      pkgs.pmbootstrap
     ];
   };
 
