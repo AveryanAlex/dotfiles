@@ -13,6 +13,7 @@
       # Creativity
       # libsForQt5.kdenlive # video editor
       mediainfo # idk but kdenlive depends on it
+      ffmpeg-full # full codec/tooling build
       # gimp # image editor
       # krita # painting program
 
@@ -59,7 +60,7 @@
       # kgraphviewer # graphviz viewer
       # stellarium # planetarium
       # kleopatra # gpg gui
-      # spek # audio file spectrogram
+      spek # audio file spectrogram
       # kmplot
       crosspipe
       # gyroflow
