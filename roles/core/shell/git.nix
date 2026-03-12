@@ -8,7 +8,10 @@
       key = "3C23C7BD99452036";
     };
 
-    ignores = [ ".sisyphus" ];
+    ignores = [
+      ".sisyphus"
+      "**/.claude/settings.local.json"
+    ];
 
     settings = {
       user.name = "AveryanAlex";
