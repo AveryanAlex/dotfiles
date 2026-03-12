@@ -12,6 +12,7 @@
     ./neovim
     ./ssh.nix
     ./tmux.nix
+    ./tmux-auto.nix
     ./zoxide.nix
     ./zsh
   ];
