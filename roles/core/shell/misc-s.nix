@@ -25,8 +25,10 @@
       screen # run in background
       hashcat # password cracking
       micro # simple text editor
-      # compsize # btrfs compression info
+      bedtools # genome arithmetic toolkit
+      compsize # btrfs compression info
       yt-dlp # video/audio downloader
+      untrunc-anthwlock # repair truncated mp4/mov
       wget # download file
       cloc # count lines of code
       pv # stdout speed
