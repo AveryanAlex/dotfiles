@@ -12,16 +12,16 @@ let
     model = "anthropic/claude-opus-4-6";
     variant = "medium";
   };
-  fast = {
-    model = "anthropic/claude-opus-4-6";
-    variant = "low";
-  };
+  fast = normal;
   ohMyOpencodeVersion = "3.11.2";
   ohMyOpencodeConfig = {
     "$schema" =
       "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json";
+    disabled_hooks = [
+      "todo-continuation-enforcer"
+    ];
     agents = {
-      sisyphus = best;
+      sisyphus = alt-best;
       sisyphus-junior = normal;
       hephaestus = {
         model = "openai/gpt-5.3-codex";
@@ -34,10 +34,10 @@ let
         model = "openai/gpt-5.4";
         variant = "medium";
       };
-      prometheus = best;
+      prometheus = alt-best;
       metis = best;
-      momus = alt-best;
-      atlas = normal;
+      momus = best;
+      atlas = alt-best;
     };
     categories = {
       visual-engineering = best;
@@ -47,7 +47,7 @@ let
       };
       deep = {
         model = "openai/gpt-5.3-codex";
-        variant = "medium";
+        variant = "high";
       };
       quick = fast;
       unspecified-low.model = fast;
@@ -90,5 +90,6 @@ in
   hm.home.packages = with pkgs; [
     # mcp-nixos TODO: re-add once fixed
     libnotify
+    opencode-desktop
   ];
 }
