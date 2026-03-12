@@ -58,6 +58,7 @@
 
     pnpm
     nodejs_latest
+    basedpyright
     typescript-language-server
 
     code-cursor
