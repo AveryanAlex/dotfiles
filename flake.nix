@@ -168,12 +168,18 @@
             builtins.mapAttrs (
               name: type:
               if type == "regular" then
-                [
-                  {
-                    name = builtins.elemAt (builtins.match "(.*)\\.nix" name) 0;
-                    value = dir + "/${name}";
-                  }
-                ]
+                let
+                  match = builtins.match "(.*)\\.nix" name;
+                in
+                if match == null then
+                  [ ]
+                else
+                  [
+                    {
+                      name = builtins.elemAt match 0;
+                      value = dir + "/${name}";
+                    }
+                  ]
               else if (builtins.readDir (dir + "/${name}")) ? "default.nix" then
                 [
                   {
