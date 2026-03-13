@@ -40,6 +40,22 @@ Flake-based NixOS/Home Manager repo for multiple machines.
 | Change whale-only topology | `machines/whale/` | Bridges, DNS, mail container, routing |
 | Add or rotate a secret | secret file + `secrets.nix` | Every new `.age` file also needs a root ACL entry |
 
+## PACKAGE PLACEMENT
+
+When adding or migrating packages, first trace the current machine's import chain and only place packages in files that host actually reaches.
+
+| Package kind | Default destination | Notes |
+|---|---|---|
+| Shared CLI tool with no Home Manager module | `roles/core/shell/misc-s.nix` | For cross-machine shell utilities |
+| Shared tool with `programs.*` config or non-trivial setup | dedicated file in `roles/core/shell/` | Import it from `roles/core/shell/default.nix` |
+| Dev compiler, runtime, LSP, or build tool | `roles/dev/default.nix` | Desktop already imports dev |
+| Editor or AI tool with substantial config | dedicated file in `roles/dev/` | Follow nearby patterns like `opencode.nix`, `claudecode.nix`, `vscode.nix`, `zed.nix` |
+| Desktop GUI app without a Home Manager module | `roles/desktop/apps/misc-a.nix` | Catch-all for package-only desktop apps |
+| Desktop GUI app with a Home Manager module | dedicated file in `roles/desktop/apps/` | Import it from `roles/desktop/default.nix` |
+| System-level desktop package or NixOS feature | `roles/desktop/default.nix`, a machine file, or a profile | Use when it must exist outside user-scoped `home.packages` |
+| Opt-in feature bundle, service, or hardware-coupled tool | `profiles/<name>.nix` | Ensure the machine imports that profile |
+| Host-only package | `machines/<host>/...` | Use only when the package should not be shared |
+
 ## CHILD GUIDES
 
 - `apps/AGENTS.md` — Quadlet app conventions, subnet registry, UID/GID schemes, networking extras
@@ -54,6 +70,9 @@ Flake-based NixOS/Home Manager repo for multiple machines.
 - `flake.nix` auto-discovers `machines/`, `hardware/`, and `modules/`. New files there need no manual registration. `roles/`, `profiles/`, and `apps/` still require explicit imports.
 - Machines normally import a top-level role (`roles/desktop`, `roles/server.nix`, `roles/family.nix`). `lizard` is the intentional exception and imports `roles/core` directly.
 - `desktop` already imports `../dev`; do not add `roles/dev` directly in machine configs.
+- Treat `programs.<tool>.enable = true` as declarative management even if the package is not listed in `home.packages`.
+- Commented-out package lines are intentional history, not active declarations; do not auto-uncomment them without confirmation.
+- When editing an existing file, match that file's current style (`hm`, `home-manager.users.alex`, inline comments, list layout). New files should match nearby siblings.
 - `inputs` and `secrets` are passed through `specialArgs`. Use `"${secrets}/..."` for shared secrets and relative `./file.age` paths for app-local secrets.
 - The repo is flakes-only: `nix.channel.enable = false`.
 - `hm` is shorthand for `home-manager.users.alex`, provided by the external `nixcfg` input. It is not defined locally.
