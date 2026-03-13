@@ -67,6 +67,7 @@ in
       enabled_providers = [
         "anthropic"
         "openai"
+        "github-copilot"
       ];
       plugin = [
         "opencode-wakatime"
