@@ -1,18 +1,42 @@
 { pkgs, ... }:
 let
-  best = {
+  claude = {
     model = "anthropic/claude-opus-4-6";
+  };
+  claude-max = claude // {
     variant = "max";
   };
-  alt-best = {
+  claude-high = claude // {
+    variant = "high";
+  };
+  gpt-54 = {
     model = "openai/gpt-5.4";
+  };
+  gpt-54-xhigh = gpt-54 // {
     variant = "xhigh";
   };
-  normal = {
-    model = "anthropic/claude-opus-4-6";
+  gpt-54-high = gpt-54 // {
+    variant = "high";
+  };
+  gpt-54-medium = gpt-54 // {
     variant = "medium";
   };
-  fast = normal;
+  gpt-53codex = {
+    model = "openai/gpt-5.3-codex";
+  };
+  gpt-53codex-high = gpt-53codex // {
+    variant = "high";
+  };
+  gpt-53codex-xhigh = gpt-53codex // {
+    variant = "xhigh";
+  };
+  gpt-53codex-medium = gpt-53codex // {
+    variant = "medium";
+  };
+  gemini-pro = {
+    model = "github-copilot/gemini-3.1-pro-preview";
+  };
+
   ohMyOpencodeVersion = "3.11.2";
   ohMyOpencodeConfig = {
     "$schema" =
@@ -21,41 +45,46 @@ let
       "todo-continuation-enforcer"
     ];
     agents = {
-      sisyphus = alt-best;
-      sisyphus-junior = normal;
-      hephaestus = {
-        model = "openai/gpt-5.3-codex";
-        variant = "medium";
-      };
-      oracle = alt-best;
-      librarian.model = "anthropic/claude-sonnet-4-6";
-      explore.model = "anthropic/claude-sonnet-4-6";
-      multimodal-looker = {
-        model = "openai/gpt-5.4";
-        variant = "medium";
-      };
-      prometheus = alt-best;
-      metis = best;
-      momus = best;
-      atlas = alt-best;
+      # main orchastrator
+      sisyphus = claude-max;
+      # main subagent coder
+      sisyphus-junior = gpt-53codex-high;
+      # deep autonomous coder
+      hephaestus = gpt-53codex-high;
+      # plan writer
+      prometheus = claude-max;
+      # architecture consultant
+      oracle = gpt-54-xhigh;
+      # code reviewer
+      momus = gpt-54-high;
+      # plan gap analyzer
+      metis = claude-max;
+      # plan executor
+      atlas = gpt-54-high;
+      # codebase explorer
+      explore = gpt-53codex-medium;
+      # docs/oss research
+      librarian = gpt-53codex-medium;
+      # vision/screenshots
+      multimodal-looker = gpt-54-medium;
     };
     categories = {
-      visual-engineering = best;
-      ultrabrain = {
-        model = "openai/gpt-5.3-codex";
-        variant = "xhigh";
-      };
-      deep = {
-        model = "openai/gpt-5.3-codex";
-        variant = "high";
-      };
-      quick = fast;
-      unspecified-low.model = fast;
-      unspecified-high = {
-        model = "openai/gpt-5.4";
-        variant = "high";
-      };
-      writing.model = normal;
+      # frontend, UI/UX, design, animation
+      visual-engineering = gemini-pro;
+      # hard logic, complex architecture
+      ultrabrain = gpt-53codex-xhigh;
+      # autonomous research + execution
+      deep = gpt-53codex-high;
+      # creative, unconventional approaches
+      artistry = gemini-pro;
+      # trivial tasks, typo fixes
+      quick = gpt-53codex-medium;
+      # general tasks, low effort
+      unspecified-low = claude-high;
+      # general tasks, high effort
+      unspecified-high = gpt-54-high;
+      # documentation, prose, technical writing
+      writing = gpt-53codex-medium;
     };
   };
 in
@@ -69,6 +98,10 @@ in
         "openai"
         "github-copilot"
       ];
+      compaction = {
+        auto = true;
+        prune = false;
+      };
       plugin = [
         "opencode-wakatime"
         # "@mohak34/opencode-notifier@latest"
