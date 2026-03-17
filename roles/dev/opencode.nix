@@ -42,7 +42,7 @@ let
     "$schema" =
       "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/dev/assets/oh-my-opencode.schema.json";
     disabled_hooks = [
-      "todo-continuation-enforcer"
+      # "todo-continuation-enforcer"
     ];
     agents = {
       # main orchastrator
@@ -117,6 +117,7 @@ in
         };
       };
     };
+    rules = builtins.readFile ./opencode-rules.md;
   };
 
   hm.xdg.configFile."opencode/oh-my-opencode.json".text = builtins.toJSON ohMyOpencodeConfig;
