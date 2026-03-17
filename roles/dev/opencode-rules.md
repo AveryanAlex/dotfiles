@@ -9,6 +9,7 @@ Feel free to ask the user clarifying questions or questions about architecture.
 # Plan Execution Rules
 Do not follow the plan dogmatically if better solutions or suitable API contracts are discovered during
 implementation. Any deviations from the plan must be recorded with a reason.
+Do NOT use git worktrees unless the user explicitly requests them. Subagents frequently mishandle worktree state and context isolation.
 
 # Code Quality
 
