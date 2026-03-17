@@ -107,3 +107,18 @@ supports it. Sync code is fine for CPU-bound or trivially sequential tasks.
 - **Tooling**: For new projects, use `ruff` for linting and formatting, `uv` as the package manager,
   and `uv_build` as the build backend. In existing projects, follow the established toolchain.
 - **Project Structure**: Prefer `pyproject.toml` over `setup.py`/`setup.cfg`. Pin dependencies in lock files.
+
+## TypeScript/JavaScript Specifics
+- **Language Choice**: For new projects, always use TypeScript over plain JavaScript. Enable `strict` mode
+  in `tsconfig.json`.
+- **Package Manager**: Use `pnpm` for new projects. In existing projects, follow the established package manager.
+- **Typing**: Avoid `any` — use `unknown` and narrow with type guards. Prefer interface over type alias
+  for object shapes unless unions or mapped types are needed. Use `as const` for literal tuples and enums.
+- **Nullability**: Enable `strictNullChecks`. Use optional chaining (`?.`) and nullish coalescing (`??`)
+  over manual null checks.
+- **Async**: Use `async`/`await` over raw `.then()` chains. Always handle promise rejections — never leave
+  a floating promise without a catch path.
+- **Imports**: Use ES module syntax (`import`/`export`). Prefer named exports over default exports for
+  better refactoring support and IDE discoverability.
+- **Tooling**: For new projects, use `biome` for linting and formatting. In existing projects, follow the
+  established toolchain (eslint, prettier, etc.). Use `tsx` for running TypeScript scripts directly.
