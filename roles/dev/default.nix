@@ -10,6 +10,7 @@
     ./nbconvert.nix
     ./docker.nix
     ./opencode.nix
+    ./codex.nix
     ./claudecode.nix
     ./mcp.nix
   ];
@@ -76,6 +77,8 @@
     openssl
     sqlite
     typst
+
+    kaggle
 
     beads
     dolt
