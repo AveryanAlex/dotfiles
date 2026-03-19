@@ -1,124 +1,103 @@
 # Environment
-We run NixOS. To install a missing tool, use `nix profile add nixpkgs#<package>` for commonly used utilities
-or `nix-shell -p <package> --run '<command>'` for one-off runs. Prefer adding to profile if the tool will be
-needed again.
+- We run NixOS
+- Install tools: `nix profile add nixpkgs#<pkg>` (persistent) or `nix-shell -p <pkg> --run '<cmd>'` (one-off)
+- Prefer profile if the tool will be needed again
+- Projects follow `~/projects/<owner>/<name>` layout with `origin` and `upstream` remotes
+- Save superpower-generated plans, specs, and scratch design docs under `.superpowers/` instead of `docs/superpowers/`
 
-# Plan Writing Rules
-Feel free to ask the user clarifying questions or questions about architecture.
+# Planning
+- When in doubt, ask — prefer using the ask/question tool over guessing
+- Ask clarifying questions about requirements and architecture
+- For requests with many edits or a large scope, first split the work into small atomic tasks, create or update a todo list, and execute from that list
+- Keep the todo list current while working: mark completed tasks, add newly discovered tasks, and avoid bundling unrelated changes into one task
+- If the repo starts clean, prefer finishing each atomic task as its own atomic commit
+- Deviate from the plan when better solutions or suitable API contracts emerge — record the reason
+- Do NOT use git worktrees unless explicitly requested
 
-# Plan Execution Rules
-Do not follow the plan dogmatically if better solutions or suitable API contracts are discovered during
-implementation. Any deviations from the plan must be recorded with a reason.
-Do NOT use git worktrees unless the user explicitly requests them. Subagents frequently mishandle worktree state and context isolation.
+# Git
+- If the repo already has multiple uncommitted changes, do not create commits automatically unless explicitly requested
+- Never push without explicit request
+- Never add commit attribution trailers (Co-authored-by, etc.)
 
 # Code Quality
+These rules are not exhaustive — on code review, flag any issue you find, even if not listed here.
 
 ## Sizing & Separation
-Each function should do one thing. If it exceeds ~30 lines or requires a comment explaining a section,
-that section is a candidate for extraction. Files should stay under ~400 lines; if larger, look for cohesion
-boundaries to split on. One file — one cohesive area. These are guidelines, not hard limits — readability
-trumps line counts.
+- One function — one job; extract at ~30 lines or when a section needs a "what" comment
+- One file — one cohesive area; look for split boundaries at ~400 lines
+- Guidelines, not hard limits — readability trumps line counts
 
-## Exception Handling
-Catch only when you have a concrete recovery strategy (retry, fallback, rollback, user-visible message,
-resource cleanup). Keep try/catch scope narrow — wrapping large blocks masks unrelated failures.
-Do not swallow errors if the function fails its primary task. Bad pattern: returning an empty placeholder
-on network failure instead of propagating the error.
+## Error Handling
+- Catch only with a concrete recovery strategy (retry, fallback, rollback, user message, cleanup)
+- Keep try/catch scope narrow — large blocks mask unrelated failures
+- Never swallow errors when the function fails its primary task (e.g. returning an empty placeholder on network failure)
+- Empty catch blocks (`catch {}`, `.catch(() => {})`) must have a comment explaining why the error is safe to ignore; prefer `console.warn`/`tracing::warn!` for debuggability
 
 ## Comments
-NEVER write comments that restate what the code does. Comments should explain **why** — non-obvious intent,
-business context, or workaround reasons. If code needs a "what" comment to be understood, clarify the code
-itself (better names, simpler structure) instead of annotating.
+- Never restate what the code does
+- Explain **why**: non-obvious intent, business context, workaround reasons
+- If code needs a "what" comment, clarify the code instead (better names, simpler structure)
 
-## No Premature Abstraction
-Do not create wrapper functions, helper classes, or abstraction layers that are only used once. Every
-indirection layer must earn its existence through actual reuse or meaningful simplification. If a "helper"
-just forwards arguments to another function, inline it.
+## Abstraction & DRY
+- Every indirection layer must earn its existence through reuse or meaningful simplification
+- No wrappers, helpers, or layers used only once — inline them; if a helper just forwards arguments, inline it
+- Two duplicates are a smell; three are a signal to extract (duplicated functions drift apart over time)
+- Don't extract prematurely — single-use wrappers add indirection without value
 
-## DRY for Utilities
-Two occurrences of the same logic are a smell; three are a clear signal to extract a shared utility.
-Duplicated functions drift apart over time. But do not extract prematurely — a single-use wrapper adds
-indirection without value.
+## Dispatchers
+- Large `match` with substantial arms → extract each arm into a handler; dispatcher only matches and delegates
 
-## Match-Heavy Dispatchers
-When a single function has a large `match` where each arm does substantial work, extract each arm into
-a dedicated handler. The dispatcher should only match and delegate.
+## Literals
+- Named constants or config for non-obvious values; repeated identifiers (event topics, endpoint URLs) defined once
+- Shared visual tokens (colors, animation durations, breakpoints) defined once in a central place — don't scatter hex colors across files
+- Acceptable inline: 0, 1, empty string, spec-defined constants (HTTP 404, standard ports), math constants
 
-## Magic Numbers & String Literals
-Use named constants or configuration for any non-obvious literal. Repeated string identifiers (event topics,
-UUIDs, endpoint URLs) must be defined once and referenced by name. Acceptable inline: universal values
-(0, 1, empty string), well-known protocol/spec-defined constants (HTTP 404, standard port numbers),
-and mathematical constants.
+## Public API Docs
+- Doc comments on public types, traits, and functions — explain **why** and **when**, not restate the name
+- Focus on invariants, failure modes, non-obvious behavior
+- Skip trivial docs (`pub struct User { pub name: String }` needs no "A user." comment)
 
-## Public API Documentation
-Public types, traits, and functions should have doc comments that explain **why** and **when**, not restate
-the name. Focus on invariants, failure modes, and non-obvious behavior. Self-explanatory items
-(e.g. `pub struct User { pub name: String }`) do not need a comment that just says "A user." —
-skip trivial docs.
+## General
+- Follow idiomatic standards; prefer stdlib/popular packages over reinventing
+- Never guess dependency versions — verify via crates.io, npm, PyPI, or the relevant registry
+- Prefer latest Rust edition; for C++ prefer latest mature standard with broad compiler support
+- Prefer async I/O for network/disk/blocking; sync is fine for CPU-bound or trivial sequential work
+- Every lint/compiler suppression (`eslint-disable`, `#[allow(...)]`, etc.) must include a short comment justifying why it is safe
 
-## Language Standards
-Follow the idiomatic standards of the language you are using. Do not reinvent the wheel if functionality
-already exists in the standard library or a popular package.
-IMPORTANT: When adding dependencies, NEVER guess version numbers from memory — always verify the current
-version via crates.io, npm, PyPI, or the relevant registry. Prefer the latest Rust edition. For C++,
-prefer the latest mature standard with broad compiler support.
-Prefer async I/O when the workload involves network, disk, or other blocking operations and the language/runtime
-supports it. Sync code is fine for CPU-bound or trivially sequential tasks.
+## Rust
+- **Errors**: `Result`/`Option` for normal conditions (IO, parsing, network, user input); panics only for bug-indicating invariant violations
+- **Libraries**: `thiserror` for typed error enums; avoid `anyhow` (callers need concrete types)
+- **CLI tools**: `color-eyre` with `eyre::Result`
+- **Propagation**: use `?`; avoid `.unwrap()` unless the invariant is trivially obvious
+- **Ownership**: prefer `&T` over `.clone()` unless necessary; understand the cost of allocation
+- **Idioms**: `match` for control flow, iterators for sequences, `From`/`Into` for conversions
+- **Constants**: consider `#[repr(...)]` enum over separate `const` values for related groups
+- **Enums**: use `#[non_exhaustive]` only when variants genuinely will grow; when a variant accumulates 3+ fields, extract a dedicated struct — keeps the enum definition scannable and lets the struct have its own methods and `impl` blocks
+- **Newtypes**: wrap for distinct units (meters vs feet), opaque handles, validated inputs (`Email`, `NonEmptyVec`); skip when every inner value is valid and no confusion risk
+- **Serde + newtypes**: never `#[derive(Deserialize)]` on validated newtypes — it bypasses validation; use `#[serde(try_from = "...")]`
+- **Numeric casts**: `From`/`Into` for widening, `try_from()`/`try_into()` for narrowing; bare `as` silently truncates
+- **Async lifecycle**: track every `JoinHandle` for join or cancellation; fire-and-forget spawns hide panics and prevent graceful shutdown; long-lived handles should cancel their background task on `Drop`
+- **`select!` safety**: verify every branch is cancellation-safe; if not, use a fused/pinned future or restructure to avoid data loss
+- **Doc comments placement**: place doc comments (`///`, `/** */`) before attributes like `#[derive(...)]` on the item they document
+- **Tooling**: must pass `cargo clippy` without warnings; format with `cargo fmt`
 
-## Rust Specifics
-- **Error Handling**:
-  - Use `Result`/`Option` for any condition that can occur during normal operation (IO, parsing, network,
-    user input, missing data).
-  - Panics (`panic!`, `unreachable!`, `.unwrap()`, `.expect()`) are appropriate for invariant violations
-    that indicate a bug in the code itself, not in the data.
-  - In libraries, use `thiserror` for typed, structured error enums. Avoid `anyhow` — callers need
-    concrete types to match on.
-  - In CLI tools and scripts, use `color-eyre` with `eyre::Result` for exception-style ergonomics.
-  - Propagate errors with `?`. Avoid `.unwrap()` unless the invariant is trivially obvious from context.
-- **Ownership & Borrowing**: Prefer borrowing (`&T`) over cloning (`T.clone()`) unless necessary.
-  Understand the cost of allocation.
-- **Idioms**:
-  - Use `match` for complex control flow, iterators for sequences, and `From`/`Into` for conversions.
-  - When a group of related constants shares the same type, use a `#[repr(...)]` enum instead of
-    separate `const` values.
-  - Mark enums with `#[non_exhaustive]` only when variants are genuinely expected to grow.
-- **Type Safety — Newtypes**:
-  - **Do wrap**: values with distinct physical units (meters vs feet), opaque handles/indices, and
-    validated inputs where the newtype enforces an invariant at construction (e.g. `Email`, `NonEmptyVec`).
-  - **Don't wrap**: when every value of the inner type is valid and there's no realistic confusion risk.
-    If you'd provide unchecked `From` in both directions, the newtype adds noise without safety.
-  - **Serde caveat**: never `#[derive(Deserialize)]` on a validated newtype — it bypasses validation.
-    Use `#[serde(try_from = "...")]` or a custom impl.
-- **Numeric Casts**: Avoid bare `as` for numeric conversions. Use `From`/`Into` for lossless widening,
-  and `try_into()`/`try_from()` for narrowing or cross-sign casts. Bare `as` silently truncates/saturates.
-- **Async Task Lifecycle**:
-  - Every `tokio::spawn` must have its `JoinHandle` tracked for join or cancellation. Fire-and-forget
-    spawns hide panics and prevent graceful shutdown. Long-lived operation handles should cancel their
-    background task on `Drop`.
-  - Never hold a sync `Mutex`/`RwLock` guard across an `.await` — it blocks the executor thread.
-    Use `tokio::sync` locks or restructure to drop the guard before awaiting.
-  - In `select!` loops, verify that every branch operation is cancellation-safe. If it isn't, use
-    a fused/pinned future or restructure to avoid data loss on cancellation.
-- **Tooling**: Code must pass `cargo clippy` without warnings. Format with `cargo fmt`.
+## Python
+- **Typing**: modern annotations (`str | None`, `list[int]`); complete signatures on public functions
+- **Tooling**: new projects use `ruff` + `uv` + `uv_build`; existing projects follow established toolchain
+- **Structure**: `pyproject.toml` over `setup.py`/`setup.cfg`; pin deps in lock files
 
-## Python Specifics
-- **Typing**: Use modern type annotations (`str | None` not `Optional[str]`, `list[int]` not `List[int]`).
-  All public functions must have complete type signatures.
-- **Tooling**: For new projects, use `ruff` for linting and formatting, `uv` as the package manager,
-  and `uv_build` as the build backend. In existing projects, follow the established toolchain.
-- **Project Structure**: Prefer `pyproject.toml` over `setup.py`/`setup.cfg`. Pin dependencies in lock files.
+## TypeScript/JavaScript
+- **Language**: always TypeScript for new projects; enable `strict` mode
+- **Package manager**: `pnpm` for new projects; follow existing project's choice
+- **Typing**: `unknown` over `any` with type guards; `interface` for object shapes (unless unions/mapped types needed); `as const` for literal tuples
+- **Nullability**: enable `strictNullChecks`; use `?.` and `??` over manual checks
+- **Async**: `async`/`await` over `.then()` chains; always handle rejections — never leave a floating promise
+- **Imports**: ES modules; prefer named exports over default exports for better refactoring and IDE discoverability
+- **Tooling**: `biome` for new projects; follow established toolchain otherwise; `tsx` for running TS scripts
 
-## TypeScript/JavaScript Specifics
-- **Language Choice**: For new projects, always use TypeScript over plain JavaScript. Enable `strict` mode
-  in `tsconfig.json`.
-- **Package Manager**: Use `pnpm` for new projects. In existing projects, follow the established package manager.
-- **Typing**: Avoid `any` — use `unknown` and narrow with type guards. Prefer interface over type alias
-  for object shapes unless unions or mapped types are needed. Use `as const` for literal tuples and enums.
-- **Nullability**: Enable `strictNullChecks`. Use optional chaining (`?.`) and nullish coalescing (`??`)
-  over manual null checks.
-- **Async**: Use `async`/`await` over raw `.then()` chains. Always handle promise rejections — never leave
-  a floating promise without a catch path.
-- **Imports**: Use ES module syntax (`import`/`export`). Prefer named exports over default exports for
-  better refactoring support and IDE discoverability.
-- **Tooling**: For new projects, use `biome` for linting and formatting. In existing projects, follow the
-  established toolchain (eslint, prettier, etc.). Use `tsx` for running TypeScript scripts directly.
+## React
+- Same sizing rules apply to components and hooks — extract sub-components/custom hooks at the same thresholds
+- More than ~8 `useState` calls in one component → split into sub-components with own state, or use `useReducer`
+- Use `useId()` for DOM IDs in reusable components — hardcoded IDs break with multiple instances
+- Don't use `innerHTML` for content React can render — bypasses the virtual DOM and risks XSS
+- Omitted effect dependencies require a comment explaining why the omission is safe when suppressing the lint rule
