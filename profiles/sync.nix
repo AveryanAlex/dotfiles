@@ -47,12 +47,14 @@ in
                 "tcp://10.57.1.40:22000"
               ];
               id = "XYYXB6U-Y24PGXJ-UEDYSHQ-HKYELXG-UF6I4S4-EKB3GB3-KU6DEUH-5JDCOAN";
+              compression = "always";
             };
         whale = {
           addresses = [
             "tcp://whale.averyan.ru:22000"
           ];
           id = "Q3SH2WU-IZ2DW2W-PGYCBXF-TR4LOSK-Z4C3TBU-PDMVA77-AJ3K55U-OODJKAG";
+          compression = "always";
         };
         hamster =
           lib.mkIf (config.networking.hostName == "whale" || config.networking.hostName == "hamster")
@@ -61,9 +63,11 @@ in
                 "tcp://10.57.1.41:22000"
               ];
               id = "ZE5OQPP-KCHNC7V-NK62XZN-ZWU4K6V-FJONTJN-SDJMJ7Y-RZZR4AY-IDGD4QB";
+              compression = "always";
             };
         pchel = lib.mkIf (config.networking.hostName == "whale") {
           id = "UCTK67O-NXE755G-GOOI32N-CJXY4NJ-OW7HWZ2-QGLZL2P-H5RE54F-WTUWKAX";
+          compression = "always";
         };
       };
       folders = {
