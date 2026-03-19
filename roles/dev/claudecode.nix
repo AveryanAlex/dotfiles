@@ -13,10 +13,7 @@ in
 {
   hm.programs.claude-code = {
     enable = true;
-    memory.text = ''
-      Do not include attribution in commit messages or pull request descriptions.
-      Never add Co-Authored-By trailers or Generated with Claude Code footers.
-    '';
+    memory.text = builtins.readFile ./opencode-rules.md;
     settings = {
       skipDangerousModePermissionPrompt = true;
 
@@ -34,9 +31,10 @@ in
 
       enabledPlugins = {
         "claude-code-wakatime@wakatime" = true;
-        # "rust-analyzer-lsp@claude-plugins-official" = true;
+        "rust-analyzer-lsp@claude-plugins-official" = true;
         "beads@beads-marketplace" = true;
         "frontend-design@claude-plugins-official" = true;
+        "typescript-lsp@claude-plugins-official" = true;
         "superpowers@claude-plugins-official" = true;
         "safety-net@cc-marketplace" = true;
       };
