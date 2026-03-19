@@ -88,7 +88,11 @@ in
     };
 
     config =
-      { pkgs, ... }:
+      {
+        lib,
+        pkgs,
+        ...
+      }:
       {
         system.stateVersion = "23.05";
 
@@ -107,6 +111,9 @@ in
           ];
         };
         services.resolved.enable = true;
+
+        # Work around pam_lastlog2 breakage that kills machinectl shell sessions.
+        security.pam.services.login.updateWtmp = lib.mkForce false;
 
         virtualisation.podman = {
           enable = true;

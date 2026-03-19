@@ -69,7 +69,11 @@
     };
 
     config =
-      { pkgs, ... }:
+      {
+        lib,
+        pkgs,
+        ...
+      }:
       {
         system.stateVersion = "24.11";
 
@@ -95,6 +99,9 @@
           ];
         };
         services.resolved.enable = true;
+
+        # Work around pam_lastlog2 breakage that kills machinectl shell sessions.
+        security.pam.services.login.updateWtmp = lib.mkForce false;
 
         virtualisation.docker = {
           enable = true;
