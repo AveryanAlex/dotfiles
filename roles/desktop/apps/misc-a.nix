@@ -42,7 +42,7 @@
       # f3d # simple 3d viewer
 
       # 3D modeling
-      # openscad
+      openscad
       # freecad
       # blender
       # gmsh

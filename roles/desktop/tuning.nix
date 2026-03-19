@@ -27,7 +27,7 @@
   };
 
   services.scx = {
-    enable = true;
+    # enable = true;;
     scheduler = "scx_bpfland";
   };
 
