@@ -10,6 +10,7 @@
     ../../roles/desktop
 
     ./hardware.nix
+    ./kimaki.nix
     ./mounts.nix
   ];
 
