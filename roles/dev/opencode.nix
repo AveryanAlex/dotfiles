@@ -67,7 +67,6 @@ in
     enableMcpIntegration = true;
     settings = {
       enabled_providers = [
-        "anthropic"
         "openai"
         "github-copilot"
       ];
