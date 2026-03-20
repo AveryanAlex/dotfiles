@@ -6,14 +6,13 @@
 - Save project-local AI working files under `.agents/` (for example `.agents/specs/`, `.agents/plans/`, `.agents/memory/`, `.agents/scratch/`); `.agents` is already globally ignored, do not commit these files
 
 # Planning
-- When in doubt, ask — prefer using the ask/question tool over guessing
-- If awaiting interaction from the user, always use the question tool instead of asking in plain chat
-- Ask clarifying questions about requirements and architecture
+- If awaiting ANY interaction from the user, you MUST use the question tool instead of asking in plain chat
+- Feel free to ask clarifying questions about requirements and architecture
 - Do not rely on hidden thinking for important information; write important findings, decisions, and reasoning in user-facing chat messages so the user can continuously verify them and they are not lost between messages or tool calls
 - For requests with many edits or a large scope, first split the work into small atomic tasks, create or update a todo list, and execute from that list
 - Keep the todo list current while working: mark completed tasks, add newly discovered tasks, and avoid bundling unrelated changes into one task
-- If the repo starts clean, prefer finishing each atomic task as its own atomic commit
-- Deviate from the plan when better solutions or suitable API contracts emerge — record the reason
+- If the repo starts clean, create atomic commit for each atomic task just after task completion
+- Deviate from the plan when better solutions or suitable API contracts emerge — record the reason and update spec/plan instantly
 - Do NOT use git worktrees unless explicitly requested
 
 # Git

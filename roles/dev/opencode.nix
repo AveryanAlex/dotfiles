@@ -51,12 +51,12 @@ let
     preset = "alex";
     presets = {
       alex = {
-        orchestrator = gpt-54-xhigh;
+        orchestrator = gpt-54-high;
         oracle = gpt-54-xhigh;
         librarian = gpt-53codex-medium;
         explorer = gpt-53codex-medium;
         designer = gemini-pro-medium;
-        fixer = gpt-53codex-high;
+        fixer = gpt-53codex-medium;
       };
     };
   };
@@ -80,7 +80,7 @@ in
         "opencode-devcontainers"
         "cc-safety-net"
         "@simonwjackson/opencode-direnv"
-        "opencode-beads"
+        # "opencode-beads"
         "oh-my-opencode-slim@${ohMyOpencodeSlimVersion}"
         "superpowers@git+https://github.com/obra/superpowers.git#${superpowersVersion}"
       ];
