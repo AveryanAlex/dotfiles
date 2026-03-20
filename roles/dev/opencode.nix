@@ -45,7 +45,7 @@ let
   };
 
   ohMyOpencodeSlimVersion = "0.8.3";
-  superpowersVersion = "v5.0.5";
+  superpowersVersion = "bf40c3813ad3e39cf22af85dd20589696e4a5e76";
   ohMyOpencodeSlimConfig = {
     "$schema" = "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json";
     preset = "alex";
@@ -82,7 +82,7 @@ in
         "@simonwjackson/opencode-direnv"
         # "opencode-beads"
         "oh-my-opencode-slim@${ohMyOpencodeSlimVersion}"
-        "superpowers@git+https://github.com/obra/superpowers.git#${superpowersVersion}"
+        "superpowers@git+https://github.com/AveryanAlex/superpowers.git#${superpowersVersion}"
       ];
       agent = {
         explore.disable = true;
