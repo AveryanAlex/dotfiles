@@ -10,7 +10,10 @@
 
     ignores = [
       ".sisyphus"
+      ".agents"
+      ".stignore"
       ".superpowers"
+      ".wakatime-project"
       "**/.claude/settings.local.json"
     ];
 

@@ -2,12 +2,13 @@
 - We run NixOS
 - Install tools: `nix profile add nixpkgs#<pkg>` (persistent) or `nix-shell -p <pkg> --run '<cmd>'` (one-off)
 - Prefer profile if the tool will be needed again
-- Projects follow `~/projects/<owner>/<name>` layout with `origin` and `upstream` remotes
-- Save superpower-generated plans, specs, and scratch design docs under `.superpowers/` instead of `docs/superpowers/`
+- Projects follow `~/projects/<owner>/<name>` layout; use `origin` and `upstream` remotes for forks
+- Save project-local AI working files under `.agents/` (for example `.agents/specs/`, `.agents/plans/`, `.agents/memory/`, `.agents/scratch/`); `.agents` is already globally ignored, do not commit these files
 
 # Planning
 - When in doubt, ask — prefer using the ask/question tool over guessing
 - Ask clarifying questions about requirements and architecture
+- Do not rely on hidden thinking for important information; write important findings, decisions, and reasoning in user-facing chat messages so the user can continuously verify them and they are not lost between messages or tool calls
 - For requests with many edits or a large scope, first split the work into small atomic tasks, create or update a todo list, and execute from that list
 - Keep the todo list current while working: mark completed tasks, add newly discovered tasks, and avoid bundling unrelated changes into one task
 - If the repo starts clean, prefer finishing each atomic task as its own atomic commit
