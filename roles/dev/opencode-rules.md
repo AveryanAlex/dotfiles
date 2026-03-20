@@ -7,6 +7,7 @@
 
 # Planning
 - When in doubt, ask — prefer using the ask/question tool over guessing
+- If awaiting interaction from the user, always use the question tool instead of asking in plain chat
 - Ask clarifying questions about requirements and architecture
 - Do not rely on hidden thinking for important information; write important findings, decisions, and reasoning in user-facing chat messages so the user can continuously verify them and they are not lost between messages or tool calls
 - For requests with many edits or a large scope, first split the work into small atomic tasks, create or update a todo list, and execute from that list
