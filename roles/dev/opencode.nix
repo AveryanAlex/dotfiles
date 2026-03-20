@@ -1,11 +1,5 @@
 { pkgs, ... }:
 let
-  claude = {
-    model = "anthropic/claude-opus-4-6";
-  };
-  claude-max = claude // {
-    variant = "max";
-  };
   gpt-54 = {
     model = "openai/gpt-5.4";
   };
@@ -57,7 +51,7 @@ let
     preset = "alex";
     presets = {
       alex = {
-        orchestrator = claude-max;
+        orchestrator = gpt-54-xhigh;
         oracle = gpt-54-xhigh;
         librarian = gpt-53codex-medium;
         explorer = gpt-53codex-medium;
