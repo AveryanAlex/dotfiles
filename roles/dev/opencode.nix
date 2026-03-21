@@ -49,6 +49,9 @@ let
   ohMyOpencodeSlimConfig = {
     "$schema" = "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json";
     preset = "alex";
+    fallback = {
+      enabled = false;
+    };
     presets = {
       alex = {
         orchestrator = gpt-54-high;
