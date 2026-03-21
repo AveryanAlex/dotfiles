@@ -18,6 +18,13 @@ let
   makeAveryanHost = proxyPass: makeHost proxyPass // { useACMEHost = "averyan.ru"; };
 in
 {
+  age.secrets.openchamber-http-basic-auth = {
+    file = "${secrets}/accounts/openchamber-http-basic-auth.age";
+    owner = "nginx";
+    group = "nginx";
+    mode = "0400";
+  };
+
   imports = [
     ../../roles/server.nix
 
@@ -166,6 +173,9 @@ in
     };
     "hydra.averyan.ru" = makeAveryanHost "http://whale:2875";
     "ntfy.averyan.ru" = makeAveryanHost "http://127.0.0.1:8163";
+    "oc.averyan.ru" = makeAveryanHost "http://alligator:8088" // {
+      # basicAuthFile = config.age.secrets.openchamber-http-basic-auth.path;
+    };
     "olsearch.averyan.ru" = makeAveryanHost "http://whale:8739";
     "prism.averyan.ru" = makeAveryanHost "http://whale:2342";
     "search.averyan.ru" = makeAveryanHost "http://127.0.0.1:8278";

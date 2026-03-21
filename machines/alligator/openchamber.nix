@@ -27,12 +27,13 @@ in
       Wants = [ "network-online.target" ];
     };
     Service = {
+      Environment = [ "OPENCHAMBER_HOST=10.57.1.40" ];
       Type = "oneshot";
       RemainAfterExit = true;
       Restart = "on-failure";
       RestartSec = "10s";
       EnvironmentFile = config.age.secrets.openchamber-ui-password.path;
-      ExecStartPre = "${pkgs.bash}/bin/bash -c 'source ${config.age.secrets.bash-init.path} && exec ${openchamber}/bin/openchamber stop --port 8088'";
+      ExecStartPre = "${pkgs.bash}/bin/bash -c 'until ${pkgs.iproute2}/bin/ip -4 addr show dev nebula.averyan to 10.57.1.40/32 >/dev/null 2>&1; do sleep 1; done && source ${config.age.secrets.bash-init.path} && exec ${openchamber}/bin/openchamber stop --port 8088'";
       ExecStart = "${pkgs.bash}/bin/bash -c 'source ${config.age.secrets.bash-init.path} && exec ${openchamber}/bin/openchamber --port 8088'";
       ExecStop = "${pkgs.bash}/bin/bash -c 'source ${config.age.secrets.bash-init.path} && exec ${openchamber}/bin/openchamber stop --port 8088'";
     };
@@ -40,4 +41,8 @@ in
       WantedBy = [ "default.target" ];
     };
   };
+
+  networking.firewall.extraInputRules = ''
+    iifname "nebula.averyan" ip saddr 10.57.1.10 tcp dport 8088 accept
+  '';
 }
