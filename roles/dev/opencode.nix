@@ -12,6 +12,9 @@ let
   gpt-54-medium = gpt-54 // {
     variant = "medium";
   };
+  gpt-54-low = gpt-54 // {
+    variant = "low";
+  };
   gemini-pro = {
     model = "github-copilot/gemini-3.1-pro-preview";
   };
@@ -42,16 +45,16 @@ let
   superpowersVersion = "bf40c3813ad3e39cf22af85dd20589696e4a5e76";
   ohMyOpencodeSlimConfig = {
     "$schema" = "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json";
-    preset = "alex";
+    preset = "gpt";
     fallback = {
       enabled = false;
     };
     presets = {
-      alex = {
+      gpt = {
         orchestrator = gpt-54-high;
-        oracle = gpt-54-xhigh;
-        librarian = gpt-54-medium;
-        explorer = gpt-54-medium;
+        oracle = gpt-54-high;
+        librarian = gpt-54-low;
+        explorer = gpt-54-low;
         designer = gemini-pro-medium;
         fixer = gpt-54-medium;
       };
@@ -82,13 +85,18 @@ in
         "superpowers@git+https://github.com/AveryanAlex/superpowers.git#${superpowersVersion}"
       ];
       agent = {
+        build = gpt-54-high;
+        plan = gpt-54-high;
         explore.disable = true;
         general.disable = true;
       };
+      model = "openai/gpt-5.4";
+      small_model = "github-copilot/gpt-5-mini";
       permission = {
         bash = {
-          "*" = "allow";
+          # "*" = "ask";
         };
+        external_directory."*" = "allow";
       };
     };
     skills = {

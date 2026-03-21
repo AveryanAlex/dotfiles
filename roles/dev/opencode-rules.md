@@ -8,7 +8,7 @@
 # Planning
 - If awaiting ANY interaction from the user, you MUST use the question tool instead of asking in plain chat
 - Feel free to ask clarifying questions about requirements and architecture
-- Do not rely on hidden thinking for important information; write important findings, decisions, and reasoning in user-facing chat messages so the user can continuously verify them and they are not lost between messages or tool calls
+- Do not rely on hidden thinking for important information; record important conclusions, decisions, and key ideas in chat messages intended for users to review; otherwise, normal thinking tokens can be lost between messages
 - For requests with many edits or a large scope, first split the work into small atomic tasks, create or update a todo list, and execute from that list
 - Keep the todo list current while working: mark completed tasks, add newly discovered tasks, and avoid bundling unrelated changes into one task
 - If the repo starts clean, create atomic commit for each atomic task just after task completion
