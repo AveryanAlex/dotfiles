@@ -25,12 +25,6 @@
   nixcfg.inputs = inputs;
   nixcfg.username = "alex";
 
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd";
-    memoryPercent = 60;
-  };
-
   boot.kernelModules = [ "tcp_bbr" ];
 
   time.timeZone = "Europe/Moscow";

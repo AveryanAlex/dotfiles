@@ -2,6 +2,7 @@
 {
   imports = [
     ../../roles/core
+    ../../profiles/zram.nix
 
     # inputs.self.nixosModules.profiles.server.hass
     # inputs.self.nixosModules.profiles.server.pgsql

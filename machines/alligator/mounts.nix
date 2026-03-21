@@ -12,4 +12,11 @@
     device = "/dev/disk/by-uuid/FBC5-F521";
     fsType = "vfat";
   };
+
+  swapDevices = [
+    {
+      device = "/dev/alligator/swap";
+      discardPolicy = "both";
+    }
+  ];
 }

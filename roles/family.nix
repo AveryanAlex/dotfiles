@@ -9,6 +9,7 @@
     inputs.self.nixosModules.modules.nebula-averyan
     ./core
     ./family
+    ../profiles/zram.nix
     ../profiles/mining.nix
   ];
 

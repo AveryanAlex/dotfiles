@@ -2,6 +2,7 @@
 {
   imports = [
     ./core
+    ../profiles/zram.nix
   ];
 
   systemd = {
