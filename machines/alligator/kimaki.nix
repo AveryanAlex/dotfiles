@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  secrets,
-  ...
-}:
+{ config, pkgs, ... }:
 let
   kimakiVersion = "0.4.79";
   kimaki = pkgs.writeShellScriptBin "kimaki" ''
@@ -11,12 +6,6 @@ let
   '';
 in
 {
-  age.secrets.kimaki-bot-token = {
-    file = "${secrets}/creds/kimaki.age";
-    owner = "alex";
-    group = "users";
-  };
-
   hm.home.packages = [ kimaki ];
 
   hm.systemd.user.services.kimaki = {
@@ -27,8 +16,8 @@ in
     };
     Service = {
       Type = "simple";
-      EnvironmentFile = config.age.secrets.kimaki-bot-token.path;
-      ExecStart = "${kimaki}/bin/kimaki";
+      WorkingDirectory = "%h/projects";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'source ${config.age.secrets.bash-init.path} && exec ${kimaki}/bin/kimaki'";
       Restart = "on-failure";
       RestartSec = "10s";
     };
