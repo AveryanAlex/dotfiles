@@ -12,7 +12,7 @@
         MACHINE="whale"
       fi
 
-      cd /home/alex/projects/averyanalex/dotfiles
+      cd /home/alex/projects/AveryanAlex/dotfiles
       echo ===UPDATING FLAKE INPUT===
       nix flake update $APP
       echo ===REBUILDING HOST===

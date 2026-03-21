@@ -66,7 +66,7 @@
 
   programs.nh = {
     enable = true;
-    flake = "/home/alex/projects/averyanalex/dotfiles";
+    flake = "/home/alex/projects/AveryanAlex/dotfiles";
   };
 
   boot = {
