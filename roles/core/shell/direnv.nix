@@ -7,7 +7,10 @@
 
       nix-direnv.enable = true;
 
-      config.whitelist.prefix = [ "~/gt" ];
+      config.whitelist.prefix = [
+        "~/gt"
+        "~/.local/share/opencode/worktree"
+      ];
     };
 
     home.packages = [ pkgs.devenv ];
