@@ -86,6 +86,7 @@ When adding or migrating packages, first trace the current machine's import chai
 - Do not put Quadlet apps in `profiles/server/` or native NixOS services in `apps/` unless the host-coupling is intentional and obvious.
 - Do not commit unencrypted secrets or forget the matching `secrets.nix` ACL entry.
 - Do not assume new files are visible to Nix until they are tracked by git.
+- Do not build another machine's NixOS configuration locally; use `./deploy.sh <hostname> build` so the build happens on the target host.
 - Do not fall back to nix channels, legacy DHCP, or Avahi defaults; this repo is built around flakes, `systemd-networkd`, and `systemd-resolved`.
 
 ## COMMANDS
@@ -95,8 +96,11 @@ treefmt
 nix run nixpkgs#nixfmt-tree -- --ci
 nix flake check
 nh os build
-nixos-rebuild build --flake .#<hostname>
+nh os switch
+nix-instantiate --parse <path-to-file>.nix
+direnv allow
 ./deploy.sh <hostname> [switch|boot|test]
+./deploy.sh <hostname> build
 nix flake update --commit-lock-file
 ```
 
