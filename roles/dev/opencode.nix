@@ -9,13 +9,7 @@ let
   gpt-54-high = gpt-54 // {
     variant = "high";
   };
-  gpt-53codex = {
-    model = "openai/gpt-5.3-codex";
-  };
-  gpt-53codex-high = gpt-53codex // {
-    variant = "high";
-  };
-  gpt-53codex-medium = gpt-53codex // {
+  gpt-54-medium = gpt-54 // {
     variant = "medium";
   };
   gemini-pro = {
@@ -56,10 +50,10 @@ let
       alex = {
         orchestrator = gpt-54-high;
         oracle = gpt-54-xhigh;
-        librarian = gpt-53codex-medium;
-        explorer = gpt-53codex-medium;
+        librarian = gpt-54-medium;
+        explorer = gpt-54-medium;
         designer = gemini-pro-medium;
-        fixer = gpt-53codex-medium;
+        fixer = gpt-54-medium;
       };
     };
   };
