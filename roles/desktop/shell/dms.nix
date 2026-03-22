@@ -36,6 +36,35 @@ in
       };
     };
 
+    programs.niri.settings = {
+      layout = {
+        background-color = "transparent";
+
+        focus-ring = {
+          active.color = "#42a5f5";
+          inactive.color = "#8c9199";
+          urgent.color = "#f2b8b5";
+        };
+
+        border = {
+          active.color = "#42a5f5";
+          inactive.color = "#8c9199";
+          urgent.color = "#f2b8b5";
+        };
+
+        shadow.color = "#00000070";
+
+        tab-indicator = {
+          active.color = "#42a5f5";
+          inactive.color = "#8c9199";
+          urgent.color = "#f2b8b5";
+        };
+
+        insert-hint.display.color = "#42a5f580";
+      };
+
+    };
+
     programs.niri.settings.binds =
       let
         dms-ipc = args: {

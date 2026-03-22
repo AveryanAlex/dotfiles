@@ -57,6 +57,11 @@ in
         };
       };
 
+      gestures.dnd-edge-view-scroll = {
+        delay-ms = 70;
+        max-speed = 5000;
+      };
+
       binds =
         let
           spawn = cmd: {
