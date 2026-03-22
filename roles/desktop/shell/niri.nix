@@ -37,7 +37,9 @@ in
         };
         touchpad = {
           tap = true;
-          click-method = "clickfinger";
+          tap-button-map = "left-right-middle";
+          click-method = "button-areas";
+          middle-emulation = false;
         };
         focus-follows-mouse.enable = true;
       };
@@ -62,7 +64,8 @@ in
 
           # Window management
           "Mod+Q".action.close-window = { };
-          "Mod+F".action.fullscreen-window = { };
+          "Mod+F".action.maximize-column = { };
+          "Mod+Shift+F".action.fullscreen-window = { };
           "Mod+Shift+V".action.toggle-window-floating = { };
 
           # Focus (WASD)
@@ -70,6 +73,18 @@ in
           "Mod+D".action.focus-column-right = { };
           "Mod+W".action.focus-window-or-workspace-up = { };
           "Mod+S".action.focus-window-or-workspace-down = { };
+
+          # Focus (mouse wheel)
+          "Mod+WheelScrollUp" = {
+            cooldown-ms = 150;
+            action.focus-column-left = { };
+          };
+          "Mod+WheelScrollDown" = {
+            cooldown-ms = 150;
+            action.focus-column-right = { };
+          };
+          "Mod+WheelScrollLeft".action.focus-column-left = { };
+          "Mod+WheelScrollRight".action.focus-column-right = { };
 
           # Move (Shift+WASD)
           "Mod+Shift+A".action.move-column-left = { };
