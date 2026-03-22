@@ -33,6 +33,7 @@ in
             layout = "us,ru";
             options = "grp:caps_toggle,grp_led:caps";
           };
+          numlock = true;
           track-layout = "window";
         };
         touchpad = {
@@ -41,7 +42,9 @@ in
           click-method = "button-areas";
           middle-emulation = false;
         };
+        warp-mouse-to-focus.enable = true;
         focus-follows-mouse.enable = true;
+        workspace-auto-back-and-forth = true;
       };
 
       layout = {
