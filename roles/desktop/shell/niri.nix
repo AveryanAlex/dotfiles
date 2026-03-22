@@ -58,6 +58,13 @@ in
           spawn = cmd: {
             action.spawn = if builtins.isList cmd then cmd else [ cmd ];
           };
+          dms-ipc = args: {
+            action.spawn = [
+              "dms"
+              "ipc"
+            ]
+            ++ args;
+          };
         in
         {
           # Terminal
@@ -90,7 +97,7 @@ in
           # Overview
           "Mod+O".action.toggle-overview = { };
 
-          # Lock screen (DMS handles actual lock via Super+Alt+L)
+          # Lock screen
           "Mod+L".action.do-screen-transition = { };
 
           # Screenshots
@@ -104,6 +111,111 @@ in
             "-c"
             "grim - | satty -f -"
           ];
+
+          # DMS shell (via IPC)
+          "Mod+Space" = dms-ipc [
+            "spotlight"
+            "toggle"
+          ];
+          "Mod+N" = dms-ipc [
+            "notifications"
+            "toggle"
+          ];
+          "Mod+Comma" = dms-ipc [
+            "settings"
+            "toggle"
+          ];
+          "Mod+P" = dms-ipc [
+            "notepad"
+            "toggle"
+          ];
+          "Mod+V" = dms-ipc [
+            "clipboard"
+            "toggle"
+          ];
+          "Mod+X" = dms-ipc [
+            "powermenu"
+            "toggle"
+          ];
+          "Mod+M" = dms-ipc [
+            "processlist"
+            "toggle"
+          ];
+          "Super+Alt+L" = dms-ipc [
+            "lock"
+            "lock"
+          ];
+          "Mod+Alt+N" = {
+            action.spawn = [
+              "dms"
+              "ipc"
+              "night"
+              "toggle"
+            ];
+            allow-when-locked = true;
+          };
+
+          # Media keys (DMS OSD)
+          "XF86AudioRaiseVolume" = {
+            action.spawn = [
+              "dms"
+              "ipc"
+              "audio"
+              "increment"
+              "3"
+            ];
+            allow-when-locked = true;
+          };
+          "XF86AudioLowerVolume" = {
+            action.spawn = [
+              "dms"
+              "ipc"
+              "audio"
+              "decrement"
+              "3"
+            ];
+            allow-when-locked = true;
+          };
+          "XF86AudioMute" = {
+            action.spawn = [
+              "dms"
+              "ipc"
+              "audio"
+              "mute"
+            ];
+            allow-when-locked = true;
+          };
+          "XF86AudioMicMute" = {
+            action.spawn = [
+              "dms"
+              "ipc"
+              "audio"
+              "micmute"
+            ];
+            allow-when-locked = true;
+          };
+          "XF86MonBrightnessUp" = {
+            action.spawn = [
+              "dms"
+              "ipc"
+              "brightness"
+              "increment"
+              "5"
+              ""
+            ];
+            allow-when-locked = true;
+          };
+          "XF86MonBrightnessDown" = {
+            action.spawn = [
+              "dms"
+              "ipc"
+              "brightness"
+              "decrement"
+              "5"
+              ""
+            ];
+            allow-when-locked = true;
+          };
         }
         // (lib.listToAttrs (
           map (n: {

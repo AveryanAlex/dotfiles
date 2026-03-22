@@ -21,14 +21,9 @@
       # Systemd user service: auto-restarts on crash, restarts on config change
       systemd.enable = true;
 
-      # DMS keybinds injected directly into niri settings (no includes hack)
-      # Provides: Mod+Space (launcher), Mod+N (notifications), Mod+V (clipboard),
-      #   Mod+Comma (settings), Mod+P (notepad), Super+Alt+L (lock), Mod+X (power menu),
-      #   Mod+M (process list), Mod+Alt+N (night mode), XF86Audio*, XF86MonBrightness*
-      niri = {
-        enableKeybinds = true;
-        includes.enable = false;
-      };
+      # DMS keybinds are defined manually in niri.nix for full control.
+      # Do not enable enableKeybinds — it injects a hardcoded non-customizable set.
+      niri.includes.enable = false;
     };
   };
 }
