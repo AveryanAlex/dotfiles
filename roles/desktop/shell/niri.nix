@@ -97,6 +97,9 @@ in
           "Mod+C".action.center-column = { };
           "Mod+Minus".action.set-column-width = "-10%";
           "Mod+Equal".action.set-column-width = "+10%";
+          "Mod+Shift+Minus".action.set-window-height = "-10%";
+          "Mod+Shift+Equal".action.set-window-height = "+10%";
+          "Mod+Shift+R".action.switch-preset-window-height = { };
 
           # Overview
           "Mod+Z".action.toggle-overview = { };
