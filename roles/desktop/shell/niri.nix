@@ -6,7 +6,6 @@
 }:
 let
   niri-pkgs = inputs.niri-flake.packages.${pkgs.system};
-  dms-shell = inputs.dms.packages.${pkgs.system}.default;
 in
 {
   imports = [ inputs.niri-flake.nixosModules.niri ];
@@ -15,7 +14,7 @@ in
   #   - programs.niri.enable (session registration, xdg-utils)
   #   - hardware.graphics
   #   - xdg.portal (portal-gnome + niri configPackages)
-  #   - security.polkit + polkit-kde-agent service (disabled below — DMS handles polkit)
+  #   - security.polkit + polkit-kde-agent service
   #   - services.gnome.gnome-keyring
   #   - security.pam.services.swaylock
   #   - programs.dconf (mkDefault)
@@ -25,9 +24,6 @@ in
     enable = true;
     package = niri-pkgs.niri-unstable;
   };
-
-  # Disable niri-flake's polkit agent — DMS provides its own polkit integration
-  systemd.user.services.niri-flake-polkit.enable = false;
 
   hm = {
     programs.niri.settings = {
@@ -58,18 +54,6 @@ in
         let
           spawn = cmd: {
             action.spawn = if builtins.isList cmd then cmd else [ cmd ];
-          };
-          dms-ipc = args: {
-            action.spawn = [
-              "qs"
-              "ipc"
-              "-p"
-              "${dms-shell}/share/quickshell/dms"
-              "--any-display"
-              "--newest"
-              "call"
-            ]
-            ++ args;
           };
         in
         {
@@ -118,103 +102,6 @@ in
             "grim - | satty -f -"
           ];
 
-          # DMS shell (via IPC)
-          "Mod+Space" = dms-ipc [
-            "powermenu"
-            "toggle"
-          ];
-          "Mod+N" = dms-ipc [
-            "notifications"
-            "toggle"
-          ];
-          "Mod+Comma" = dms-ipc [
-            "settings"
-            "toggle"
-          ];
-          "Mod+P" = dms-ipc [
-            "notepad"
-            "toggle"
-          ];
-          "Mod+V" = dms-ipc [
-            "clipboard"
-            "toggle"
-          ];
-          "Mod+X" = dms-ipc [
-            "spotlight"
-            "toggle"
-          ];
-          "Mod+M" = dms-ipc [
-            "processlist"
-            "toggle"
-          ];
-          "Super+Alt+L" = dms-ipc [
-            "lock"
-            "lock"
-          ];
-          "Mod+Alt+N" =
-            (dms-ipc [
-              "night"
-              "toggle"
-            ])
-            // {
-              allow-when-locked = true;
-            };
-
-          # Media keys (DMS OSD)
-          "XF86AudioRaiseVolume" =
-            (dms-ipc [
-              "audio"
-              "increment"
-              "3"
-            ])
-            // {
-              allow-when-locked = true;
-            };
-          "XF86AudioLowerVolume" =
-            (dms-ipc [
-              "audio"
-              "decrement"
-              "3"
-            ])
-            // {
-              allow-when-locked = true;
-            };
-          "XF86AudioMute" =
-            (dms-ipc [
-              "audio"
-              "mute"
-            ])
-            // {
-              allow-when-locked = true;
-            };
-          "XF86AudioMicMute" =
-            (dms-ipc [
-              "audio"
-              "micmute"
-            ])
-            // {
-              allow-when-locked = true;
-            };
-          "XF86MonBrightnessUp" =
-            (dms-ipc [
-              "brightness"
-              "increment"
-              "5"
-              ""
-            ])
-            // {
-              allow-when-locked = true;
-            };
-          "XF86MonBrightnessDown" =
-            (dms-ipc [
-              "brightness"
-              "decrement"
-              "5"
-              ""
-            ])
-            // {
-              allow-when-locked = true;
-            };
         }
         // (lib.listToAttrs (
           map (n: {
