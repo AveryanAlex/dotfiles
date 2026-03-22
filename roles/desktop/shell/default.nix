@@ -21,8 +21,9 @@
     };
   };
 
-  # SSH agent
+  # SSH agent (disable gcr-ssh-agent from gnome-keyring to avoid conflict)
   programs.ssh.startAgent = true;
+  services.gnome.gcr-ssh-agent.enable = false;
 
   # XDG portals
   environment.pathsToLink = [

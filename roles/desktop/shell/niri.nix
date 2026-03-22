@@ -1,12 +1,19 @@
 {
   inputs,
   lib,
+  pkgs,
   ...
 }:
+let
+  niri-pkgs = inputs.niri-flake.packages.${pkgs.system};
+in
 {
   imports = [ inputs.niri-flake.nixosModules.niri ];
 
-  programs.niri.enable = true;
+  programs.niri = {
+    enable = true;
+    package = niri-pkgs.niri-unstable;
+  };
 
   hm = {
     programs.niri.settings = {
@@ -46,23 +53,23 @@
           # Window management
           "Mod+Q".action.close-window = { };
           "Mod+F".action.fullscreen-window = { };
-          "Mod+V".action.toggle-window-floating = { };
+          "Mod+Shift+V".action.toggle-window-floating = { };
 
           # Focus (WASD)
-          "Mod+A".action.focus-column = "left";
-          "Mod+D".action.focus-column = "right";
-          "Mod+W".action.focus-window-or-workspace = "up";
-          "Mod+S".action.focus-window-or-workspace = "down";
+          "Mod+A".action.focus-column-left = { };
+          "Mod+D".action.focus-column-right = { };
+          "Mod+W".action.focus-window-or-workspace-up = { };
+          "Mod+S".action.focus-window-or-workspace-down = { };
 
           # Move (Shift+WASD)
-          "Mod+Shift+A".action.move-column = "left";
-          "Mod+Shift+D".action.move-column = "right";
-          "Mod+Shift+W".action.move-window-up-or-to-workspace = "up";
-          "Mod+Shift+S".action.move-window-down-or-to-workspace = "down";
+          "Mod+Shift+A".action.move-column-left = { };
+          "Mod+Shift+D".action.move-column-right = { };
+          "Mod+Shift+W".action.move-window-up-or-to-workspace-up = { };
+          "Mod+Shift+S".action.move-window-down-or-to-workspace-down = { };
 
           # Column management
-          "Mod+E".action.consume-or-expel-window = "left";
-          "Mod+Shift+E".action.consume-or-expel-window = "right";
+          "Mod+E".action.consume-or-expel-window-left = { };
+          "Mod+Shift+E".action.consume-or-expel-window-right = { };
           "Mod+C".action.center-column = { };
           "Mod+Minus".action.set-column-width = "-10%";
           "Mod+Equal".action.set-column-width = "+10%";
