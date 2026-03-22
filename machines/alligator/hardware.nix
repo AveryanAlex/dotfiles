@@ -39,6 +39,18 @@
     "video=DP-1:3440x1440@144"
   ];
   hm = {
+    programs.niri.settings.outputs."DP-1" = {
+      mode = {
+        width = 3440;
+        height = 1440;
+        refresh = 144.0;
+      };
+      scale = 1.25;
+      position = {
+        x = 0;
+        y = 0;
+      };
+    };
     wayland.windowManager.sway.config.output.DP-1 = {
       mode = "3440x1440@144Hz";
       scale = "1.25";
