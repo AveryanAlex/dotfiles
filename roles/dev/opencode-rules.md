@@ -5,11 +5,12 @@
 - Projects follow `~/projects/<owner>/<name>` layout; use `origin` and `upstream` remotes for forks
 
 # Planning
-- If awaiting ANY user interaction, you MUST use the question tool instead of asking in plain chat, so the run is explicitly blocked on user input rather than looking like unfinished work that should be force-continued
-- Feel free to ask clarifying questions about requirements and architecture
+- If awaiting ANY user interaction, you MUST use the question tool instead of asking in plain chat. Todo continuation will force the run to continue if you stop with unfinished todo items and no explicit question-tool block on user input
+- Feel free to ask clarifying questions about requirements and architecture, but use the question tool whenever you need user input
 - Do not rely on hidden thinking for important information; record important conclusions, decisions, and key ideas in chat messages intended for users to review; otherwise, normal thinking tokens can be lost between messages
 - For requests with many edits or a large scope, first split the work into small atomic tasks, create or update a todo list, and execute from that list
 - Keep the todo list accurate at all times: unfinished todo items trigger forced continuation, so mark completed tasks immediately, add newly discovered tasks, and never leave stale entries behind
+- If you believe the work is finished, mark every completed todo item as completed before stopping. Do not leave finished work marked as pending or in_progress, or todo continuation will treat the run as unfinished and force more work
 - If the repo starts clean, create atomic commit for each atomic task just after task completion
 - Deviate from the plan when better solutions or suitable API contracts emerge — record the reason and update spec/plan instantly
 - Do NOT use git worktrees unless explicitly requested
