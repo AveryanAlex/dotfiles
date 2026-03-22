@@ -128,16 +128,9 @@ in
           "Mod+L".action.do-screen-transition = { };
 
           # Screenshots
-          "Print" = spawn [
-            "sh"
-            "-c"
-            ''grim -g "$(slurp)" - | satty -f -''
-          ];
-          "Shift+Print" = spawn [
-            "sh"
-            "-c"
-            "grim - | satty -f -"
-          ];
+          "Print".action.screenshot = { };
+          "Shift+Print".action.screenshot-screen = { };
+          "Mod+Print".action.screenshot-window = { };
 
         }
         // (lib.listToAttrs (
