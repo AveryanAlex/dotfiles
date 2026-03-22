@@ -12,7 +12,7 @@
     ./apps/firefox.nix
     ./apps/misc-a.nix
     ./apps/mpv.nix
-    ./gnome.nix
+    ./shell
     ./compat.nix
     ./deployapp.nix
     ./tuning.nix
