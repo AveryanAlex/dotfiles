@@ -15,7 +15,6 @@
 
       # Niri integration
       niri = {
-        enableKeybinds = true;
         enableSpawn = true;
         includes.filesToInclude = [
           "binds"
