@@ -1,6 +1,7 @@
 {
   secrets,
   pkgs,
+  lib,
   ...
 }:
 {
@@ -85,6 +86,8 @@
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   home-manager.users.alex = {
+    home.stateVersion = lib.mkForce "26.05";
+
     dconf.settings = {
       "org/virt-manager/virt-manager".xmleditor-enabled = true;
       "org/virt-manager/virt-manager/connections".uris = [
