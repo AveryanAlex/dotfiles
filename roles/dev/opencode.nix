@@ -34,30 +34,63 @@ let
     rev = "8cfba1752d794e67856dfca67cd424a7a776b0d3";
     hash = "sha256-OIarkXZfK18quKvoKIeotv7kdvDC1buKY/OfKuHQ0e8=";
   };
-  omoSlimSrc = pkgs.fetchFromGitHub {
-    owner = "alvinunreal";
-    repo = "oh-my-opencode-slim";
-    rev = "115bbac7e3cc76ec4cb20b51fe4c38bf3065b3a8"; # v0.8.3
-    hash = "sha256-ftRtXNnuEJvzNgSHR37X9ggwWMRTbZIFc0VOm4Hd4XE=";
-  };
 
-  ohMyOpencodeSlimVersion = "0.8.3";
-  superpowersVersion = "bf40c3813ad3e39cf22af85dd20589696e4a5e76";
-  ohMyOpencodeSlimConfig = {
-    "$schema" = "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json";
-    preset = "gpt";
-    fallback = {
-      enabled = false;
+  ohMyOpencodeVersion = "3.12.3";
+  ohMyOpencodeConfig = {
+    "$schema" =
+      "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json";
+    agents = {
+      # main orchestrator
+      sisyphus = gpt-54-high;
+      # main subagent coder
+      sisyphus-junior = gpt-54-medium;
+      # deep autonomous coder
+      hephaestus = gpt-54-high;
+      # plan writer
+      prometheus = gpt-54-high;
+      # architecture consultant
+      oracle = gpt-54-high;
+      # code reviewer
+      momus = gpt-54-high;
+      # plan gap analyzer
+      metis = gpt-54-high;
+      # plan executor
+      atlas = gpt-54-high;
+      # codebase explorer
+      explore = gpt-54-low;
+      # docs/OSS research
+      librarian = gpt-54-low;
+      # vision/screenshots
+      multimodal-looker = gemini-pro-medium;
     };
-    presets = {
-      gpt = {
-        orchestrator = gpt-54-high;
-        oracle = gpt-54-high;
-        librarian = gpt-54-low;
-        explorer = gpt-54-low;
-        designer = gemini-pro-medium;
-        fixer = gpt-54-medium;
-      };
+    categories = {
+      # frontend, UI/UX, design
+      visual-engineering = gemini-pro-medium;
+      # hard logic, complex architecture
+      ultrabrain = gpt-54-xhigh;
+      # autonomous research + execution
+      deep = gpt-54-high;
+      # creative approaches
+      artistry = gemini-pro-medium;
+      # trivial tasks
+      quick = gpt-54-low;
+      # general tasks, low effort
+      unspecified-low = gpt-54-medium;
+      # general tasks, high effort
+      unspecified-high = gpt-54-high;
+      # documentation, prose
+      writing = gpt-54-medium;
+    };
+    git_master = {
+      commit_footer = false;
+      include_co_authored_by = false;
+    };
+    tmux = {
+      enabled = true;
+      layout = "main-vertical";
+      main_pane_size = 60;
+      main_pane_min_width = 120;
+      agent_pane_min_width = 40;
     };
   };
 in
@@ -69,6 +102,7 @@ in
       enabled_providers = [
         "openai"
         "github-copilot"
+        # "anthropic"
       ];
       compaction = {
         auto = true;
@@ -81,14 +115,11 @@ in
         "cc-safety-net"
         "@simonwjackson/opencode-direnv"
         # "opencode-beads"
-        "oh-my-opencode-slim@${ohMyOpencodeSlimVersion}"
-        "superpowers@git+https://github.com/AveryanAlex/superpowers.git#${superpowersVersion}"
+        "oh-my-opencode@${ohMyOpencodeVersion}"
       ];
       agent = {
-        build = gpt-54-high;
-        plan = gpt-54-high;
-        explore.disable = true;
-        general.disable = true;
+        # explore.disable = true;
+        # general.disable = true;
       };
       model = "openai/gpt-5.4";
       small_model = "github-copilot/gpt-5-mini";
@@ -106,7 +137,7 @@ in
     rules = builtins.readFile ./opencode-rules.md;
   };
 
-  hm.xdg.configFile."opencode/oh-my-opencode-slim.json".text = builtins.toJSON ohMyOpencodeSlimConfig;
+  hm.xdg.configFile."opencode/oh-my-opencode.json".text = builtins.toJSON ohMyOpencodeConfig;
 
   hm.home.packages = with pkgs; [
     # mcp-nixos TODO: re-add once fixed
