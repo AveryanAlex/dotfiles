@@ -78,14 +78,8 @@ in
           "Mod+S".action.focus-window-or-workspace-down = { };
 
           # Focus (mouse wheel)
-          "Mod+WheelScrollUp" = {
-            cooldown-ms = 150;
-            action.focus-column-left = { };
-          };
-          "Mod+WheelScrollDown" = {
-            cooldown-ms = 150;
-            action.focus-column-right = { };
-          };
+          "Mod+WheelScrollUp".action.focus-column-left = { };
+          "Mod+WheelScrollDown".action.focus-column-right = { };
           "Mod+WheelScrollLeft".action.focus-column-left = { };
           "Mod+WheelScrollRight".action.focus-column-right = { };
 
