@@ -9,6 +9,7 @@
     ./gpg
     ./jq.nix
     ./misc-s.nix
+    ./nethogs.nix
     ./neovim
     ./ssh.nix
     ./tmux.nix
