@@ -50,17 +50,32 @@ in
       };
 
       layout = {
-        gaps = 8;
+        gaps = 4;
         border = {
           enable = true;
           width = 2;
         };
+        focus-ring.width = 2;
       };
 
       gestures.dnd-edge-view-scroll = {
         delay-ms = 70;
         max-speed = 5000;
       };
+
+      window-rules = [
+        {
+          geometry-corner-radius = {
+            top-left = 12.0;
+            top-right = 12.0;
+            bottom-right = 12.0;
+            bottom-left = 12.0;
+          };
+          clip-to-geometry = true;
+          tiled-state = true;
+          draw-border-with-background = false;
+        }
+      ];
 
       binds =
         let
