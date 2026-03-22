@@ -2,6 +2,11 @@
 {
   imports = [ inputs.dms.nixosModules.dank-material-shell ];
 
+  # DMS NixOS module provides:
+  #   - security.polkit (system polkit daemon)
+  #   - services.power-profiles-daemon
+  #   - services.accounts-daemon
+  #   - quickshell in environment.systemPackages
   programs.dank-material-shell.enable = true;
 
   hm = {
@@ -13,32 +18,17 @@
     programs.dank-material-shell = {
       enable = true;
 
-      # Niri integration
+      # Systemd user service: auto-restarts on crash, restarts on config change
+      systemd.enable = true;
+
+      # DMS keybinds injected directly into niri settings (no includes hack)
+      # Provides: Mod+Space (launcher), Mod+N (notifications), Mod+V (clipboard),
+      #   Mod+Comma (settings), Mod+P (notepad), Super+Alt+L (lock), Mod+X (power menu),
+      #   Mod+M (process list), Mod+Alt+N (night mode), XF86Audio*, XF86MonBrightness*
       niri = {
-        enableSpawn = true;
-        includes.filesToInclude = [
-          "binds"
-          "colors"
-          "layout"
-          "outputs"
-          "wpblur"
-          "alttab"
-        ];
+        enableKeybinds = true;
+        includes.enable = false;
       };
-
-      # Do NOT enable systemd — mutually exclusive with niri.enableSpawn
     };
-
   };
-
-  # Pre-seed empty DMS include files so niri can start before `dms setup`
-  systemd.tmpfiles.rules = [
-    "d /home/alex/.config/niri/dms 0755 alex users -"
-    "f /home/alex/.config/niri/dms/binds.kdl 0644 alex users -"
-    "f /home/alex/.config/niri/dms/colors.kdl 0644 alex users -"
-    "f /home/alex/.config/niri/dms/layout.kdl 0644 alex users -"
-    "f /home/alex/.config/niri/dms/outputs.kdl 0644 alex users -"
-    "f /home/alex/.config/niri/dms/wpblur.kdl 0644 alex users -"
-    "f /home/alex/.config/niri/dms/alttab.kdl 0644 alex users -"
-  ];
 }

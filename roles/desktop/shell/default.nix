@@ -25,27 +25,19 @@
   programs.ssh.startAgent = true;
   services.gnome.gcr-ssh-agent.enable = false;
 
-  # XDG portals
+  # XDG portals: niri-flake handles portal-gnome and configPackages automatically.
+  # We only set xdgOpenUsePortal and pathsToLink here.
   environment.pathsToLink = [
     "/share/xdg-desktop-portal"
     "/share/applications"
   ];
+  xdg.portal.xdgOpenUsePortal = true;
 
-  xdg.portal = {
-    xdgOpenUsePortal = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
-    config.niri = {
-      default = [
-        "gnome"
-        "gtk"
-      ];
-      "org.freedesktop.impl.portal.ScreenCast" = [ "niri" ];
-      "org.freedesktop.impl.portal.Screenshot" = [ "niri" ];
-    };
-  };
-
-  # dconf (needed by various apps)
+  # dconf (also set by niri-flake via mkDefault, kept explicit for other apps)
   programs.dconf.enable = true;
+
+  # Polkit: DMS NixOS module enables security.polkit.
+  # niri-flake starts polkit-kde-agent — disabled in niri.nix to avoid conflict with DMS polkit.
 
   # Valent (KDE Connect replacement)
   networking.firewall = rec {
@@ -59,7 +51,7 @@
   };
 
   hm = {
-    # Secrets
+    # gnome-keyring: also enabled by niri-flake NixOS module, kept explicit for clarity
     services.gnome-keyring.enable = true;
     services.gpg-agent.pinentry.package = pkgs.pinentry-gnome3;
 

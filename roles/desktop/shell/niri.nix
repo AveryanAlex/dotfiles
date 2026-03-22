@@ -10,10 +10,23 @@ in
 {
   imports = [ inputs.niri-flake.nixosModules.niri ];
 
+  # niri-flake NixOS module provides:
+  #   - programs.niri.enable (session registration, xdg-utils)
+  #   - hardware.graphics
+  #   - xdg.portal (portal-gnome + niri configPackages)
+  #   - security.polkit + polkit-kde-agent service (disabled below — DMS handles polkit)
+  #   - services.gnome.gnome-keyring
+  #   - security.pam.services.swaylock
+  #   - programs.dconf (mkDefault)
+  #   - fonts.enableDefaultPackages (mkDefault)
+  #   - home-manager.sharedModules with niri-flake config module
   programs.niri = {
     enable = true;
     package = niri-pkgs.niri-unstable;
   };
+
+  # Disable niri-flake's polkit agent — DMS provides its own polkit integration
+  systemd.user.services.niri-flake-polkit.enable = false;
 
   hm = {
     programs.niri.settings = {
@@ -77,7 +90,7 @@ in
           # Overview
           "Mod+O".action.toggle-overview = { };
 
-          # Lock screen (DMS handles actual lock via its keybinds)
+          # Lock screen (DMS handles actual lock via Super+Alt+L)
           "Mod+L".action.do-screen-transition = { };
 
           # Screenshots
