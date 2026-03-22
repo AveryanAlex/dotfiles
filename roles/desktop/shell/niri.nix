@@ -6,6 +6,7 @@
 }:
 let
   niri-pkgs = inputs.niri-flake.packages.${pkgs.system};
+  dms-shell = inputs.dms.packages.${pkgs.system}.default;
 in
 {
   imports = [ inputs.niri-flake.nixosModules.niri ];
@@ -60,8 +61,13 @@ in
           };
           dms-ipc = args: {
             action.spawn = [
-              "dms"
+              "qs"
               "ipc"
+              "-p"
+              "${dms-shell}/share/quickshell/dms"
+              "--any-display"
+              "--newest"
+              "call"
             ]
             ++ args;
           };
@@ -95,7 +101,7 @@ in
           "Mod+Equal".action.set-column-width = "+10%";
 
           # Overview
-          "Mod+O".action.toggle-overview = { };
+          "Mod+Z".action.toggle-overview = { };
 
           # Lock screen
           "Mod+L".action.do-screen-transition = { };
@@ -114,7 +120,7 @@ in
 
           # DMS shell (via IPC)
           "Mod+Space" = dms-ipc [
-            "spotlight"
+            "powermenu"
             "toggle"
           ];
           "Mod+N" = dms-ipc [
@@ -134,7 +140,7 @@ in
             "toggle"
           ];
           "Mod+X" = dms-ipc [
-            "powermenu"
+            "spotlight"
             "toggle"
           ];
           "Mod+M" = dms-ipc [
@@ -145,77 +151,70 @@ in
             "lock"
             "lock"
           ];
-          "Mod+Alt+N" = {
-            action.spawn = [
-              "dms"
-              "ipc"
+          "Mod+Alt+N" =
+            (dms-ipc [
               "night"
               "toggle"
-            ];
-            allow-when-locked = true;
-          };
+            ])
+            // {
+              allow-when-locked = true;
+            };
 
           # Media keys (DMS OSD)
-          "XF86AudioRaiseVolume" = {
-            action.spawn = [
-              "dms"
-              "ipc"
+          "XF86AudioRaiseVolume" =
+            (dms-ipc [
               "audio"
               "increment"
               "3"
-            ];
-            allow-when-locked = true;
-          };
-          "XF86AudioLowerVolume" = {
-            action.spawn = [
-              "dms"
-              "ipc"
+            ])
+            // {
+              allow-when-locked = true;
+            };
+          "XF86AudioLowerVolume" =
+            (dms-ipc [
               "audio"
               "decrement"
               "3"
-            ];
-            allow-when-locked = true;
-          };
-          "XF86AudioMute" = {
-            action.spawn = [
-              "dms"
-              "ipc"
+            ])
+            // {
+              allow-when-locked = true;
+            };
+          "XF86AudioMute" =
+            (dms-ipc [
               "audio"
               "mute"
-            ];
-            allow-when-locked = true;
-          };
-          "XF86AudioMicMute" = {
-            action.spawn = [
-              "dms"
-              "ipc"
+            ])
+            // {
+              allow-when-locked = true;
+            };
+          "XF86AudioMicMute" =
+            (dms-ipc [
               "audio"
               "micmute"
-            ];
-            allow-when-locked = true;
-          };
-          "XF86MonBrightnessUp" = {
-            action.spawn = [
-              "dms"
-              "ipc"
+            ])
+            // {
+              allow-when-locked = true;
+            };
+          "XF86MonBrightnessUp" =
+            (dms-ipc [
               "brightness"
               "increment"
               "5"
               ""
-            ];
-            allow-when-locked = true;
-          };
-          "XF86MonBrightnessDown" = {
-            action.spawn = [
-              "dms"
-              "ipc"
+            ])
+            // {
+              allow-when-locked = true;
+            };
+          "XF86MonBrightnessDown" =
+            (dms-ipc [
               "brightness"
               "decrement"
               "5"
               ""
-            ];
-            allow-when-locked = true;
-          };
+            ])
+            // {
+              allow-when-locked = true;
+            };
         }
         // (lib.listToAttrs (
           map (n: {
