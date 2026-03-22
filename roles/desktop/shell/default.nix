@@ -51,6 +51,10 @@
     # gnome-keyring: also enabled by niri-flake NixOS module, kept explicit for clarity
     services.gnome-keyring.enable = true;
     services.gpg-agent.pinentry.package = pkgs.pinentry-gnome3;
+    services.wl-clip-persist = {
+      enable = true;
+      clipboardType = "regular";
+    };
 
     # Packages
     home.packages = with pkgs; [
