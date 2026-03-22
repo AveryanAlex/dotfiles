@@ -27,6 +27,8 @@ in
 
   hm = {
     programs.niri.settings = {
+      prefer-no-csd = true;
+
       input = {
         keyboard = {
           xkb = {
