@@ -36,9 +36,6 @@
   # dconf (also set by niri-flake via mkDefault, kept explicit for other apps)
   programs.dconf.enable = true;
 
-  # Polkit: DMS NixOS module enables security.polkit.
-  # niri-flake starts polkit-kde-agent — disabled in niri.nix to avoid conflict with DMS polkit.
-
   # Valent (KDE Connect replacement)
   networking.firewall = rec {
     allowedTCPPortRanges = [
@@ -71,8 +68,6 @@
       # wireless diagnostics
       iw
 
-      # GTK3 theme for DMS dark/light toggle
-      adw-gtk3
     ];
 
     # Cursor
@@ -84,17 +79,8 @@
       size = 16;
     };
 
-    # GTK theme (DMS Matugen manages color overrides at runtime)
     gtk = {
       enable = true;
-      theme = {
-        name = "adw-gtk3-dark";
-        package = pkgs.adw-gtk3;
-      };
-      gtk4 = {
-        theme = null;
-        extraCss = "";
-      };
       iconTheme = {
         package = pkgs.adwaita-icon-theme;
         name = "Adwaita";

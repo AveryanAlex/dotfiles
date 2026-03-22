@@ -21,6 +21,21 @@ in
       inputs.dms.homeModules.niri
     ];
 
+    home.packages = [ pkgs.adw-gtk3 ];
+
+    # DMS Matugen manages runtime GTK color overrides, so keep the baseline
+    # GTK theme and GTK4 ownership with the rest of the DMS integration.
+    gtk = {
+      theme = {
+        name = "adw-gtk3-dark";
+        package = pkgs.adw-gtk3;
+      };
+      gtk4 = {
+        theme = null;
+        extraCss = "";
+      };
+    };
+
     programs.niri.settings.binds =
       let
         dms-ipc = args: {
