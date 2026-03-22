@@ -52,6 +52,14 @@
     #   };
     # };
     lanzaboote.url = "github:nix-community/lanzaboote";
+    niri-flake = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     mailserver = {
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
       # inputs.nixpkgs-25_05.follows = "nixpkgs-stable";
