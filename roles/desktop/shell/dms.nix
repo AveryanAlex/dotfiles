@@ -102,7 +102,7 @@ in
           "clipboard"
           "toggle"
         ];
-        "Mod+X" = dms-ipc [
+        "Mod+D" = dms-ipc [
           "spotlight"
           "toggle"
         ];
