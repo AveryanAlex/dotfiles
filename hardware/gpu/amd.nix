@@ -1,5 +1,11 @@
 { pkgs, ... }:
 {
+  nixpkgs.overlays = [
+    (final: prev: {
+      btop = prev.btop.override { rocmSupport = true; };
+    })
+  ];
+
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [

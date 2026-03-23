@@ -8,7 +8,6 @@
       xdg-ninja # clean home dir
       ncdu # disk usage analyze
       killall # kill all processes by name
-      btop # beautiful cpu, net, disk monitor
       htop # simple cpu monitor
       smartmontools # SMART data reader
       usbutils # lsusb
@@ -49,5 +48,8 @@
     };
   };
 
-  environment.systemPackages = [ pkgs.perf ];
+  environment.systemPackages = with pkgs; [
+    btop # beautiful cpu, net, disk monitor
+    perf
+  ];
 }
