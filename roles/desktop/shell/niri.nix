@@ -110,6 +110,10 @@ in
           # Move (Shift+WASZ)
           "Mod+Shift+A".action.move-column-left = { };
           "Mod+Shift+S".action.move-column-right = { };
+          "Mod+Shift+WheelScrollUp".action.move-column-left = { };
+          "Mod+Shift+WheelScrollDown".action.move-column-right = { };
+          "Mod+Shift+WheelScrollLeft".action.move-column-left = { };
+          "Mod+Shift+WheelScrollRight".action.move-column-right = { };
           "Mod+Shift+W".action.move-window-up-or-to-workspace-up = { };
           "Mod+Shift+Z".action.move-window-down-or-to-workspace-down = { };
 
