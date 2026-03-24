@@ -25,6 +25,8 @@ in
     package = niri-pkgs.niri-unstable;
   };
 
+  environment.systemPackages = [ niri-pkgs.xwayland-satellite-unstable ];
+
   hm = {
     programs.niri.settings = {
       prefer-no-csd = true;
