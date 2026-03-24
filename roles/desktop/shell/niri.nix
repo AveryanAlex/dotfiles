@@ -104,18 +104,20 @@ in
           # Focus (mouse wheel)
           "Mod+WheelScrollUp".action.focus-column-left = { };
           "Mod+WheelScrollDown".action.focus-column-right = { };
-          "Mod+WheelScrollLeft".action.focus-column-left = { };
-          "Mod+WheelScrollRight".action.focus-column-right = { };
+          "Mod+Shift+WheelScrollUp".action.focus-window-or-workspace-up = { };
+          "Mod+Shift+WheelScrollDown".action.focus-window-or-workspace-down = { };
 
           # Move (Shift+WASZ)
           "Mod+Shift+A".action.move-column-left = { };
           "Mod+Shift+S".action.move-column-right = { };
-          "Mod+Shift+WheelScrollUp".action.move-column-left = { };
-          "Mod+Shift+WheelScrollDown".action.move-column-right = { };
-          "Mod+Shift+WheelScrollLeft".action.move-column-left = { };
-          "Mod+Shift+WheelScrollRight".action.move-column-right = { };
           "Mod+Shift+W".action.move-window-up-or-to-workspace-up = { };
           "Mod+Shift+Z".action.move-window-down-or-to-workspace-down = { };
+
+          # Move (mouse wheel, Ctrl)
+          "Mod+Ctrl+WheelScrollUp".action.move-column-left = { };
+          "Mod+Ctrl+WheelScrollDown".action.move-column-right = { };
+          "Mod+Ctrl+Shift+WheelScrollUp".action.move-window-up-or-to-workspace-up = { };
+          "Mod+Ctrl+Shift+WheelScrollDown".action.move-window-down-or-to-workspace-down = { };
 
           # Column management
           "Mod+E".action.consume-or-expel-window-left = { };
