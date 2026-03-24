@@ -6,6 +6,7 @@
     signing = {
       signByDefault = true;
       key = "3C23C7BD99452036";
+      format = "openpgp";
     };
 
     ignores = [
