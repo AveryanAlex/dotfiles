@@ -14,6 +14,7 @@
       source-sans-pro
       font-awesome
       inter
+      adwaita-fonts
     ];
     fontconfig = {
       enable = true;
