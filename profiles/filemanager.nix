@@ -2,6 +2,10 @@
 {
   services.gvfs.enable = true;
   services.gnome.sushi.enable = true;
+  programs.nautilus-open-any-terminal = {
+    enable = true;
+    terminal = "alacritty";
+  };
   home-manager.users.alex = {
     home.packages = with pkgs; [
       nautilus
