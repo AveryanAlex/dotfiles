@@ -14,6 +14,7 @@
 - If the repo starts clean, create atomic commit for each atomic task just after task completion
 - Deviate from the plan when better solutions or suitable API contracts emerge — record the reason and update spec/plan instantly
 - Do NOT use git worktrees unless explicitly requested
+- Always use `.agents/{specs,plans}` only instead of `docs/superpowers` (keep using `.sisyphus` or other dirs if asked to) for specs and plans, never commit them
 
 # Git
 - If the repo already has multiple uncommitted changes, do not create commits automatically unless explicitly requested

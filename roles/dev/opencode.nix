@@ -1,86 +1,97 @@
 { pkgs, ... }:
 let
-  gpt-54 = {
-    model = "openai/gpt-5.4";
+  opus = {
+    model = "anthropic/claude-opus-4-6";
   };
-  gpt-54-xhigh = gpt-54 // {
-    variant = "xhigh";
+  opus-max = opus // {
+    variant = "max";
   };
-  gpt-54-high = gpt-54 // {
+  opus-high = opus // {
     variant = "high";
   };
-  gpt-54-medium = gpt-54 // {
+
+  gpt = {
+    model = "openai/gpt-5.4";
+  };
+  gpt-xhigh = gpt // {
+    variant = "xhigh";
+  };
+  gpt-high = gpt // {
+    variant = "high";
+  };
+  gpt-medium = gpt // {
     variant = "medium";
   };
-  gpt-54-low = gpt-54 // {
-    variant = "low";
+
+  gpt-codex = {
+    model = "openai/gpt-5.3-codex";
   };
+  gpt-codex-medium = gpt-codex // {
+    variant = "medium";
+  };
+
+  gpt-mini = {
+    model = "openai/gpt-5.4-mini";
+  };
+
   gemini-pro = {
     model = "github-copilot/gemini-3.1-pro-preview";
   };
-  gemini-pro-medium = gemini-pro // {
-    variant = "medium";
+  gemini-pro-high = gemini-pro // {
+    variant = "high";
   };
 
-  simplifySrc = pkgs.fetchFromGitHub {
-    owner = "brianlovin";
-    repo = "agent-config";
-    rev = "009b50c90c4a106e0c94565c4a5afd93343218c9";
-    hash = "sha256-WnxdSacRir2CvZpYX2I9zl1c7XRHBwoNEvoGJDtavr4=";
-  };
-  agentBrowserSrc = pkgs.fetchFromGitHub {
-    owner = "vercel-labs";
-    repo = "agent-browser";
-    rev = "8cfba1752d794e67856dfca67cd424a7a776b0d3";
-    hash = "sha256-OIarkXZfK18quKvoKIeotv7kdvDC1buKY/OfKuHQ0e8=";
-  };
+  ohMyOpencodePath = "/home/alex/projects/code-yeongyu/oh-my-openagent";
 
-  ohMyOpencodeVersion = "3.12.3";
   ohMyOpencodeConfig = {
     "$schema" =
       "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json";
     agents = {
       # main orchestrator
-      sisyphus = gpt-54-high;
+      sisyphus = opus-max;
       # main subagent coder
-      sisyphus-junior = gpt-54-medium;
+      # sisyphus-junior = gpt-medium;
       # deep autonomous coder
-      hephaestus = gpt-54-high;
+      hephaestus = gpt-codex-medium;
       # plan writer
-      prometheus = gpt-54-high;
+      prometheus = opus-max;
       # architecture consultant
-      oracle = gpt-54-high;
+      oracle = gpt-high;
       # code reviewer
-      momus = gpt-54-high;
+      momus = gpt-xhigh;
       # plan gap analyzer
-      metis = gpt-54-high;
+      metis = opus-max;
       # plan executor
-      atlas = gpt-54-high;
+      atlas = opus-high;
       # codebase explorer
-      explore = gpt-54-low;
+      explore = gpt-mini;
       # docs/OSS research
-      librarian = gpt-54-low;
+      librarian = gpt-mini;
       # vision/screenshots
-      multimodal-looker = gemini-pro-medium;
+      multimodal-looker = gpt-medium;
     };
     categories = {
       # frontend, UI/UX, design
-      visual-engineering = gemini-pro-medium;
+      visual-engineering = gemini-pro-high;
       # hard logic, complex architecture
-      ultrabrain = gpt-54-xhigh;
+      ultrabrain = gpt-xhigh;
       # autonomous research + execution
-      deep = gpt-54-high;
+      deep = gpt-codex-medium;
       # creative approaches
-      artistry = gemini-pro-medium;
+      artistry = gemini-pro-high;
       # trivial tasks
-      quick = gpt-54-low;
+      quick = gpt-mini;
       # general tasks, low effort
-      unspecified-low = gpt-54-medium;
+      unspecified-low = gpt-codex-medium;
       # general tasks, high effort
-      unspecified-high = gpt-54-high;
+      unspecified-high = opus-high;
       # documentation, prose
-      writing = gpt-54-medium;
+      writing = gpt-medium;
     };
+    disabled_hooks = [
+      "model-fallback"
+      "session-recovery"
+    ];
     git_master = {
       commit_footer = false;
       include_co_authored_by = false;
@@ -101,8 +112,8 @@ in
     settings = {
       enabled_providers = [
         "openai"
+        "anthropic"
         "github-copilot"
-        # "anthropic"
       ];
       compaction = {
         auto = true;
@@ -110,19 +121,19 @@ in
       };
       plugin = [
         "opencode-wakatime"
-        # "@mohak34/opencode-notifier@latest"
         "opencode-devcontainers"
         "cc-safety-net"
         "@simonwjackson/opencode-direnv"
-        # "opencode-beads"
-        "oh-my-opencode@${ohMyOpencodeVersion}"
+        "file://${ohMyOpencodePath}"
       ];
       agent = {
         # explore.disable = true;
         # general.disable = true;
       };
-      model = "openai/gpt-5.4";
-      small_model = "github-copilot/gpt-5-mini";
+      model = opus.model;
+      # small_model = "github-copilot/gpt-5-mini";
+      small_model = gpt-mini.model;
+      provider.anthropic.options.baseURL = "https://litellm.averyan.ru/v1";
       permission = {
         bash = {
           # "*" = "ask";
@@ -140,8 +151,7 @@ in
   hm.xdg.configFile."opencode/oh-my-opencode.json".text = builtins.toJSON ohMyOpencodeConfig;
 
   hm.home.packages = with pkgs; [
-    # mcp-nixos TODO: re-add once fixed
-    libnotify
+    mcp-nixos
     opencode-desktop
   ];
 }
