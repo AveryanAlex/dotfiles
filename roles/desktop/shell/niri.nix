@@ -48,7 +48,7 @@ in
         };
         warp-mouse-to-focus.enable = true;
         focus-follows-mouse.enable = true;
-        workspace-auto-back-and-forth = true;
+        # workspace-auto-back-and-forth = true;
       };
 
       layout = {
