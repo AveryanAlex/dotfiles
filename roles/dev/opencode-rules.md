@@ -36,7 +36,7 @@ These rules are not exhaustive — on code review, flag any issue you find, even
 - Empty catch blocks (`catch {}`, `.catch(() => {})`) must have a comment explaining why the error is safe to ignore; prefer `console.warn`/`tracing::warn!` for debuggability
 
 ## Comments
-- Never restate what the code does
+- Never just restate what the code does
 - Explain **why**: non-obvious intent, business context, workaround reasons
 - If code needs a "what" comment, clarify the code instead (better names, simpler structure)
 
