@@ -13,16 +13,10 @@
       # new to Codex.
       sandbox_mode = "danger-full-access";
 
-      model_provider = "cliproxyapi";
       model = "gpt-5.4"; # Or gpt-5, you can also use any of the models that we support.
       model_reasoning_effort = "high";
-      model_providers = {
-        cliproxyapi = {
-          name = "cliproxyapi";
-          base_url = "https://cli.machka.dev/v1";
-          wire_api = "responses";
-        };
-      };
+
+      openai_base_url = "https://litellm.averyan.ru/v1";
     };
   };
 }
