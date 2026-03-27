@@ -145,7 +145,7 @@ in
         services.dovecot2.sieve.extensions = [ "fileinto" ];
 
         mailserver = {
-          stateVersion = 3;
+          stateVersion = 4;
           enable = true;
           fqdn = "whale.averyan.ru";
           domains = [ "averyan.ru" ];
@@ -157,17 +157,18 @@ in
             # indexAttachments = true;
           };
 
-          vmailUserName = "vmail";
-          vmailGroupName = "vmail";
-
-          useFsLayout = true;
+          storage = {
+            owner = "vmail";
+            group = "vmail";
+            directoryLayout = "fs";
+          };
 
           x509 = {
             certificateFile = certDir + "/fullchain.pem";
             privateKeyFile = certDir + "/key.pem";
           };
 
-          dkimKeyBits = 2048;
+          dkim.defaults.keyLength = 2048;
 
           mailboxes = {
             Trash = {
@@ -192,7 +193,7 @@ in
             };
           };
 
-          loginAccounts = {
+          accounts = {
             "alex@averyan.ru" = {
               hashedPasswordFile = "/run/mail-passwords/alex";
               sieveScript = commonSieve;

@@ -62,8 +62,7 @@
     };
     mailserver = {
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
-      # inputs.nixpkgs-25_05.follows = "nixpkgs-stable";
-      # inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
