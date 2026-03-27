@@ -13,10 +13,16 @@
       # new to Codex.
       sandbox_mode = "danger-full-access";
 
-      model = "gpt-5.4"; # Or gpt-5, you can also use any of the models that we support.
+      model = "gpt-5.4";
+      model_provider = "litellm";
       model_reasoning_effort = "high";
 
-      openai_base_url = "https://litellm.averyan.ru/v1";
+      model_providers.litellm = {
+        name = "LiteLLM";
+        # base_url = "https://litellm.averyan.ru/v1";
+        env_key = "OPENAI_API_KEY";
+        wire_api = "responses";
+      };
     };
   };
 }
