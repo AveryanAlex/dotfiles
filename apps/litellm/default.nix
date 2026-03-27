@@ -17,14 +17,25 @@ in
         proxyWebsockets = true;
 
         extraConfig = ''
-          proxy_connect_timeout 300s;
-          proxy_send_timeout 300s;
-          proxy_read_timeout 300s;
-          send_timeout 300s;
+          proxy_connect_timeout 900s;
+          proxy_send_timeout 900s;
+          proxy_read_timeout 900s;
+          send_timeout 900s;
           proxy_buffering off;
         '';
       };
     };
+  };
+
+  networking.firewall.extraForwardRules = ''iifname pme-${name} oifname "nebula.averyan" accept'';
+  networking.nftables.tables."${name}-nat" = {
+    family = "inet";
+    content = ''
+      chain post {
+        type nat hook postrouting priority srcnat; policy accept;
+        iifname pme-${name} oifname "nebula.averyan" masquerade
+      }
+    '';
   };
 
   age.secrets.${name}.file = ./main.age;
