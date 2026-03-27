@@ -13,6 +13,7 @@
     ./openchamber.nix
     # ./kimaki.nix
     ./mounts.nix
+    ./ollama.nix
   ];
 
   system.stateVersion = "24.05";
