@@ -1,7 +1,7 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-03-12
-**Commit:** d97eea8
+**Generated:** 2026-03-27
+**Commit:** 58cdc34
 **Branch:** main
 
 ## OVERVIEW
@@ -15,8 +15,10 @@ Flake-based NixOS/Home Manager repo for multiple machines.
 .
 ├── machines/           # Per-host entrypoints; whale is the complex server outlier
 ├── roles/core/         # Base system, networking, podman, shell, hm wiring
-├── roles/desktop/      # Desktop stack; imports dev automatically
+├── roles/desktop/      # Desktop stack; imports core + dev automatically
 ├── roles/dev/          # Editor/tooling/AI configs for desktop machines
+├── roles/family/       # Family desktop for user `olga` (Russian locale)
+├── roles/server.nix    # Server hardening (watchdog, sysctl tuning)
 ├── profiles/           # Reusable host/service modules
 ├── profiles/server/    # Native NixOS services for whale
 ├── apps/               # Quadlet/Podman apps imported by whale
@@ -34,6 +36,8 @@ Flake-based NixOS/Home Manager repo for multiple machines.
 | Change cross-machine base behavior | `roles/core/` | Networking, podman, shell, system profile bus |
 | Change desktop behavior | `roles/desktop/` | Desktop already imports dev |
 | Change dev/editor tooling | `roles/dev/` | Packages, overlays, VS Code/Zed/AI configs |
+| Change family machine behavior | `roles/family/` + `roles/family.nix` | Targets user `olga`, Russian locale; only ferret uses this |
+| Change server base behavior | `roles/server.nix` | Imports core; adds watchdog, sysctl tuning, performance governor |
 | Add a native whale service | `profiles/server/<name>.nix` | Import it from `machines/whale/default.nix` |
 | Add a containerized whale service | `apps/<app>/` | See `apps/AGENTS.md` |
 | Change custom option modules | `modules/` | Auto-exported as `inputs.self.nixosModules.modules.*` |
@@ -61,6 +65,8 @@ When adding or migrating packages, first trace the current machine's import chai
 - `apps/AGENTS.md` — Quadlet app conventions, subnet registry, UID/GID schemes, networking extras
 - `machines/whale/AGENTS.md` — whale-only topology, mail container, DNS, ingress rules
 - `roles/core/AGENTS.md` — cross-machine networking/podman/shell invariants
+- `roles/dev/AGENTS.md` — editor, AI tool, and dev tooling conventions
+- `roles/desktop/AGENTS.md` — desktop stack, compositor, app/shell/game layout
 - `profiles/server/AGENTS.md` — native whale service patterns
 - `modules/AGENTS.md` — custom NixOS module conventions and module coupling
 
@@ -79,6 +85,8 @@ When adding or migrating packages, first trace the current machine's import chai
 - Persistent host data usually goes through `persist.state`, `persist.derivative`, or `persist.cache`. App containers are the main exception: they usually create `/persist/<app>/...` via `systemd.tmpfiles.rules`.
 - Hardware modules are referenced as `inputs.self.nixosModules.hardware.<name>`; custom modules as `inputs.self.nixosModules.modules.<name>`.
 - CI is split: GitHub Actions handles formatting and flake.lock updates; Woodpecker runs lint plus `nix flake check`.
+- `roles/family.nix` overrides `persist.username` to `olga` and locale to `ru_RU.UTF-8`; the family role is not `alex`-centric.
+- `roles/server.nix` imports core and adds server hardening: systemd watchdog, disabled sleep/suspend, BBR congestion control, and sysctl tuning.
 
 ## ANTI-PATTERNS
 
