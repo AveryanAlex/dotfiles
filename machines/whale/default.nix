@@ -1,5 +1,4 @@
 {
-  inputs,
   config,
   secrets,
   ...
@@ -94,10 +93,10 @@ in
     # ../../apps/cinemabot
     ../../apps/wakapi
     # ../../apps/s2sbot
-    ../../apps/reelsgen
+    # ../../apps/reelsgen
     ../../apps/nextcloud
     ../../apps/newsrelay
-    # ../../apps/litellm
+    ../../apps/litellm
     # ../../apps/mtproto
   ];
 
