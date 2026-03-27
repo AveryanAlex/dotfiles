@@ -5,12 +5,13 @@
     {
       type = "nfs";
       mountConfig = {
-        Options = "rw,noatime";
+        Options = "rw,noatime,soft,timeo=30,retrans=3";
+        TimeoutSec = 15;
       };
       what = "whale:/home/alex/tank";
       where = "/tank";
       after = [ "nebula@averyan.service" ];
-      wants = [ "nebula@averyan.service" ];
+      bindsTo = [ "nebula@averyan.service" ];
     }
   ];
 
