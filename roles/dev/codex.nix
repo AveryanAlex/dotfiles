@@ -19,7 +19,7 @@
 
       model_providers.litellm = {
         name = "LiteLLM";
-        # base_url = "https://litellm.averyan.ru/v1";
+        base_url = "https://litellm.averyan.ru/v1";
         env_key = "OPENAI_API_KEY";
         wire_api = "responses";
       };
