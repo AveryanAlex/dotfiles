@@ -5,6 +5,7 @@ general_settings:
   database_connection_pool_limit: 10
 
 litellm_settings:
+  drop_params: true
   request_timeout: 600
   set_verbose: false
   json_logs: true
