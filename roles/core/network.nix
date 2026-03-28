@@ -15,6 +15,7 @@
     enable = true;
 
     settings.Resolve = {
+      # TODO: consider switching to strict DNSSEC validation
       DNSSEC = "allow-downgrade";
       FallbackDNS = [ ];
       DNSOverTLS = true;

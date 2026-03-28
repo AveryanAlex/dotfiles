@@ -27,6 +27,7 @@ in
     };
   };
 
+  # TODO: restrict nebula egress to specific hosts/ports instead of full network access
   networking.firewall.extraForwardRules = ''iifname pme-${name} oifname "nebula.averyan" accept'';
   networking.nftables.tables."${name}-nat" = {
     family = "inet";

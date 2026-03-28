@@ -5,7 +5,7 @@
     config = {
       DOMAIN = "https://bw.neutrino.su";
       DATABASE_URL = "postgresql:///vaultwarden?host=/run/postgresql";
-      ROCKET_ADDRESS = "::";
+      ROCKET_ADDRESS = "::1";
       ROCKET_PORT = 8222;
     };
   };

@@ -40,6 +40,7 @@
     };
   };
 
+  # TODO: add MemoryMax to prevent OOM from destabilizing the host
   containers.docker = {
     autoStart = true;
     ephemeral = true;

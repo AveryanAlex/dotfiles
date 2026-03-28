@@ -25,6 +25,7 @@
     };
   };
 
+  # TODO: add MemoryMax to prevent OOM from destabilizing the host
   containers.haowp = {
     autoStart = true;
     ephemeral = true;
