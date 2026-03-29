@@ -43,6 +43,7 @@
   systemd.services.forgejo = {
     requires = [ "postgresql.service" ];
     after = [ "postgresql.service" ];
+    serviceConfig.MemoryMax = "2G";
   };
 
   # services.woodpecker-server = {

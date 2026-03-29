@@ -28,6 +28,8 @@ in
     };
   };
 
+  systemd.services.podman-picsavai.serviceConfig.MemoryMax = "16G";
+
   systemd.services.picsavbot = {
     after = [
       "network-online.target"

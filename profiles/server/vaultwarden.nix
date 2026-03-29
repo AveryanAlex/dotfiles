@@ -26,6 +26,7 @@
   systemd.services.vaultwarden = {
     requires = [ "postgresql.service" ];
     after = [ "postgresql.service" ];
+    serviceConfig.MemoryMax = "512M";
   };
 
   services.postgresql = {

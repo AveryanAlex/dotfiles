@@ -25,7 +25,8 @@
     };
   };
 
-  # TODO: add MemoryMax to prevent OOM from destabilizing the host
+  systemd.services."container@haowp".serviceConfig.MemoryMax = "4G";
+
   containers.haowp = {
     autoStart = true;
     ephemeral = true;

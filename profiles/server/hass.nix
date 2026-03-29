@@ -12,6 +12,7 @@
     {
       containers = {
         hass = {
+          serviceConfig.MemoryMax = "4G";
           containerConfig = {
             image = "ghcr.io/home-assistant/home-assistant:stable";
             autoUpdate = "registry";
@@ -42,6 +43,7 @@
         };
 
         hass-db = {
+          serviceConfig.MemoryMax = "2G";
           containerConfig = {
             image = "docker.io/library/postgres:17";
             autoUpdate = "registry";
@@ -59,6 +61,7 @@
         };
 
         esphome = {
+          serviceConfig.MemoryMax = "1G";
           containerConfig = {
             image = "ghcr.io/esphome/esphome:latest";
             autoUpdate = "registry";

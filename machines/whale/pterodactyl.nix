@@ -45,6 +45,8 @@ in
   age.secrets.pterodactyl-panel-passwords.file = "${secrets}/intpass/pterodactyl-panel.age";
   age.secrets.pterodactyl-redis-password.file = "${secrets}/intpass/pterodactyl-redis.age";
 
+  systemd.services."container@pterodactyl".serviceConfig.MemoryMax = "32G";
+
   containers.pterodactyl = {
     autoStart = true;
     ephemeral = true;

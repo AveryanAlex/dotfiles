@@ -58,6 +58,8 @@ in
     symlink = false;
   };
 
+  systemd.services."container@mailserver".serviceConfig.MemoryMax = "2G";
+
   containers.mailserver = {
     autoStart = true;
     ephemeral = true;

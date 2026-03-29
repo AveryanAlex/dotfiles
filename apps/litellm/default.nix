@@ -51,19 +51,22 @@ in
         podmanArgs = [ "--interface-name=pme-${name}" ];
       };
 
-      containers."${name}-db".containerConfig = {
-        image = "docker.io/library/postgres:17";
-        autoUpdate = "registry";
-        networks = [ networks.${name}.ref ];
-        ip = "10.90.95.3";
-        environments = {
-          POSTGRES_DB = name;
-          POSTGRES_USER = name;
-          POSTGRES_PASSWORD = name;
+      containers."${name}-db" = {
+        serviceConfig.MemoryMax = "2G";
+        containerConfig = {
+          image = "docker.io/library/postgres:17";
+          autoUpdate = "registry";
+          networks = [ networks.${name}.ref ];
+          ip = "10.90.95.3";
+          environments = {
+            POSTGRES_DB = name;
+            POSTGRES_USER = name;
+            POSTGRES_PASSWORD = name;
+          };
+          volumes = [ "/persist/${name}/db:/var/lib/postgresql/data" ];
+          gidMaps = [ "0:100000:100000" ];
+          uidMaps = [ "0:100000:100000" ];
         };
-        volumes = [ "/persist/${name}/db:/var/lib/postgresql/data" ];
-        gidMaps = [ "0:100000:100000" ];
-        uidMaps = [ "0:100000:100000" ];
       };
 
       containers."${name}-app" = {
@@ -84,6 +87,7 @@ in
           gidMaps = [ "0:100000:100000" ];
           uidMaps = [ "0:100000:100000" ];
         };
+        serviceConfig.MemoryMax = "4G";
         unitConfig = rec {
           Requires = [
             "${name}-db.service"

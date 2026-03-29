@@ -50,6 +50,7 @@
       SupplementaryGroups = [ "acme" ];
       Restart = "on-failure";
       RestartSec = "5s";
+      MemoryMax = "1G";
     };
   };
 

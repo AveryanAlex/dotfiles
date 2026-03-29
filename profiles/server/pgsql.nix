@@ -6,6 +6,8 @@
     extensions = with pkgs.postgresql_14.pkgs; [ pgvector ];
   };
 
+  systemd.services.postgresql.serviceConfig.MemoryMax = "12G";
+
   services.prometheus.exporters.postgres = {
     enable = true;
     runAsLocalSuperUser = true;

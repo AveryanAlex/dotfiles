@@ -20,6 +20,7 @@ in
     {
       containers = {
         ${name} = {
+          serviceConfig.MemoryMax = "2G";
           containerConfig = {
             image = "ghcr.io/averyanalex/newsrelay:latest";
             # autoUpdate = "registry";

@@ -28,6 +28,8 @@ in
     };
   };
 
+  systemd.services.podman-gayradarai.serviceConfig.MemoryMax = "8G";
+
   systemd.services.gayradarbot = {
     after = [
       "network-online.target"

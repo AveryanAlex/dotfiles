@@ -78,6 +78,8 @@ in
       };
     };
 
+    systemd.services.nginx.serviceConfig.MemoryMax = "4G";
+
     users.users.nginx.extraGroups = [ "acme" ];
 
     networking.firewall = {

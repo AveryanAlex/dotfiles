@@ -132,6 +132,7 @@ in
   systemd.services.matrix-synapse = {
     requires = [ "postgresql.service" ];
     after = [ "postgresql.service" ];
+    serviceConfig.MemoryMax = "2G";
     # serviceConfig.ReadWritePaths = ["/tank/matrix-media"];
   };
 

@@ -40,7 +40,8 @@
     };
   };
 
-  # TODO: add MemoryMax to prevent OOM from destabilizing the host
+  systemd.services."container@docker".serviceConfig.MemoryMax = "16G";
+
   containers.docker = {
     autoStart = true;
     ephemeral = true;

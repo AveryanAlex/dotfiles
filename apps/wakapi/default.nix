@@ -26,6 +26,7 @@ in
     {
       containers = {
         "${name}-db" = {
+          serviceConfig.MemoryMax = "2G";
           containerConfig = {
             image = "docker.io/library/postgres:17";
             autoUpdate = "registry";
@@ -43,6 +44,7 @@ in
         };
 
         "${name}-server" = {
+          serviceConfig.MemoryMax = "1G";
           containerConfig = {
             image = "ghcr.io/muety/wakapi:latest";
             autoUpdate = "registry";

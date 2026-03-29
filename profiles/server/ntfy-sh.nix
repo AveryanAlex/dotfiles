@@ -1,4 +1,6 @@
 {
+  systemd.services.ntfy-sh.serviceConfig.MemoryMax = "512M";
+
   services.ntfy-sh = {
     enable = true;
     settings = {

@@ -10,6 +10,7 @@
     {
       containers = {
         webtlo = {
+          serviceConfig.MemoryMax = "512M";
           containerConfig = {
             image = "docker.io/berkut174/webtlo:latest";
             autoUpdate = "registry";
