@@ -24,7 +24,7 @@ Use this tree for containerized services; native NixOS services belong in `profi
 - Explicit subnets use `10.90.X.0/24`. Static IPs follow `.2` = app, `.3` = db, `.4` = cache/secondary.
 - `reelsgen` is the one current no-subnet exception; do not copy that pattern unless the app really relies on Podman's auto-assigned network.
 - Use `autoUpdate = "registry"` on containers unless you are intentionally pinning or disabling updates, and explain the exception inline.
-- Set `serviceConfig.MemoryMax` for app containers. Avoid leaving large app containers unbounded.
+- Set `containerConfig.memory` (Podman native `--memory`) for app containers. Avoid leaving large app containers unbounded.
 - Web apps usually define their own nginx vhost here with `useACMEHost = "averyan.ru"`, `forceSSL = true`, and `proxyWebsockets = true`. `mtproto` is the raw-TCP exception.
 - Keep app secrets next to the app (`./*.age`), but still add their ACL entries to root `secrets.nix`.
 - Dependent sidecars use `unitConfig = rec { Requires = [...]; After = Requires; };`.

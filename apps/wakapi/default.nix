@@ -26,10 +26,10 @@ in
     {
       containers = {
         "${name}-db" = {
-          serviceConfig.MemoryMax = "2G";
           containerConfig = {
             image = "docker.io/library/postgres:17";
             autoUpdate = "registry";
+            memory = "2g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.86.3";
             volumes = [ "/persist/${name}/db:/var/lib/postgresql/data" ];
@@ -44,10 +44,10 @@ in
         };
 
         "${name}-server" = {
-          serviceConfig.MemoryMax = "1G";
           containerConfig = {
             image = "ghcr.io/muety/wakapi:latest";
             autoUpdate = "registry";
+            memory = "1g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.86.2";
             volumes = [ "/persist/${name}/data:/data" ];

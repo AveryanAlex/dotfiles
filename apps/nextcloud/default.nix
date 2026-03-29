@@ -42,6 +42,7 @@ in
           containerConfig = {
             image = "docker.io/library/mariadb:12";
             autoUpdate = "registry";
+            memory = "4g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.88.3";
             volumes = [ "/persist/${name}/db:/var/lib/mysql" ];
@@ -54,23 +55,18 @@ in
             gidMaps = [ "0:100000:100000" ];
             uidMaps = [ "0:100000:100000" ];
           };
-          serviceConfig = {
-            MemoryMax = "4G";
-          };
         };
 
         "${name}-redis" = {
           containerConfig = {
             image = "docker.io/valkey/valkey:8";
             autoUpdate = "registry";
+            memory = "2g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.88.4";
             volumes = [ "/persist/${name}/redis:/data" ];
             gidMaps = [ "0:100000:100000" ];
             uidMaps = [ "0:100000:100000" ];
-          };
-          serviceConfig = {
-            MemoryMax = "2G";
           };
         };
 
@@ -78,6 +74,7 @@ in
           containerConfig = {
             image = "lscr.io/linuxserver/nextcloud:latest";
             autoUpdate = "registry";
+            memory = "8g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.88.2";
             volumes = [
@@ -113,9 +110,6 @@ in
               "${name}-redis.service"
             ];
             After = Requires;
-          };
-          serviceConfig = {
-            MemoryMax = "8G";
           };
         };
       };

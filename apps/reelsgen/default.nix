@@ -10,6 +10,7 @@ let
           containerConfig = {
             image = "ghcr.io/hao-vc/video-workflow:${branch}";
             autoUpdate = "registry";
+            memory = "20g";
             networks = [ config.virtualisation.quadlet.networks.${name}.ref ];
             volumes = [
               "${config.age.secrets."${name}-gsa".path}:/etc/gsa.json:ro"
@@ -25,7 +26,6 @@ let
           };
           serviceConfig = {
             Environment = [ "REGISTRY_AUTH_FILE=${config.environment.sessionVariables.REGISTRY_AUTH_FILE}" ];
-            MemoryMax = "20G";
           };
         };
       })

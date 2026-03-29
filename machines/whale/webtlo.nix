@@ -10,10 +10,10 @@
     {
       containers = {
         webtlo = {
-          serviceConfig.MemoryMax = "512M";
           containerConfig = {
             image = "docker.io/berkut174/webtlo:latest";
             autoUpdate = "registry";
+            memory = "512m";
             volumes = [ "/var/lib/webtlo:/data" ];
             networks = [ networks.webtlo.ref ];
             ip = "10.90.26.2";

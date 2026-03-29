@@ -20,9 +20,9 @@ in
     {
       containers = {
         ${name} = {
-          serviceConfig.MemoryMax = "2G";
           containerConfig = {
             image = "ghcr.io/averyanalex/newsrelay:latest";
+            memory = "2g";
             # autoUpdate = "registry";
             networks = [ networks.${name}.ref ];
             ip = "10.90.89.2";

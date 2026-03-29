@@ -20,14 +20,12 @@ in
           containerConfig = {
             image = "docker.io/searxng/searxng:latest";
             autoUpdate = "registry";
+            memory = "8g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.87.3";
             volumes = [ "/persist/${name}/searxng:/etc/searxng" ];
             gidMaps = [ "0:100000:100000" ];
             uidMaps = [ "0:100000:100000" ];
-          };
-          serviceConfig = {
-            MemoryMax = "8G";
           };
         };
 
@@ -35,6 +33,7 @@ in
           containerConfig = {
             image = "ghcr.io/averyanalex/cinemabot:latest";
             autoUpdate = "registry";
+            memory = "2g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.87.2";
             volumes = [ "/persist/${name}/data:/app/data" ];
@@ -50,7 +49,6 @@ in
             After = Requires;
           };
           serviceConfig = {
-            MemoryMax = "2G";
             Environment = [ "REGISTRY_AUTH_FILE=${config.environment.sessionVariables.REGISTRY_AUTH_FILE}" ];
           };
         };

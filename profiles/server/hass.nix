@@ -12,10 +12,10 @@
     {
       containers = {
         hass = {
-          serviceConfig.MemoryMax = "4G";
           containerConfig = {
             image = "ghcr.io/home-assistant/home-assistant:stable";
             autoUpdate = "registry";
+            memory = "4g";
             networks = [ networks.hass.ref ];
             ip = "10.90.18.2";
             volumes = [
@@ -43,10 +43,10 @@
         };
 
         hass-db = {
-          serviceConfig.MemoryMax = "2G";
           containerConfig = {
             image = "docker.io/library/postgres:17";
             autoUpdate = "registry";
+            memory = "2g";
             networks = [ networks.hass.ref ];
             ip = "10.90.18.3";
             volumes = [ "/persist/hass/db:/var/lib/postgresql/data" ];
@@ -61,10 +61,10 @@
         };
 
         esphome = {
-          serviceConfig.MemoryMax = "1G";
           containerConfig = {
             image = "ghcr.io/esphome/esphome:latest";
             autoUpdate = "registry";
+            memory = "1g";
             volumes = [
               "/etc/localtime:/etc/localtime:ro"
               "/var/lib/esphome:/config"

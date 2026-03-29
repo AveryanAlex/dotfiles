@@ -26,10 +26,8 @@ in
           ip = "10.90.94.2";
           environmentFiles = [ config.age.secrets.${name}.path ];
           gidMaps = [ "0:100000:100000" ];
+          memory = "256m";
           uidMaps = [ "0:100000:100000" ];
-        };
-        serviceConfig = {
-          MemoryMax = "256M";
         };
       };
     };

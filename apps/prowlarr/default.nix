@@ -28,6 +28,7 @@ in
           containerConfig = {
             image = "lscr.io/linuxserver/prowlarr:latest";
             autoUpdate = "registry";
+            memory = "1g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.93.2";
             volumes = [ "/persist/${name}/config:/config" ];
@@ -47,9 +48,6 @@ in
               "1000:1000:1"
               "1001:101001:98999"
             ];
-          };
-          serviceConfig = {
-            MemoryMax = "1G";
           };
         };
       };

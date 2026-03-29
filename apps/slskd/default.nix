@@ -26,6 +26,7 @@ in
           containerConfig = {
             image = "docker.io/slskd/slskd:latest";
             autoUpdate = "registry";
+            memory = "2g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.91.2";
             volumes = [
@@ -49,9 +50,6 @@ in
               "1000:1000:1"
               "1001:101001:98999"
             ];
-          };
-          serviceConfig = {
-            MemoryMax = "2G";
           };
         };
       };

@@ -28,6 +28,7 @@ in
           containerConfig = {
             image = "ghcr.io/linuxserver-labs/prarr:lidarr-plugins";
             autoUpdate = "registry";
+            memory = "8g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.90.2";
             volumes = [
@@ -51,9 +52,6 @@ in
               "1000:1000:1"
               "1001:101001:98999"
             ];
-          };
-          serviceConfig = {
-            MemoryMax = "8G";
           };
         };
       };
