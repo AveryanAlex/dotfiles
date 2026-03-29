@@ -112,6 +112,25 @@ direnv allow
 nix flake update --commit-lock-file
 ```
 
+## USEFUL LINKS
+
+| Resource | URL |
+|----------|-----|
+| NixOS options search | https://search.nixos.org/options |
+| NixOS packages search | https://search.nixos.org/packages |
+| Home Manager options | https://home-manager-options.extranix.com |
+| Nix language reference | https://nix.dev/manual/nix/latest/language/ |
+| nixpkgs manual | https://nixos.org/manual/nixpkgs/unstable/ |
+| quadlet-nix (Podman Quadlet) | https://github.com/SEIAROTg/quadlet-nix |
+| ragenix (agenix secrets) | https://github.com/yaxitech/ragenix |
+| impermanence | https://github.com/nix-community/impermanence |
+| Simple NixOS Mailserver | https://nixos-mailserver.readthedocs.io |
+| niri (compositor) | https://github.com/YaLTeR/niri/wiki |
+| systemd.exec(5) (MemoryMax, etc.) | https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html |
+| systemd-nspawn(1) (NixOS containers) | https://www.freedesktop.org/software/systemd/man/latest/systemd-nspawn.html |
+| nftables wiki | https://wiki.nftables.org |
+| Podman docs | https://docs.podman.io |
+
 ## NOTES
 
 - `nix flake check` is still useful, but the repo currently has known non-blocking noise around `colmenaHive` and some existing machine warnings.
