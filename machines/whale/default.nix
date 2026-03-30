@@ -187,7 +187,7 @@ in
     "git.neutrino.su" = makeHost "http://whale:3826" // {
       useACMEHost = "neutrino.su";
     };
-    "bw.neutrino.su" = makeHost "http://whale:8222" // {
+    "bw.neutrino.su" = makeHost "http://127.0.0.1:8222" // {
       useACMEHost = "neutrino.su";
     };
 

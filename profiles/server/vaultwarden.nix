@@ -5,7 +5,7 @@
     config = {
       DOMAIN = "https://bw.neutrino.su";
       DATABASE_URL = "postgresql:///vaultwarden?host=/run/postgresql";
-      ROCKET_ADDRESS = "::1";
+      ROCKET_ADDRESS = "127.0.0.1";
       ROCKET_PORT = 8222;
     };
   };
@@ -21,7 +21,7 @@
       mode = "u=rwx,g=,o=";
     }
   ];
-  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 8222 ];
+  # networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 8222 ];
 
   systemd.services.vaultwarden = {
     requires = [ "postgresql.service" ];

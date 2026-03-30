@@ -5,12 +5,12 @@ general_settings:
   database_connection_pool_limit: 10
 
 litellm_settings:
-  drop_params: true
-  request_timeout: 600
+  drop_params: false
+  request_timeout: 3600
   set_verbose: false
   json_logs: true
 
-  max_internal_user_budget: 10
+  max_internal_user_budget: 1000
   internal_user_budget_duration: "1mo"
 
   default_internal_user_params:
