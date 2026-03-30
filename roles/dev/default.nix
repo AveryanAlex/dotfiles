@@ -9,6 +9,7 @@
     ./zed.nix
     ./nbconvert.nix
     ./docker.nix
+    ./npm.nix
     ./opencode.nix
     ./codex.nix
     ./claudecode.nix
