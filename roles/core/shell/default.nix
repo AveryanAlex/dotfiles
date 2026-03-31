@@ -14,6 +14,7 @@
     ./ssh.nix
     ./tmux.nix
     ./tmux-auto.nix
+    ./zellij.nix
     ./zoxide.nix
     ./zsh
   ];

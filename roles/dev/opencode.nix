@@ -75,7 +75,7 @@ in
       model = opus.model;
       # small_model = "github-copilot/gpt-5-mini";
       small_model = gpt-mini.model;
-      provider.anthropic.options.baseURL = "https://litellm.averyan.ru/v1";
+      provider.anthropic.options.baseURL = "https://claude.machka.dev/v1";
       permission = {
         bash = {
           # "*" = "ask";
