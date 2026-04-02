@@ -3,6 +3,7 @@
     enable = true;
     enableZshIntegration = false;
     settings = {
+      default_mode = "locked";
       default_shell = "zsh";
       serialization_interval = 60;
       scroll_buffer_size = 100000;
