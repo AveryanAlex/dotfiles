@@ -83,7 +83,8 @@
           vm.surendrajat.apklab
 
           # Tools
-          # pkgs.vscode-extensions.github.copilot-chat
+          # (vm.github.copilot-chat.override { meta.license = [ ]; })
+          pkgs.vscode-extensions.github.copilot-chat
           vm.bierner.emojisense
           # vm.bito.bito
           vm.earshinov.sort-lines-by-selection
