@@ -38,4 +38,10 @@
     enable = true;
     configFile = "${secrets}/xray/whale.age";
   };
+
+  systemd.services.xray.serviceConfig = {
+    MemoryMax = "256M";
+    Restart = "on-failure";
+    RestartSec = "10";
+  };
 }

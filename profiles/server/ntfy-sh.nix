@@ -1,5 +1,9 @@
 {
-  systemd.services.ntfy-sh.serviceConfig.MemoryMax = "512M";
+  systemd.services.ntfy-sh.serviceConfig = {
+    MemoryMax = "512M";
+    Restart = "on-failure";
+    RestartSec = "10";
+  };
 
   services.ntfy-sh = {
     enable = true;

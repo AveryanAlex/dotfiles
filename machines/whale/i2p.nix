@@ -15,6 +15,8 @@
     yggdrasil.enable = true;
   };
 
+  systemd.services.i2pd.serviceConfig.MemoryMax = "512M";
+
   networking.firewall.allowedTCPPorts = [
     17283
     15728

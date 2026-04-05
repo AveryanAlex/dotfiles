@@ -12,6 +12,7 @@
   systemd.services.qdrant.serviceConfig = {
     DynamicUser = lib.mkForce false;
     User = "qdrant";
+    MemoryMax = "4G";
   };
 
   users.users.qdrant = {

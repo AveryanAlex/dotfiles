@@ -20,6 +20,8 @@
     hostname = "matomo.neutrino.su";
   };
 
+  systemd.services.phpfpm-matomo.serviceConfig.MemoryMax = "512M";
+
   persist.state.dirs = [
     {
       directory = "/var/lib/matomo";

@@ -19,6 +19,7 @@ let
       User = "infinitytgadminsbot-${name}";
       Group = "infinitytgadminsbot-${name}";
 
+      MemoryMax = "128M";
       Restart = "on-failure";
       RestartSec = "5s";
 

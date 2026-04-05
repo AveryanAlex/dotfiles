@@ -29,6 +29,7 @@ in
       EnvironmentFile = config.age.secrets.memexpert.path;
       ExecStart = "${memexpert-pkg}/bin/memexpert";
 
+      MemoryMax = "6G";
       Restart = "on-failure";
       RestartSec = "5s";
 

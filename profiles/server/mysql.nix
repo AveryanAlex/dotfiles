@@ -10,6 +10,8 @@
     };
   };
 
+  systemd.services.mysql.serviceConfig.MemoryMax = "2G";
+
   persist.state.dirs = [
     {
       directory = "/var/lib/mysql";

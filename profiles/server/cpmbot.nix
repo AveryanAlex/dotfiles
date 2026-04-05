@@ -28,6 +28,7 @@ in
       EnvironmentFile = config.age.secrets.cpmbot.path;
       ExecStart = "${cpmbot-pkg}/bin/cpmbot";
       Restart = "always";
+      RestartSec = "10";
 
       # Capabilities
       CapabilityBoundingSet = "";

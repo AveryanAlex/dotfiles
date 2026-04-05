@@ -84,6 +84,7 @@ in
     };
   };
 
+  systemd.services.syncthing.serviceConfig.MemoryMax = "8G";
   # systemd.services.syncthing.after = ["multi-user.target"];
 
   persist.state.homeDirs = [ ".config/syncthing" ];

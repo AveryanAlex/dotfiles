@@ -13,6 +13,7 @@
       Group = "users";
       MemoryMax = "8G";
       Restart = "always";
+      RestartSec = "10";
     };
   };
 

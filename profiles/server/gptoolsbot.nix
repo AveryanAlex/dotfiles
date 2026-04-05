@@ -22,6 +22,7 @@ in
       User = "gptoolsbot";
       Group = "gptoolsbot";
 
+      MemoryMax = "512M";
       Restart = "on-failure";
       RestartSec = "5s";
 

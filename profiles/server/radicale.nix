@@ -18,6 +18,12 @@
     };
   };
 
+  systemd.services.radicale.serviceConfig = {
+    MemoryMax = "128M";
+    Restart = "on-failure";
+    RestartSec = "10";
+  };
+
   users.users.radicale.uid = 984;
   users.groups.radicale.gid = 984;
 

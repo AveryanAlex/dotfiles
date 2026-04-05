@@ -51,6 +51,7 @@ in
       EnvironmentFile = config.age.secrets.picsav.path;
       ExecStart = "${picsavbot-pkg}/bin/picsavbot";
 
+      MemoryMax = "256M";
       Restart = "on-failure";
       RestartSec = "5s";
 

@@ -51,6 +51,7 @@ in
       EnvironmentFile = config.age.secrets.gayradar.path;
       ExecStart = "${gayradarbot-pkg}/bin/gayradarbot";
 
+      MemoryMax = "256M";
       Restart = "on-failure";
       RestartSec = "5s";
 

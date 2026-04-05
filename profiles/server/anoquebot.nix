@@ -30,6 +30,7 @@ in
       EnvironmentFile = config.age.secrets.anoquebot.path;
       ExecStart = "${anoquebot-pkg}/bin/anoquebot";
 
+      MemoryMax = "256M";
       Restart = "on-failure";
       RestartSec = "5s";
 

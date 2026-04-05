@@ -16,7 +16,11 @@
     environmentFile = config.age.secrets.searx.path;
   };
 
-  systemd.services.searx.serviceConfig.MemoryMax = "1G";
+  systemd.services.searx.serviceConfig = {
+    MemoryMax = "1G";
+    Restart = "on-failure";
+    RestartSec = "10";
+  };
 
   age.secrets.searx.file = "${secrets}/creds/searx.age";
 }

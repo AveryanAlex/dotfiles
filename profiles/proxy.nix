@@ -1,4 +1,10 @@
 {
+  systemd.services.privoxy.serviceConfig = {
+    MemoryMax = "64M";
+    Restart = "on-failure";
+    RestartSec = "10";
+  };
+
   services.privoxy = {
     enable = true;
     settings = {

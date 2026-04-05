@@ -69,6 +69,7 @@ in
 
     systemd.services."nebula@averyan".before = [ "network-online.target" ];
     systemd.services."nebula@averyan".wantedBy = [ "network-online.target" ];
+    systemd.services."nebula@averyan".serviceConfig.MemoryMax = "256M";
 
     services.nebula.networks.averyan = {
       package = pkgs.nebula;

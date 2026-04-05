@@ -25,6 +25,7 @@ in
       EnvironmentFile = config.age.secrets.aplusmuz-music-scraper.path;
       ExecStart = "${aplusmuz-music-scraper-pkg}/bin/bot";
       Restart = "always";
+      RestartSec = "10";
 
       # Capabilities
       CapabilityBoundingSet = "";
