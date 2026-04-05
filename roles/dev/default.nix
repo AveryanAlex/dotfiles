@@ -4,7 +4,10 @@
   ...
 }:
 let
-  # Some editors still hardcode pyright-langserver, so keep a compat shim.
+  # Some integrations still hardcode pyright binaries, so keep compat shims.
+  pyrightCompat = pkgs.writeShellScriptBin "pyright" ''
+    exec ${pkgs.basedpyright}/bin/basedpyright "$@"
+  '';
   pyrightLangserverCompat = pkgs.writeShellScriptBin "pyright-langserver" ''
     exec ${pkgs.basedpyright}/bin/basedpyright-langserver "$@"
   '';
@@ -43,6 +46,7 @@ in
 
   hm.home.packages = [
     ((import ./python.nix) pkgs)
+    pyrightCompat
     pyrightLangserverCompat
   ]
   ++ (with pkgs; [
