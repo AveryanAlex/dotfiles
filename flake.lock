@@ -1326,11 +1326,11 @@
         "systems": "systems_14"
       },
       "locked": {
-        "lastModified": 1774395131,
-        "narHash": "sha256-r04o1ryhnIsoEhl0HlV+um1BuV4TTpB95YMwlfIrnwo=",
+        "lastModified": 1774709753,
+        "narHash": "sha256-VEphBwlCzEnUEsxYuDQL5aZo5l8bRMoInsD57VMCGfE=",
         "owner": "averyanalex",
         "repo": "memexpert",
-        "rev": "eded9657fc2e78522ea76678c3e0830607bd7504",
+        "rev": "3c043caf80790e2012d600483baed04536926ac1",
         "type": "github"
       },
       "original": {
