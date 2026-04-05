@@ -18,6 +18,7 @@ let
     requires = [ "postgresql.service" ];
     serviceConfig = {
       Restart = "always";
+      RestartSec = "10";
 
       # Capabilities
       CapabilityBoundingSet = "";
@@ -54,7 +55,7 @@ in
     environment = {
       DATABASE_URL = "postgresql:///bvilove";
     };
-    serviceConfig = {
+    serviceConfig = commonService.serviceConfig // {
       User = "bvilove";
       Group = "bvilove";
       EnvironmentFile = config.age.secrets.bvilove.path;
@@ -67,7 +68,7 @@ in
     environment = {
       DATABASE_URL = "postgresql:///bvilovebeta";
     };
-    serviceConfig = {
+    serviceConfig = commonService.serviceConfig // {
       User = "bvilovebeta";
       Group = "bvilovebeta";
       EnvironmentFile = config.age.secrets.bvilove-beta.path;
