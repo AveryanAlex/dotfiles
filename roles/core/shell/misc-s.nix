@@ -41,6 +41,7 @@
       iperf
       rmlint
       immich-cli
+      jq
     ];
 
     home.sessionVariables = {
