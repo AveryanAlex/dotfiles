@@ -37,7 +37,7 @@ let
     preset = "alex";
     presets = {
       alex = {
-        orchestrator = opus-max;
+        orchestrator = gpt-xhigh;
         oracle = gpt-xhigh;
         librarian = gpt-mini;
         explorer = gpt-mini;
