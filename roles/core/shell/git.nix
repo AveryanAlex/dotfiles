@@ -11,7 +11,7 @@
 
     ignores = [
       ".sisyphus"
-      ".agents"
+      # ".agents"
       ".stignore"
       ".superpowers"
       ".wakatime-project"
