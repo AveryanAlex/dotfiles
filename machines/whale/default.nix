@@ -106,6 +106,8 @@ in
 
   virtualisation.libvirtd.enable = true;
   users.users.alex.extraGroups = [ "libvirtd" ];
+  # libvirt's secret encryption needs TPM2 or persistent host key, neither available on impermanence
+  systemd.services.virt-secret-init-encryption.enable = false;
 
   system.stateVersion = "22.05";
 
