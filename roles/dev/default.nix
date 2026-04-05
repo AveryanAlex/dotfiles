@@ -3,6 +3,12 @@
   inputs,
   ...
 }:
+let
+  # Some editors still hardcode pyright-langserver, so keep a compat shim.
+  pyrightLangserverCompat = pkgs.writeShellScriptBin "pyright-langserver" ''
+    exec ${pkgs.basedpyright}/bin/basedpyright-langserver "$@"
+  '';
+in
 {
   imports = [
     ./vscode.nix
@@ -37,6 +43,7 @@
 
   hm.home.packages = [
     ((import ./python.nix) pkgs)
+    pyrightLangserverCompat
   ]
   ++ (with pkgs; [
     nixd
