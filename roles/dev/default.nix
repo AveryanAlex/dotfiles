@@ -95,6 +95,8 @@ in
     beads
     dolt
     gastown
+
+    rtk
   ]);
 
   hm.home.sessionVariables.CARGO_TARGET_DIR = "/home/alex/.cargo/target";
@@ -104,5 +106,9 @@ in
   persist.cache.homeDirs = [
     ".local/share/uv"
     ".cargo/target"
+  ];
+
+  hm.home.sessionPath = [
+    "/home/alex/.cargo/bin"
   ];
 }
