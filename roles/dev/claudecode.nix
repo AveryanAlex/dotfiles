@@ -38,6 +38,7 @@ in
         "superpowers@claude-plugins-official" = true;
         "context7@claude-plugins-official" = true;
         "code-simplifier@claude-plugins-official" = true;
+        "pyright-lsp@claude-plugins-official" = true;
         # "safety-net@cc-marketplace" = true;
       };
       permissions.additionalDirectories = [ "~/.cargo" ];
