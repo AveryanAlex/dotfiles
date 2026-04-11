@@ -34,12 +34,11 @@
     # ./opensnitch.nix
   ];
 
-  # Enable transparent proxy for outbound traffic on desktops
+  # Enable transparent proxy for outbound traffic on desktops. Server and
+  # family machines run mihomo as a plain listener without host interception
+  # -- only desktops have tproxy.output.enable set, so mihomo only sees
+  # intercepted traffic here.
   networking.tproxy.output.enable = true;
-  services.xray-tproxy = {
-    enable = true;
-    configFile = "${secrets}/xray/desktop.age";
-  };
 
   # networking.firewall.allowedTCPPorts = [18298];
 

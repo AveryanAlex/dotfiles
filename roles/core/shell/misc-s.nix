@@ -52,5 +52,6 @@
   environment.systemPackages = with pkgs; [
     btop # beautiful cpu, net, disk monitor
     perf
+    tcpdump # packet sniffer (root tool, needs to be in system PATH for sudo)
   ];
 }

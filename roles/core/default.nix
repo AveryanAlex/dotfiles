@@ -11,11 +11,13 @@
     inputs.self.nixosModules.modules.persist
     inputs.self.nixosModules.modules.tproxy
     inputs.self.nixosModules.modules.xray
+    inputs.self.nixosModules.modules.mihomo
     ./network.nix
     ./podman.nix
     ./hosts.nix
     ./shell
     ./system.nix
+    ./mihomo.nix
   ];
 
   # Core system configuration

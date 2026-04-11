@@ -268,57 +268,63 @@ in
       linkConfig.RequiredForOnline = false;
     };
 
-    "40-wgav" = {
-      routes = [
-        {
-          Destination = "::/0";
-          Type = "unreachable";
-          Table = 700;
-        }
-      ];
-      routingPolicyRules = [
-        {
-          FirewallMark = 700;
-          Table = 700;
-        }
-        # {
-        #   routingPolicyRuleConfig = {
-        #     User = "alex";
-        #     Table = 700;
-        #   };
-        # }
-      ];
-    };
-    "40-wgavbr" = {
-      networkConfig = {
-        IPv6AcceptRA = false;
-        ConfigureWithoutCarrier = true;
+    # wgav (Averyan VPN WireGuard) commented out 2026-04-11: dead many years
+    /*
+      "40-wgav" = {
+        routes = [
+          {
+            Destination = "::/0";
+            Type = "unreachable";
+            Table = 700;
+          }
+        ];
+        routingPolicyRules = [
+          {
+            FirewallMark = 700;
+            Table = 700;
+          }
+          # {
+          #   routingPolicyRuleConfig = {
+          #     User = "alex";
+          #     Table = 700;
+          #   };
+          # }
+        ];
       };
-      linkConfig.RequiredForOnline = false;
-      routingPolicyRules = [
-        {
-          IncomingInterface = "wgavbr";
-          Table = 700;
-        }
-      ];
-    };
+      "40-wgavbr" = {
+        networkConfig = {
+          IPv6AcceptRA = false;
+          ConfigureWithoutCarrier = true;
+        };
+        linkConfig.RequiredForOnline = false;
+        routingPolicyRules = [
+          {
+            IncomingInterface = "wgavbr";
+            Table = 700;
+          }
+        ];
+      };
+    */
   };
 
-  age.secrets.wg-key-averyan.file = "${secrets}/wireguard/whale.age";
-  networking.wireguard.interfaces = {
-    wgav = {
-      allowedIPsAsRoutes = false;
-      privateKeyFile = config.age.secrets.wg-key-averyan.path;
-      peers = [
-        {
-          publicKey = "h+76esMcmPLakUN/1vDlvGGf2Ovmw/IDKKxFtqXCdm8=";
-          allowedIPs = [ "0.0.0.0/0" ];
-          endpoint = "vpn.averyan.ru:51820";
-          persistentKeepalive = 25;
-        }
-      ];
+  # wgav (Averyan VPN WireGuard) commented out 2026-04-11: dead many years
+  /*
+    age.secrets.wg-key-averyan.file = "${secrets}/wireguard/whale.age";
+    networking.wireguard.interfaces = {
+      wgav = {
+        allowedIPsAsRoutes = false;
+        privateKeyFile = config.age.secrets.wg-key-averyan.path;
+        peers = [
+          {
+            publicKey = "h+76esMcmPLakUN/1vDlvGGf2Ovmw/IDKKxFtqXCdm8=";
+            allowedIPs = [ "0.0.0.0/0" ];
+            endpoint = "vpn.averyan.ru:51820";
+            persistentKeepalive = 25;
+          }
+        ];
+      };
     };
-  };
+  */
 
   services.yggdrasil.settings = {
     Peers = [
@@ -422,8 +428,9 @@ in
       extraForwardRules = ''
         iifname yggbr oifname ygg0 accept
         iifname ygg0 oifname yggbr accept
-        iifname wgavbr oifname wgav accept
-        iifname wgav oifname wgavbr accept
+        # wgav dead 2026-04-11:
+        # iifname wgavbr oifname wgav accept
+        # iifname wgav oifname wgavbr accept
       '';
     };
 
@@ -432,7 +439,7 @@ in
       ${wan}.interfaces = [ "${physWan}" ];
       vms.interfaces = [ ];
       yggbr.interfaces = [ ];
-      wgavbr.interfaces = [ ];
+      # wgav dead 2026-04-11: wgavbr.interfaces = [ ];
     };
 
     interfaces = {
@@ -462,50 +469,53 @@ in
           prefixLength = 64;
         }
       ];
-      wgavbr = {
-        ipv4 = {
-          addresses = [
-            {
-              address = "10.8.8.1";
-              prefixLength = 24;
-            }
-          ];
-          routes = [
-            {
-              address = "10.8.8.0";
-              prefixLength = 24;
-              options.table = "700";
-            }
-          ];
+      # wgav (Averyan VPN WireGuard) commented out 2026-04-11: dead many years
+      /*
+        wgavbr = {
+          ipv4 = {
+            addresses = [
+              {
+                address = "10.8.8.1";
+                prefixLength = 24;
+              }
+            ];
+            routes = [
+              {
+                address = "10.8.8.0";
+                prefixLength = 24;
+                options.table = "700";
+              }
+            ];
+          };
         };
-      };
-      wgav = {
-        ipv4 = {
-          addresses = [
-            {
-              address = "10.8.8.2";
-              prefixLength = 32;
-            }
-          ];
-          routes = [
-            {
-              address = "10.8.7.0";
-              prefixLength = 24;
-            }
-            {
-              address = "10.8.7.0";
-              prefixLength = 24;
-              options.table = "700";
-            }
-            {
-              address = "0.0.0.0";
-              prefixLength = 0;
-              via = "10.8.7.1";
-              options.table = "700";
-            }
-          ];
+        wgav = {
+          ipv4 = {
+            addresses = [
+              {
+                address = "10.8.8.2";
+                prefixLength = 32;
+              }
+            ];
+            routes = [
+              {
+                address = "10.8.7.0";
+                prefixLength = 24;
+              }
+              {
+                address = "10.8.7.0";
+                prefixLength = 24;
+                options.table = "700";
+              }
+              {
+                address = "0.0.0.0";
+                prefixLength = 0;
+                via = "10.8.7.1";
+                options.table = "700";
+              }
+            ];
+          };
         };
-      };
+      */
     };
   };
 }
