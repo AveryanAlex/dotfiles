@@ -64,7 +64,7 @@ in
       plugin = [
         "opencode-wakatime"
         "opencode-devcontainers"
-        "cc-safety-net"
+        # "cc-safety-net"
         "@simonwjackson/opencode-direnv"
         "oh-my-opencode-slim@${ohMyOpencodeSlimVersion}"
       ];
