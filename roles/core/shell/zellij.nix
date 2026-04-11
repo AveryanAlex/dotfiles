@@ -16,27 +16,29 @@ in
       pane_frames = false;
       on_force_close = "detach";
       show_startup_tips = false;
+      web_server = true;
       web_server_ip = "127.0.0.1";
       web_server_port = zellijWebPort;
+      web_sharing = "on";
     };
   };
 
-  hm.systemd.user.services.zellij-web = {
-    Unit = {
-      Description = "Zellij web server";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
-    };
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.zellij}/bin/zellij web";
-      Restart = "on-failure";
-      RestartSec = "10s";
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
+  # hm.systemd.user.services.zellij-web = {
+  #   Unit = {
+  #     Description = "Zellij web server";
+  #     After = [ "network-online.target" ];
+  #     Wants = [ "network-online.target" ];
+  #   };
+  #   Service = {
+  #     Type = "simple";
+  #     ExecStart = "${pkgs.zellij}/bin/zellij web";
+  #     Restart = "on-failure";
+  #     RestartSec = "10s";
+  #   };
+  #   Install = {
+  #     WantedBy = [ "default.target" ];
+  #   };
+  # };
 
   hm.systemd.user.services.zellij-web-http-proxy = {
     Unit = {
