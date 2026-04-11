@@ -1,4 +1,7 @@
+{ lib, pkgs, ... }:
 {
+  hm.home.packages = [ pkgs.git-xet ];
+
   hm.programs.git = {
     enable = true;
     lfs.enable = true;
@@ -24,6 +27,11 @@
 
       core.editor = "micro";
       init.defaultBranch = "main";
+      lfs."customtransfer.xet" = {
+        path = lib.getExe pkgs.git-xet;
+        args = "transfer";
+        concurrent = true;
+      };
       pull.rebase = true;
       push.autoSetupRemote = true;
     };
