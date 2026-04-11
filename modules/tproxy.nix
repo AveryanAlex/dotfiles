@@ -72,13 +72,21 @@ let
       tcpPorts,
       udpPorts,
     }:
+    # `meta mark set <mark>` after tproxy is required for forwarded traffic:
+    # without the mark, the kernel's route lookup after prerouting picks the
+    # normal forward path and the packet egresses via wan0 instead of being
+    # delivered to the transparent socket. With the mark, the fwmark policy
+    # rule selects table <table> which has `local default dev lo`, so the
+    # packet is classified as local and delivered to mihomo's socket. The
+    # mark is idempotent for the output-reinject path (mark is already set
+    # by the output chain there).
     (optionalString (tcpPorts != [ ]) ''
-      meta nfproto ipv4 meta l4proto tcp tcp dport { ${portList tcpPorts} } tproxy ip to :${toString cfg.port}
-      meta nfproto ipv6 meta l4proto tcp tcp dport { ${portList tcpPorts} } tproxy ip6 to :${toString cfg.port}
+      meta nfproto ipv4 meta l4proto tcp tcp dport { ${portList tcpPorts} } tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark}
+      meta nfproto ipv6 meta l4proto tcp tcp dport { ${portList tcpPorts} } tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark}
     '')
     + (optionalString (udpPorts != [ ]) ''
-      meta nfproto ipv4 meta l4proto udp udp dport { ${portList udpPorts} } tproxy ip to :${toString cfg.port}
-      meta nfproto ipv6 meta l4proto udp udp dport { ${portList udpPorts} } tproxy ip6 to :${toString cfg.port}
+      meta nfproto ipv4 meta l4proto udp udp dport { ${portList udpPorts} } tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark}
+      meta nfproto ipv6 meta l4proto udp udp dport { ${portList udpPorts} } tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark}
     '');
 
   # Output-hook marking lines: set fwmark on matching packets so `type route`
@@ -327,6 +335,14 @@ in
           type filter hook prerouting priority mangle; policy accept;
           ip daddr @bypass4 return
           ip6 daddr @bypass6 return
+          # Packets destined to any of the host's own addresses (WAN, LAN,
+          # lo, nebula, bridges) must skip tproxy so locally-hosted services
+          # like nginx reverse-proxies work. Without this, e.g. a container
+          # dialling whale's own WAN IP gets caught by tproxy, delivered to
+          # mihomo, mihomo tries to DIRECT-dial the same IP and refuses with
+          # `reject loopback connection`. The fib check uses the kernel's
+          # FIB to detect local addresses dynamically.
+          fib daddr type local return
           ${optionalString hasForward ''
             iifname { ${quoteList cfg.forward.interfaces} } jump redirect_forward
           ''}
@@ -411,13 +427,19 @@ in
     );
 
     # NixOS's reverse-path filter (inet nixos-fw rpfilter) drops packets whose
-    # source address doesn't match the iif via FIB check. Our output-hook
-    # re-injection sends packets with a LAN source address back in through lo,
-    # which the FIB lookup does not accept as a valid reverse path. Whitelist
-    # our marked traffic so those legitimate re-injected packets make it to
-    # the tproxy delivery step.
-    networking.firewall.extraReversePathFilterRules = mkIf hasOutput ''
-      iifname "lo" meta mark ${toString cfg.mark} accept
+    # source address doesn't match the iif via FIB check. TWO cases need the
+    # exemption:
+    #   - Output-hook re-injection: packet comes in on lo with a LAN source,
+    #     FIB check rejects.
+    #   - Forwarded interfaces: after our redirect_forward sets the tproxy
+    #     mark, the fib check uses the marked lookup which returns `local dev
+    #     lo` and sees iif=lo, but the actual packet iif is e.g. dockerbr, so
+    #     the check fails.
+    # Both cases are caught by matching the mark alone, regardless of iif.
+    # Safe because the mark is only set by our own nft rules, never by
+    # external sources.
+    networking.firewall.extraReversePathFilterRules = mkIf (hasOutput || hasForward) ''
+      meta mark ${toString cfg.mark} accept
     '';
   };
 }
