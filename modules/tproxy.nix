@@ -212,7 +212,16 @@ let
     in
     ''socket cgroupv2 level ${toString level} "${g}" return'';
 
-  mkSkipUser = u: ''meta skuid "${u}" return'';
+  # Resolve username to numeric UID at Nix eval time so nft doesn't need
+  # /etc/passwd at rule-load time (fails in build sandbox and on fresh boot
+  # before user creation). Accepts strings (looked up via config.users.users)
+  # or ints (used directly).
+  mkSkipUser =
+    u:
+    let
+      uid = if builtins.isInt u then u else config.users.users.${u}.uid;
+    in
+    "meta skuid ${toString uid} return  # ${toString u}";
 
   # Shared option set used by both output and each forward.<iface> submodule.
   # Each field: null = inherit defaults, [] = clear, explicit = override.
@@ -324,7 +333,7 @@ in
         description = "Default source CIDRs inherited unless overridden. Empty = match any source.";
       };
       skipUsers = mkOption {
-        type = types.listOf types.str;
+        type = types.listOf (types.either types.str types.int);
         default = [ ];
         description = "Default users whose outbound traffic bypasses tproxy. Inherited by output unless overridden.";
       };
@@ -394,13 +403,13 @@ in
       enable = mkEnableOption "transparent proxy for this host's own outbound traffic";
 
       skipUsers = mkOption {
-        type = types.nullOr (types.listOf types.str);
+        type = types.nullOr (types.listOf (types.either types.str types.int));
         default = null;
         example = literalExpression ''[ "yggdrasil" ]'';
         description = "Users bypassing tproxy. null = use defaults.skipUsers. [] = clear.";
       };
       extraSkipUsers = mkOption {
-        type = types.listOf types.str;
+        type = types.listOf (types.either types.str types.int);
         default = [ ];
         description = "Extra users appended after resolving skipUsers.";
       };
