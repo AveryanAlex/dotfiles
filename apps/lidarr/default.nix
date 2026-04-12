@@ -16,7 +16,7 @@ in
     };
   };
 
-  networking.tproxy.forward.interfaces = [ "pme-${name}" ];
+  networking.tproxy.forward."pme-${name}" = { };
 
   virtualisation.quadlet =
     let

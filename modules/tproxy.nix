@@ -13,12 +13,14 @@
 }:
 let
   inherit (lib)
+    attrNames
     concatMapStringsSep
     concatStringsSep
     filter
     hasInfix
     length
     literalExpression
+    mapAttrsToList
     mkEnableOption
     mkIf
     mkMerge
@@ -29,6 +31,13 @@ let
     ;
 
   cfg = config.networking.tproxy;
+
+  # Port spec type: accepts integers (single port) and strings (ranges like
+  # "8000-9000"). Rendered to nftables set syntax: { 80, 443, 8000-9000 }
+  portSpec = types.listOf (types.either types.port types.str);
+
+  renderPort = p: if builtins.isInt p then toString p else p;
+  renderPorts = ps: concatStringsSep ", " (map renderPort ps);
 
   defaultBypass4 = [
     "0.0.0.0/8"
@@ -59,54 +68,69 @@ let
   v6Of = filter isV6;
 
   commaList = xs: concatStringsSep ", " xs;
-  portList = xs: concatStringsSep ", " (map toString xs);
-  quoteList = xs: concatStringsSep ", " (map (s: ''"${s}"'') xs);
 
-  hasForward = cfg.forward.interfaces != [ ];
+  hasForward = cfg.forward != { };
   hasOutput = cfg.output.enable;
+  forwardIfaces = attrNames cfg.forward;
 
-  # tproxy statement only works in prerouting. Emit one line per (family, l4)
-  # because `inet` tables need an explicit `ip`/`ip6` qualifier on tproxy.
-  mkTproxyLines =
+  # Resolve null-means-inherit for output
+  outputTcpPorts = if cfg.output.tcpPorts != null then cfg.output.tcpPorts else cfg.defaults.tcpPorts;
+  outputUdpPorts = if cfg.output.udpPorts != null then cfg.output.udpPorts else cfg.defaults.udpPorts;
+  outputSrcCIDRs = if cfg.output.srcCIDRs != null then cfg.output.srcCIDRs else cfg.defaults.srcCIDRs;
+
+  # Resolve per-interface config
+  resolveIface =
+    name:
+    let
+      ic = cfg.forward.${name};
+    in
+    {
+      tcpPorts = if ic.tcpPorts != null then ic.tcpPorts else cfg.defaults.tcpPorts;
+      udpPorts = if ic.udpPorts != null then ic.udpPorts else cfg.defaults.udpPorts;
+      srcCIDRs = if ic.srcCIDRs != null then ic.srcCIDRs else cfg.defaults.srcCIDRs;
+    };
+
+  # Generate tproxy rules for a given resolved config. `meta mark set` after
+  # tproxy is required for forwarded traffic: without it the kernel's route
+  # lookup picks the forward path instead of local delivery.
+  mkTproxyRules =
     {
       tcpPorts,
       udpPorts,
     }:
-    # `meta mark set <mark>` after tproxy is required for forwarded traffic:
-    # without the mark, the kernel's route lookup after prerouting picks the
-    # normal forward path and the packet egresses via wan0 instead of being
-    # delivered to the transparent socket. With the mark, the fwmark policy
-    # rule selects table <table> which has `local default dev lo`, so the
-    # packet is classified as local and delivered to mihomo's socket. The
-    # mark is idempotent for the output-reinject path (mark is already set
-    # by the output chain there).
+    let
+      tcpDport = if tcpPorts == [ ] then "" else " tcp dport { ${renderPorts tcpPorts} }";
+      udpDport = if udpPorts == [ ] then "" else " udp dport { ${renderPorts udpPorts} }";
+    in
     (optionalString (tcpPorts != [ ]) ''
-      meta nfproto ipv4 meta l4proto tcp tcp dport { ${portList tcpPorts} } tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark}
-      meta nfproto ipv6 meta l4proto tcp tcp dport { ${portList tcpPorts} } tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark}
+      meta nfproto ipv4 meta l4proto tcp${tcpDport} tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark}
+      meta nfproto ipv6 meta l4proto tcp${tcpDport} tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark}
     '')
     + (optionalString (udpPorts != [ ]) ''
-      meta nfproto ipv4 meta l4proto udp udp dport { ${portList udpPorts} } tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark}
-      meta nfproto ipv6 meta l4proto udp udp dport { ${portList udpPorts} } tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark}
+      meta nfproto ipv4 meta l4proto udp${udpDport} tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark}
+      meta nfproto ipv6 meta l4proto udp${udpDport} tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark}
     '');
 
-  # Output-hook marking lines: set fwmark on matching packets so `type route`
-  # re-runs routing, sends them via the tproxy table through lo, and they
-  # re-enter prerouting where the tproxy statement above catches them.
-  mkMarkLines =
+  # Mark-set rules for the output chain (no tproxy statement — that happens
+  # in redirect_output after re-injection via lo).
+  mkMarkRules =
     {
       tcpPorts,
       udpPorts,
     }:
+    let
+      tcpDport = if tcpPorts == [ ] then "" else " tcp dport { ${renderPorts tcpPorts} }";
+      udpDport = if udpPorts == [ ] then "" else " udp dport { ${renderPorts udpPorts} }";
+    in
     (optionalString (tcpPorts != [ ]) ''
-      meta l4proto tcp tcp dport { ${portList tcpPorts} } meta mark set ${toString cfg.mark}
+      meta l4proto tcp${tcpDport} meta mark set ${toString cfg.mark}
     '')
     + (optionalString (udpPorts != [ ]) ''
-      meta l4proto udp udp dport { ${portList udpPorts} } meta mark set ${toString cfg.mark}
+      meta l4proto udp${udpDport} meta mark set ${toString cfg.mark}
     '');
 
   # Source-CIDR filter: when set, only traffic whose source matches one of the
-  # CIDRs passes through. Empty list means no filter. A single-family list
-  # implicitly denies the other family.
+  # CIDRs passes through. Empty list means no filter.
   mkSrcFilter =
     cidrs:
     let
@@ -137,7 +161,6 @@ let
     );
 
   # nftables cgroupv2 level is the number of path components in the cgroup.
-  # e.g. "system.slice/mihomo.service" is level 2.
   mkSkipCgroup =
     g:
     let
@@ -146,6 +169,32 @@ let
     ''socket cgroupv2 level ${toString level} "${g}" return'';
 
   mkSkipUser = u: ''meta skuid "${u}" return'';
+
+  # Per-interface forward submodule type
+  forwardIfaceOpts = types.submodule {
+    options = {
+      tcpPorts = mkOption {
+        type = types.nullOr portSpec;
+        default = null;
+        example = literalExpression ''[ 80 443 "8000-9000" ]'';
+        description = ''
+          TCP ports to intercept on this interface. null = inherit from
+          `defaults.tcpPorts`. Empty list = don't intercept TCP at all.
+          Supports port ranges as strings (e.g. "8000-9000").
+        '';
+      };
+      udpPorts = mkOption {
+        type = types.nullOr portSpec;
+        default = null;
+        description = "UDP ports. Same semantics as tcpPorts.";
+      };
+      srcCIDRs = mkOption {
+        type = types.nullOr (types.listOf types.str);
+        default = null;
+        description = "Source CIDRs. null = inherit from defaults.srcCIDRs.";
+      };
+    };
+  };
 in
 {
   options.networking.tproxy = {
@@ -162,11 +211,9 @@ in
       default = 18298;
       description = ''
         Firewall mark used exclusively for policy routing of local output
-        traffic: the nft output chain sets this mark on packets we want to
-        re-inject via lo, and the `ip rule fwmark <mark> lookup <table>`
-        policy routes them. Must NOT collide with marks used by other
-        subsystems (e.g. WireGuard selective routing), and must NOT be set
-        externally by the backend (use `backendMark` for that).
+        traffic and forwarded traffic delivery. Must NOT collide with marks
+        used by other subsystems, and must NOT be set externally by the
+        backend (use `backendMark` for that).
       '';
     };
 
@@ -175,10 +222,8 @@ in
       default = 18299;
       description = ''
         Firewall mark the backend (mihomo, xray) sets via SO_MARK on its own
-        upstream connections, matched by the output chain's loop-prevention
-        `meta mark <backendMark> return` rule. Must differ from `mark` so
-        that the kernel's policy routing rule does NOT catch the backend's
-        upstream and re-inject it via lo (which would deadlock the backend).
+        upstream connections. Must differ from `mark` so the kernel's policy
+        routing rule does NOT catch the backend's upstream.
       '';
     };
 
@@ -188,19 +233,26 @@ in
       description = "Routing table number used to local-deliver marked output traffic via lo.";
     };
 
-    defaultTcpPorts = mkOption {
-      type = types.listOf types.port;
-      default = [
-        80
-        443
-      ];
-      description = "Default TCP destination ports to intercept (used when output/forward don't override).";
-    };
-
-    defaultUdpPorts = mkOption {
-      type = types.listOf types.port;
-      default = [ 443 ];
-      description = "Default UDP destination ports to intercept (used when output/forward don't override).";
+    defaults = {
+      tcpPorts = mkOption {
+        type = portSpec;
+        default = [
+          80
+          443
+        ];
+        example = literalExpression ''[ 80 443 "8000-9000" ]'';
+        description = "Default TCP ports inherited by output and forward interfaces unless overridden.";
+      };
+      udpPorts = mkOption {
+        type = portSpec;
+        default = [ 443 ];
+        description = "Default UDP ports inherited by output and forward interfaces unless overridden.";
+      };
+      srcCIDRs = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Default source CIDRs inherited unless overridden. Empty = match any source.";
+      };
     };
 
     extraBypassCIDRs = {
@@ -220,27 +272,21 @@ in
       enable = mkEnableOption "transparent proxy for this host's own outbound traffic";
 
       tcpPorts = mkOption {
-        type = types.listOf types.port;
-        default = cfg.defaultTcpPorts;
-        defaultText = literalExpression "config.networking.tproxy.defaultTcpPorts";
-        description = "TCP ports to intercept in the output hook.";
+        type = types.nullOr portSpec;
+        default = null;
+        description = "TCP ports for output interception. null = use defaults.tcpPorts.";
       };
 
       udpPorts = mkOption {
-        type = types.listOf types.port;
-        default = cfg.defaultUdpPorts;
-        defaultText = literalExpression "config.networking.tproxy.defaultUdpPorts";
-        description = "UDP ports to intercept in the output hook.";
+        type = types.nullOr portSpec;
+        default = null;
+        description = "UDP ports for output interception. null = use defaults.udpPorts.";
       };
 
       srcCIDRs = mkOption {
-        type = types.listOf types.str;
-        default = [ ];
-        example = literalExpression ''[ "192.168.5.0/24" ]'';
-        description = ''
-          If non-empty, only local traffic whose source address matches one of
-          these CIDRs is intercepted. Empty means any source.
-        '';
+        type = types.nullOr (types.listOf types.str);
+        default = null;
+        description = "Source CIDRs for output. null = use defaults.srcCIDRs.";
       };
 
       skipUsers = mkOption {
@@ -257,46 +303,25 @@ in
         description = ''
           Systemd cgroup v2 paths whose sockets bypass the proxy, evaluated via
           `socket cgroupv2 level N "..."`. Empty by default because nft resolves
-          cgroup paths at ruleset load time, so a named service must already be
-          running when the firewall loads -- at fresh boot that's a chicken-and-
-          egg problem. The primary loop guard for mihomo is its `routing-mark`
-          (secondary) combined with the `meta mark <mark> return` check at the
-          top of the output chain (primary). Only set this when the target
-          service is guaranteed to exist before nftables reloads.
+          cgroup paths at ruleset load time (chicken-and-egg at boot).
         '';
       };
     };
 
-    forward = {
-      interfaces = mkOption {
-        type = types.listOf types.str;
-        default = [ ];
-        example = literalExpression ''[ "pme-lidarr" ]'';
-        description = ''
-          Interface names whose forwarded traffic is intercepted. Typically
-          container or VM bridge interfaces.
-        '';
-      };
-
-      tcpPorts = mkOption {
-        type = types.listOf types.port;
-        default = cfg.defaultTcpPorts;
-        defaultText = literalExpression "config.networking.tproxy.defaultTcpPorts";
-        description = "TCP ports to intercept on forwarded interfaces.";
-      };
-
-      udpPorts = mkOption {
-        type = types.listOf types.port;
-        default = cfg.defaultUdpPorts;
-        defaultText = literalExpression "config.networking.tproxy.defaultUdpPorts";
-        description = "UDP ports to intercept on forwarded interfaces.";
-      };
-
-      srcCIDRs = mkOption {
-        type = types.listOf types.str;
-        default = [ ];
-        description = "If non-empty, only forwarded traffic whose source address matches one of these CIDRs is intercepted.";
-      };
+    forward = mkOption {
+      type = types.attrsOf forwardIfaceOpts;
+      default = { };
+      example = literalExpression ''
+        {
+          "dockerbr" = { tcpPorts = [ "1-65535" ]; };  # all TCP
+          "pme-lidarr" = {};                            # use defaults
+        }
+      '';
+      description = ''
+        Per-interface forwarded traffic interception. Keys are interface names.
+        Each entry inherits from `defaults` unless fields are explicitly set.
+        An empty attrset `{}` means "use all defaults for this interface".
+      '';
     };
   };
 
@@ -337,34 +362,35 @@ in
           ip6 daddr @bypass6 return
           # Packets destined to any of the host's own addresses (WAN, LAN,
           # lo, nebula, bridges) must skip tproxy so locally-hosted services
-          # like nginx reverse-proxies work. Without this, e.g. a container
-          # dialling whale's own WAN IP gets caught by tproxy, delivered to
-          # mihomo, mihomo tries to DIRECT-dial the same IP and refuses with
-          # `reject loopback connection`. The fib check uses the kernel's
-          # FIB to detect local addresses dynamically.
+          # like nginx reverse-proxies work.
           fib daddr type local return
-          ${optionalString hasForward ''
-            iifname { ${quoteList cfg.forward.interfaces} } jump redirect_forward
-          ''}
+          ${concatStringsSep "\n    " (map (iface: ''iifname "${iface}" jump fwd-${iface}'') forwardIfaces)}
           ${optionalString hasOutput ''
             iifname "lo" jump redirect_output
           ''}
         }
 
-        ${optionalString hasForward ''
-          chain redirect_forward {
-            ${mkSrcFilter cfg.forward.srcCIDRs}
-            ${mkTproxyLines {
-              inherit (cfg.forward) tcpPorts udpPorts;
-            }}
-          }
-        ''}
+        ${concatStringsSep "\n" (
+          map (
+            iface:
+            let
+              resolved = resolveIface iface;
+            in
+            ''
+              chain fwd-${iface} {
+                ${mkSrcFilter resolved.srcCIDRs}
+                ${mkTproxyRules { inherit (resolved) tcpPorts udpPorts; }}
+              }
+            ''
+          ) forwardIfaces
+        )}
 
         ${optionalString hasOutput ''
           chain redirect_output {
-            ${mkSrcFilter cfg.output.srcCIDRs}
-            ${mkTproxyLines {
-              inherit (cfg.output) tcpPorts udpPorts;
+            ${mkSrcFilter outputSrcCIDRs}
+            ${mkTproxyRules {
+              tcpPorts = outputTcpPorts;
+              udpPorts = outputUdpPorts;
             }}
           }
 
@@ -379,9 +405,10 @@ in
 
             ${concatMapStringsSep "\n    " mkSkipCgroup cfg.output.skipCgroups}
             ${concatMapStringsSep "\n    " mkSkipUser cfg.output.skipUsers}
-            ${mkSrcFilter cfg.output.srcCIDRs}
-            ${mkMarkLines {
-              inherit (cfg.output) tcpPorts udpPorts;
+            ${mkSrcFilter outputSrcCIDRs}
+            ${mkMarkRules {
+              tcpPorts = outputTcpPorts;
+              udpPorts = outputUdpPorts;
             }}
           }
         ''}
@@ -389,9 +416,9 @@ in
     };
 
     # Local delivery of re-injected output traffic: fwmark -> table -> `local
-    # default dev lo`. Attached to the lo link because that's where the local
-    # routes live; the routing policy rules themselves are global.
-    systemd.network.networks."10-lo-tproxy" = mkIf hasOutput {
+    # default dev lo`. Also needed for forwarded tproxy traffic (the mark makes
+    # the kernel route the packet locally instead of forwarding).
+    systemd.network.networks."10-lo-tproxy" = mkIf (hasOutput || hasForward) {
       matchConfig.Name = "lo";
       linkConfig.RequiredForOnline = false;
       routingPolicyRules = [
@@ -423,7 +450,7 @@ in
           allowedTCPPorts = [ cfg.port ];
           allowedUDPPorts = [ cfg.port ];
         };
-      }) cfg.forward.interfaces
+      }) forwardIfaces
     );
 
     # NixOS's reverse-path filter (inet nixos-fw rpfilter) drops packets whose
@@ -431,10 +458,10 @@ in
     # exemption:
     #   - Output-hook re-injection: packet comes in on lo with a LAN source,
     #     FIB check rejects.
-    #   - Forwarded interfaces: after our redirect_forward sets the tproxy
-    #     mark, the fib check uses the marked lookup which returns `local dev
-    #     lo` and sees iif=lo, but the actual packet iif is e.g. dockerbr, so
-    #     the check fails.
+    #   - Forwarded interfaces: after our redirect chains set the tproxy mark,
+    #     the fib check uses the marked lookup which returns `local dev lo` and
+    #     sees iif=lo, but the actual packet iif is e.g. dockerbr, so the check
+    #     fails.
     # Both cases are caught by matching the mark alone, regardless of iif.
     # Safe because the mark is only set by our own nft rules, never by
     # external sources.

@@ -4,7 +4,7 @@
     "d /persist/docker/data 700 0 0 - -"
   ];
 
-  networking.tproxy.forward.interfaces = [ "dockerbr" ];
+  networking.tproxy.forward.dockerbr = { };
 
   networking = {
     bridges.dockerbr.interfaces = [ ];
