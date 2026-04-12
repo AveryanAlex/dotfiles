@@ -54,7 +54,7 @@ in
   config = mkIf cfg.enable {
     # Nebula's listen port must bypass tproxy so peer-to-peer UDP isn't
     # intercepted and routed through mihomo.
-    networking.tproxy.skipPorts.udp = [ 4242 ];
+    networking.tproxy.skipPorts.any = [ 4242 ];
 
     users.users.nebula-averyan.uid = 864;
 

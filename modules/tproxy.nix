@@ -73,20 +73,25 @@ let
   hasOutput = cfg.output.enable;
   forwardIfaces = attrNames cfg.forward;
 
-  # Resolution: tcpPorts overrides defaults (or null = use defaults), then
-  # extraTcpPorts is appended. Same for udp and srcCIDRs.
+  # Resolution: field overrides defaults (or null = use defaults), then
+  # extra* is appended. `any`/`extraAny` feeds into both tcp and udp.
   resolve =
     {
-      tcpPorts,
-      extraTcpPorts,
-      udpPorts,
-      extraUdpPorts,
+      tcp,
+      extraTcp,
+      udp,
+      extraUdp,
+      any,
+      extraAny,
       srcCIDRs,
       extraSrcCIDRs,
     }:
+    let
+      anyResolved = (if any != null then any else cfg.defaults.any) ++ extraAny;
+    in
     {
-      tcpPorts = (if tcpPorts != null then tcpPorts else cfg.defaults.tcpPorts) ++ extraTcpPorts;
-      udpPorts = (if udpPorts != null then udpPorts else cfg.defaults.udpPorts) ++ extraUdpPorts;
+      tcpPorts = (if tcp != null then tcp else cfg.defaults.tcp) ++ extraTcp ++ anyResolved;
+      udpPorts = (if udp != null then udp else cfg.defaults.udp) ++ extraUdp ++ anyResolved;
       srcCIDRs = (if srcCIDRs != null then srcCIDRs else cfg.defaults.srcCIDRs) ++ extraSrcCIDRs;
     };
 
@@ -100,10 +105,12 @@ let
 
   outputResolved = resolve {
     inherit (cfg.output)
-      tcpPorts
-      extraTcpPorts
-      udpPorts
-      extraUdpPorts
+      tcp
+      extraTcp
+      udp
+      extraUdp
+      any
+      extraAny
       srcCIDRs
       extraSrcCIDRs
       ;
@@ -116,10 +123,12 @@ let
     in
     resolve {
       inherit (ic)
-        tcpPorts
-        extraTcpPorts
-        udpPorts
-        extraUdpPorts
+        tcp
+        extraTcp
+        udp
+        extraUdp
+        any
+        extraAny
         srcCIDRs
         extraSrcCIDRs
         ;
@@ -206,30 +215,40 @@ let
   mkSkipUser = u: ''meta skuid "${u}" return'';
 
   # Shared option set used by both output and each forward.<iface> submodule.
-  # tcpPorts/udpPorts/srcCIDRs: null = inherit defaults, [] = clear, explicit = override.
-  # extra*: always appended to the resolved base (default or override).
+  # Each field: null = inherit defaults, [] = clear, explicit = override.
+  # extra*: always appended to the resolved base.
+  # `.any`/`.extraAny` is a convenience that appends to BOTH tcp and udp.
   interceptOpts = {
-    tcpPorts = mkOption {
+    tcp = mkOption {
       type = types.nullOr portSpec;
       default = null;
       example = literalExpression ''[ 80 443 "8000-9000" ]'';
-      description = "TCP ports. null = use defaults. [] = disable TCP. Overrides defaults entirely.";
+      description = "TCP ports. null = use defaults.tcp. [] = disable TCP.";
     };
-    extraTcpPorts = mkOption {
+    extraTcp = mkOption {
       type = portSpec;
       default = [ ];
-      example = literalExpression ''[ "8080-8099" ]'';
-      description = "Extra TCP ports appended after resolving tcpPorts (default or override).";
+      description = "Extra TCP ports appended after resolving tcp.";
     };
-    udpPorts = mkOption {
+    udp = mkOption {
       type = types.nullOr portSpec;
       default = null;
-      description = "UDP ports. null = use defaults. [] = disable UDP.";
+      description = "UDP ports. null = use defaults.udp. [] = disable UDP.";
     };
-    extraUdpPorts = mkOption {
+    extraUdp = mkOption {
       type = portSpec;
       default = [ ];
-      description = "Extra UDP ports appended after resolving udpPorts.";
+      description = "Extra UDP ports appended after resolving udp.";
+    };
+    any = mkOption {
+      type = types.nullOr portSpec;
+      default = null;
+      description = "Ports for both TCP and UDP. null = use defaults.any. Appended to both resolved tcp and udp.";
+    };
+    extraAny = mkOption {
+      type = portSpec;
+      default = [ ];
+      description = "Extra ports appended to both TCP and UDP after resolution.";
     };
     srcCIDRs = mkOption {
       type = types.nullOr (types.listOf types.str);
@@ -283,16 +302,21 @@ in
     };
 
     defaults = {
-      tcpPorts = mkOption {
+      tcp = mkOption {
         type = portSpec;
         default = [ "1-65535" ];
         example = literalExpression ''[ 80 443 "8000-9000" ]'';
-        description = "Default TCP ports inherited by output and forward interfaces unless overridden.";
+        description = "Default TCP ports inherited by output and forward unless overridden.";
       };
-      udpPorts = mkOption {
+      udp = mkOption {
         type = portSpec;
         default = [ "1-65535" ];
-        description = "Default UDP ports inherited by output and forward interfaces unless overridden.";
+        description = "Default UDP ports inherited by output and forward unless overridden.";
+      };
+      any = mkOption {
+        type = portSpec;
+        default = [ ];
+        description = "Default ports for both TCP and UDP. Appended to both resolved tcp and udp lists.";
       };
       srcCIDRs = mkOption {
         type = types.listOf types.str;
@@ -336,20 +360,20 @@ in
       tcp = mkOption {
         type = portSpec;
         default = [ ];
-        example = literalExpression ''[ 22 25 "4242" "8362-8364" ]'';
-        description = ''
-          TCP destination ports that bypass tproxy entirely at the nftables
-          level (returned before the tproxy statement). Traffic on these ports
-          is never delivered to mihomo — it goes through the normal
-          forward/output path unmodified. Use for services whose traffic must
-          never be proxied (e.g. SSH, yggdrasil peers, mail).
-        '';
+        example = literalExpression ''[ 22 25 "8362-8364" ]'';
+        description = "TCP ports that bypass tproxy entirely (never proxied).";
       };
       udp = mkOption {
         type = portSpec;
         default = [ ];
-        example = literalExpression ''[ 53 4242 "60000-61000" ]'';
-        description = "UDP destination ports that bypass tproxy entirely.";
+        example = literalExpression ''[ 53 "60000-61000" ]'';
+        description = "UDP ports that bypass tproxy entirely.";
+      };
+      any = mkOption {
+        type = portSpec;
+        default = [ ];
+        example = literalExpression "[ 4242 ]";
+        description = "Ports that bypass tproxy for both TCP and UDP.";
       };
     };
 
@@ -453,12 +477,22 @@ in
           # lo, nebula, bridges) must skip tproxy so locally-hosted services
           # like nginx reverse-proxies work.
           fib daddr type local return
-          ${optionalString (cfg.skipPorts.tcp != [ ]) ''
-            tcp dport { ${renderPorts cfg.skipPorts.tcp} } return
-          ''}
-          ${optionalString (cfg.skipPorts.udp != [ ]) ''
-            udp dport { ${renderPorts cfg.skipPorts.udp} } return
-          ''}
+          ${
+            let
+              skipTcp = cfg.skipPorts.tcp ++ cfg.skipPorts.any;
+            in
+            optionalString (skipTcp != [ ]) ''
+              tcp dport { ${renderPorts skipTcp} } return
+            ''
+          }
+          ${
+            let
+              skipUdp = cfg.skipPorts.udp ++ cfg.skipPorts.any;
+            in
+            optionalString (skipUdp != [ ]) ''
+              udp dport { ${renderPorts skipUdp} } return
+            ''
+          }
           ${concatStringsSep "\n    " (map (iface: ''iifname "${iface}" jump fwd-${iface}'') forwardIfaces)}
           ${optionalString hasOutput ''
             iifname "lo" jump redirect_output
@@ -498,12 +532,22 @@ in
             # connection, skip us.
             meta mark ${toString cfg.backendMark} return
 
-            ${optionalString (cfg.skipPorts.tcp != [ ]) ''
-              tcp dport { ${renderPorts cfg.skipPorts.tcp} } return
-            ''}
-            ${optionalString (cfg.skipPorts.udp != [ ]) ''
-              udp dport { ${renderPorts cfg.skipPorts.udp} } return
-            ''}
+            ${
+              let
+                skipTcp = cfg.skipPorts.tcp ++ cfg.skipPorts.any;
+              in
+              optionalString (skipTcp != [ ]) ''
+                tcp dport { ${renderPorts skipTcp} } return
+              ''
+            }
+            ${
+              let
+                skipUdp = cfg.skipPorts.udp ++ cfg.skipPorts.any;
+              in
+              optionalString (skipUdp != [ ]) ''
+                udp dport { ${renderPorts skipUdp} } return
+              ''
+            }
             ${concatMapStringsSep "\n    " mkSkipCgroup outputSkipCgroups}
             ${concatMapStringsSep "\n    " mkSkipUser outputSkipUsers}
             ${mkSrcFilter outputResolved.srcCIDRs}
