@@ -90,6 +90,14 @@ let
       srcCIDRs = (if srcCIDRs != null then srcCIDRs else cfg.defaults.srcCIDRs) ++ extraSrcCIDRs;
     };
 
+  # Output also resolves skipUsers/skipCgroups from defaults
+  outputSkipUsers =
+    (if cfg.output.skipUsers != null then cfg.output.skipUsers else cfg.defaults.skipUsers)
+    ++ cfg.output.extraSkipUsers;
+  outputSkipCgroups =
+    (if cfg.output.skipCgroups != null then cfg.output.skipCgroups else cfg.defaults.skipCgroups)
+    ++ cfg.output.extraSkipCgroups;
+
   outputResolved = resolve {
     inherit (cfg.output)
       tcpPorts
@@ -294,6 +302,16 @@ in
         default = [ ];
         description = "Default source CIDRs inherited unless overridden. Empty = match any source.";
       };
+      skipUsers = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Default users whose outbound traffic bypasses tproxy. Inherited by output unless overridden.";
+      };
+      skipCgroups = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Default cgroups whose sockets bypass tproxy. Inherited by output unless overridden.";
+      };
     };
 
     extraBypassCIDRs = {
@@ -313,21 +331,30 @@ in
       enable = mkEnableOption "transparent proxy for this host's own outbound traffic";
 
       skipUsers = mkOption {
+        type = types.nullOr (types.listOf types.str);
+        default = null;
+        example = literalExpression ''[ "yggdrasil" ]'';
+        description = "Users bypassing tproxy. null = use defaults.skipUsers. [] = clear.";
+      };
+      extraSkipUsers = mkOption {
         type = types.listOf types.str;
         default = [ ];
-        example = literalExpression ''[ "nix-daemon" "root" ]'';
-        description = "Local users whose outbound traffic bypasses the proxy (matched via meta skuid).";
+        description = "Extra users appended after resolving skipUsers.";
       };
 
       skipCgroups = mkOption {
-        type = types.listOf types.str;
-        default = [ ];
+        type = types.nullOr (types.listOf types.str);
+        default = null;
         example = literalExpression ''[ "system.slice/mihomo.service" ]'';
         description = ''
-          Systemd cgroup v2 paths whose sockets bypass the proxy, evaluated via
-          `socket cgroupv2 level N "..."`. Empty by default because nft resolves
-          cgroup paths at ruleset load time (chicken-and-egg at boot).
+          Cgroups bypassing tproxy. null = use defaults.skipCgroups. [] = clear.
+          nft resolves paths at load time (chicken-and-egg at boot).
         '';
+      };
+      extraSkipCgroups = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Extra cgroups appended after resolving skipCgroups.";
       };
     };
 
@@ -426,8 +453,8 @@ in
             # connection, skip us.
             meta mark ${toString cfg.backendMark} return
 
-            ${concatMapStringsSep "\n    " mkSkipCgroup cfg.output.skipCgroups}
-            ${concatMapStringsSep "\n    " mkSkipUser cfg.output.skipUsers}
+            ${concatMapStringsSep "\n    " mkSkipCgroup outputSkipCgroups}
+            ${concatMapStringsSep "\n    " mkSkipUser outputSkipUsers}
             ${mkSrcFilter outputResolved.srcCIDRs}
             ${mkMarkRules {
               tcpPorts = outputResolved.tcpPorts;
