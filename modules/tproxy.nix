@@ -332,6 +332,27 @@ in
       '';
     };
 
+    skipPorts = {
+      tcp = mkOption {
+        type = portSpec;
+        default = [ ];
+        example = literalExpression ''[ 22 25 "4242" "8362-8364" ]'';
+        description = ''
+          TCP destination ports that bypass tproxy entirely at the nftables
+          level (returned before the tproxy statement). Traffic on these ports
+          is never delivered to mihomo — it goes through the normal
+          forward/output path unmodified. Use for services whose traffic must
+          never be proxied (e.g. SSH, yggdrasil peers, mail).
+        '';
+      };
+      udp = mkOption {
+        type = portSpec;
+        default = [ ];
+        example = literalExpression ''[ 53 4242 "60000-61000" ]'';
+        description = "UDP destination ports that bypass tproxy entirely.";
+      };
+    };
+
     extraBypassCIDRs = {
       ipv4 = mkOption {
         type = types.listOf types.str;
@@ -432,6 +453,12 @@ in
           # lo, nebula, bridges) must skip tproxy so locally-hosted services
           # like nginx reverse-proxies work.
           fib daddr type local return
+          ${optionalString (cfg.skipPorts.tcp != [ ]) ''
+            tcp dport { ${renderPorts cfg.skipPorts.tcp} } return
+          ''}
+          ${optionalString (cfg.skipPorts.udp != [ ]) ''
+            udp dport { ${renderPorts cfg.skipPorts.udp} } return
+          ''}
           ${concatStringsSep "\n    " (map (iface: ''iifname "${iface}" jump fwd-${iface}'') forwardIfaces)}
           ${optionalString hasOutput ''
             iifname "lo" jump redirect_output
@@ -471,6 +498,12 @@ in
             # connection, skip us.
             meta mark ${toString cfg.backendMark} return
 
+            ${optionalString (cfg.skipPorts.tcp != [ ]) ''
+              tcp dport { ${renderPorts cfg.skipPorts.tcp} } return
+            ''}
+            ${optionalString (cfg.skipPorts.udp != [ ]) ''
+              udp dport { ${renderPorts cfg.skipPorts.udp} } return
+            ''}
             ${concatMapStringsSep "\n    " mkSkipCgroup outputSkipCgroups}
             ${concatMapStringsSep "\n    " mkSkipUser outputSkipUsers}
             ${mkSrcFilter outputResolved.srcCIDRs}
