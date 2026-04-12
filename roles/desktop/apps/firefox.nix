@@ -45,7 +45,7 @@
             "network.proxy.ssl_port" = 8080;
             "network.proxy.socks" = "127.0.0.1";
             "network.proxy.socks_port" = 1080;
-            "network.proxy.type" = 1;
+            "network.proxy.type" = 0; # 1
           };
         };
       };
