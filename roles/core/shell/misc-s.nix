@@ -42,6 +42,7 @@
       rmlint
       immich-cli
       jq
+      arp-scan
     ];
 
     home.sessionVariables = {
