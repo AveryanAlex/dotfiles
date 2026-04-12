@@ -285,16 +285,13 @@ in
     defaults = {
       tcpPorts = mkOption {
         type = portSpec;
-        default = [
-          80
-          443
-        ];
+        default = [ "1-65535" ];
         example = literalExpression ''[ 80 443 "8000-9000" ]'';
         description = "Default TCP ports inherited by output and forward interfaces unless overridden.";
       };
       udpPorts = mkOption {
         type = portSpec;
-        default = [ 443 ];
+        default = [ "1-65535" ];
         description = "Default UDP ports inherited by output and forward interfaces unless overridden.";
       };
       srcCIDRs = mkOption {
