@@ -307,6 +307,14 @@ in
         "akenai.ru"
         "akenai.click"
       ];
+      # REALITY-spoofed SNI domains used by akenai proxy servers as
+      # camouflage. Bypass so real visits go direct and can't be
+      # correlated with the proxy's impersonation traffic.
+      networking.tproxy.skipExactDomains = [
+        "www.nvidia.com"
+        "www.amd.com"
+        "eh.vk.ru"
+      ];
 
       # Expose the mihomo external-controller (REST API + metacubexd
       # dashboard) to the nebula-averyan overlay only. Everything else
