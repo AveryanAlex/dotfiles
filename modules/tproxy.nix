@@ -73,21 +73,48 @@ let
   hasOutput = cfg.output.enable;
   forwardIfaces = attrNames cfg.forward;
 
-  # Resolve null-means-inherit for output
-  outputTcpPorts = if cfg.output.tcpPorts != null then cfg.output.tcpPorts else cfg.defaults.tcpPorts;
-  outputUdpPorts = if cfg.output.udpPorts != null then cfg.output.udpPorts else cfg.defaults.udpPorts;
-  outputSrcCIDRs = if cfg.output.srcCIDRs != null then cfg.output.srcCIDRs else cfg.defaults.srcCIDRs;
+  # Resolution: tcpPorts overrides defaults (or null = use defaults), then
+  # extraTcpPorts is appended. Same for udp and srcCIDRs.
+  resolve =
+    {
+      tcpPorts,
+      extraTcpPorts,
+      udpPorts,
+      extraUdpPorts,
+      srcCIDRs,
+      extraSrcCIDRs,
+    }:
+    {
+      tcpPorts = (if tcpPorts != null then tcpPorts else cfg.defaults.tcpPorts) ++ extraTcpPorts;
+      udpPorts = (if udpPorts != null then udpPorts else cfg.defaults.udpPorts) ++ extraUdpPorts;
+      srcCIDRs = (if srcCIDRs != null then srcCIDRs else cfg.defaults.srcCIDRs) ++ extraSrcCIDRs;
+    };
 
-  # Resolve per-interface config
+  outputResolved = resolve {
+    inherit (cfg.output)
+      tcpPorts
+      extraTcpPorts
+      udpPorts
+      extraUdpPorts
+      srcCIDRs
+      extraSrcCIDRs
+      ;
+  };
+
   resolveIface =
     name:
     let
       ic = cfg.forward.${name};
     in
-    {
-      tcpPorts = if ic.tcpPorts != null then ic.tcpPorts else cfg.defaults.tcpPorts;
-      udpPorts = if ic.udpPorts != null then ic.udpPorts else cfg.defaults.udpPorts;
-      srcCIDRs = if ic.srcCIDRs != null then ic.srcCIDRs else cfg.defaults.srcCIDRs;
+    resolve {
+      inherit (ic)
+        tcpPorts
+        extraTcpPorts
+        udpPorts
+        extraUdpPorts
+        srcCIDRs
+        extraSrcCIDRs
+        ;
     };
 
   # Generate tproxy rules for a given resolved config. `meta mark set` after
@@ -170,31 +197,45 @@ let
 
   mkSkipUser = u: ''meta skuid "${u}" return'';
 
-  # Per-interface forward submodule type
-  forwardIfaceOpts = types.submodule {
-    options = {
-      tcpPorts = mkOption {
-        type = types.nullOr portSpec;
-        default = null;
-        example = literalExpression ''[ 80 443 "8000-9000" ]'';
-        description = ''
-          TCP ports to intercept on this interface. null = inherit from
-          `defaults.tcpPorts`. Empty list = don't intercept TCP at all.
-          Supports port ranges as strings (e.g. "8000-9000").
-        '';
-      };
-      udpPorts = mkOption {
-        type = types.nullOr portSpec;
-        default = null;
-        description = "UDP ports. Same semantics as tcpPorts.";
-      };
-      srcCIDRs = mkOption {
-        type = types.nullOr (types.listOf types.str);
-        default = null;
-        description = "Source CIDRs. null = inherit from defaults.srcCIDRs.";
-      };
+  # Shared option set used by both output and each forward.<iface> submodule.
+  # tcpPorts/udpPorts/srcCIDRs: null = inherit defaults, [] = clear, explicit = override.
+  # extra*: always appended to the resolved base (default or override).
+  interceptOpts = {
+    tcpPorts = mkOption {
+      type = types.nullOr portSpec;
+      default = null;
+      example = literalExpression ''[ 80 443 "8000-9000" ]'';
+      description = "TCP ports. null = use defaults. [] = disable TCP. Overrides defaults entirely.";
+    };
+    extraTcpPorts = mkOption {
+      type = portSpec;
+      default = [ ];
+      example = literalExpression ''[ "8080-8099" ]'';
+      description = "Extra TCP ports appended after resolving tcpPorts (default or override).";
+    };
+    udpPorts = mkOption {
+      type = types.nullOr portSpec;
+      default = null;
+      description = "UDP ports. null = use defaults. [] = disable UDP.";
+    };
+    extraUdpPorts = mkOption {
+      type = portSpec;
+      default = [ ];
+      description = "Extra UDP ports appended after resolving udpPorts.";
+    };
+    srcCIDRs = mkOption {
+      type = types.nullOr (types.listOf types.str);
+      default = null;
+      description = "Source CIDRs. null = use defaults. [] = match any source.";
+    };
+    extraSrcCIDRs = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "Extra source CIDRs appended after resolving srcCIDRs.";
     };
   };
+
+  forwardIfaceOpts = types.submodule { options = interceptOpts; };
 in
 {
   options.networking.tproxy = {
@@ -268,26 +309,8 @@ in
       };
     };
 
-    output = {
+    output = interceptOpts // {
       enable = mkEnableOption "transparent proxy for this host's own outbound traffic";
-
-      tcpPorts = mkOption {
-        type = types.nullOr portSpec;
-        default = null;
-        description = "TCP ports for output interception. null = use defaults.tcpPorts.";
-      };
-
-      udpPorts = mkOption {
-        type = types.nullOr portSpec;
-        default = null;
-        description = "UDP ports for output interception. null = use defaults.udpPorts.";
-      };
-
-      srcCIDRs = mkOption {
-        type = types.nullOr (types.listOf types.str);
-        default = null;
-        description = "Source CIDRs for output. null = use defaults.srcCIDRs.";
-      };
 
       skipUsers = mkOption {
         type = types.listOf types.str;
@@ -387,10 +410,10 @@ in
 
         ${optionalString hasOutput ''
           chain redirect_output {
-            ${mkSrcFilter outputSrcCIDRs}
+            ${mkSrcFilter outputResolved.srcCIDRs}
             ${mkTproxyRules {
-              tcpPorts = outputTcpPorts;
-              udpPorts = outputUdpPorts;
+              tcpPorts = outputResolved.tcpPorts;
+              udpPorts = outputResolved.udpPorts;
             }}
           }
 
@@ -405,10 +428,10 @@ in
 
             ${concatMapStringsSep "\n    " mkSkipCgroup cfg.output.skipCgroups}
             ${concatMapStringsSep "\n    " mkSkipUser cfg.output.skipUsers}
-            ${mkSrcFilter outputSrcCIDRs}
+            ${mkSrcFilter outputResolved.srcCIDRs}
             ${mkMarkRules {
-              tcpPorts = outputTcpPorts;
-              udpPorts = outputUdpPorts;
+              tcpPorts = outputResolved.tcpPorts;
+              udpPorts = outputResolved.udpPorts;
             }}
           }
         ''}
