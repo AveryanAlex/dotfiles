@@ -290,8 +290,6 @@ in
         rules = [
           "RULE-SET,geoip-private,DIRECT,no-resolve"
           "RULE-SET,geosite-private,DIRECT"
-          "DOMAIN-SUFFIX,akenai.ru,DIRECT"
-          "DOMAIN-SUFFIX,akenai.click,DIRECT"
           "AND,((NETWORK,udp),(DST-PORT,443)),REJECT"
           "RULE-SET,torrent-clients,DIRECT"
           "RULE-SET,geosite-telegram,Telegram"
@@ -302,6 +300,13 @@ in
           "MATCH,Default"
         ];
       };
+
+      # Proxy provider domains must always go DIRECT so containers/LAN
+      # devices don't try to reach the proxy server through itself.
+      networking.tproxy.skipDomains = [
+        "akenai.ru"
+        "akenai.click"
+      ];
 
       # Expose the mihomo external-controller (REST API + metacubexd
       # dashboard) to the nebula-averyan overlay only. Everything else

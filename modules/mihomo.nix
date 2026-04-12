@@ -96,7 +96,19 @@ let
 
   mergedSettings = recursiveUpdate defaultSettings cfg.settings;
 
-  generatedConfig = yamlFormat.generate "mihomo.yaml" mergedSettings;
+  # Prepend DIRECT rules for domains that must never be proxied (e.g. the
+  # proxy provider's own domains). Read from networking.tproxy.skipDomains
+  # and skipExactDomains so the policy lives in one place.
+  tproxyCfg = config.networking.tproxy;
+  skipDomainRules =
+    (map (d: "DOMAIN-SUFFIX,${d},DIRECT") tproxyCfg.skipDomains)
+    ++ (map (d: "DOMAIN,${d},DIRECT") tproxyCfg.skipExactDomains);
+
+  finalSettings = mergedSettings // {
+    rules = skipDomainRules ++ (mergedSettings.rules or [ ]);
+  };
+
+  generatedConfig = yamlFormat.generate "mihomo.yaml" finalSettings;
 in
 {
   options.services.mihomo-tproxy = {

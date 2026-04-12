@@ -314,6 +314,27 @@ in
       };
     };
 
+    skipDomains = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      example = literalExpression ''[ "akenai.ru" "akenai.click" ]'';
+      description = ''
+        Domain suffixes whose traffic should always go DIRECT, never through
+        the proxy. The backend module (e.g. mihomo) reads this and prepends
+        DOMAIN-SUFFIX rules before user-defined rules. Use for proxy provider
+        domains to prevent circular routing.
+      '';
+    };
+
+    skipExactDomains = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = ''
+        Exact domain names whose traffic should always go DIRECT. Same as
+        skipDomains but matches the full domain, not suffixes.
+      '';
+    };
+
     extraBypassCIDRs = {
       ipv4 = mkOption {
         type = types.listOf types.str;
