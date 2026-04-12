@@ -101,8 +101,7 @@ in
   ];
 
   networking.tproxy.output.enable = true;
-
-  # networking.tproxy.forward.interfaces = [lan];
+  networking.tproxy.forward.${lan} = { };
 
   virtualisation.libvirtd.enable = true;
   users.users.alex.extraGroups = [ "libvirtd" ];
@@ -244,6 +243,73 @@ in
         EmitDNS = true;
         DNS = "1.1.1.1";
       };
+      dhcpServerStaticLeases = [
+        # ASUS Wi-Fi AP
+        {
+          Address = "192.168.3.3";
+          MACAddress = "42:b0:76:05:56:5c";
+        }
+        # Xiaomi AX3000 mesh — primary node
+        {
+          Address = "192.168.3.4";
+          MACAddress = "a4:39:b3:0f:6e:a0";
+        }
+        # Xiaomi AX3000 mesh — secondary node
+        {
+          Address = "192.168.3.5";
+          MACAddress = "44:f7:70:33:29:1c";
+        }
+        # HP DeskJet 5820 printer
+        {
+          Address = "192.168.3.10";
+          MACAddress = "ec:8e:b5:e3:35:c0";
+        }
+        # beaver — 3D printer
+        {
+          Address = "192.168.3.31";
+          MACAddress = "90:8f:88:03:d7:a0";
+        }
+        # ESPHome PC switch
+        {
+          Address = "192.168.3.70";
+          MACAddress = "60:55:f9:75:b8:e8";
+        }
+        # alligator — desktop PC
+        {
+          Address = "192.168.3.60";
+          MACAddress = "68:54:5a:f9:14:56";
+        }
+        # hamster — laptop
+        {
+          Address = "192.168.3.61";
+          MACAddress = "f4:46:37:5d:67:ef";
+        }
+        # Alex's OnePlus phone
+        {
+          Address = "192.168.3.62";
+          MACAddress = "7c:f0:e5:7a:f1:59";
+        }
+        # father's Samsung phone
+        {
+          Address = "192.168.3.63";
+          MACAddress = "50:49:b0:c7:2c:9b";
+        }
+        # mother's Realme phone
+        {
+          Address = "192.168.3.64";
+          MACAddress = "a8:ef:5f:9c:72:d4";
+        }
+        # ESPHome bedroom air quality monitor
+        {
+          Address = "192.168.3.72";
+          MACAddress = "60:55:f9:75:99:bc";
+        }
+        # Roborock X20 Max vacuum
+        {
+          Address = "192.168.3.80";
+          MACAddress = "ac:8c:46:34:fe:ca";
+        }
+      ];
     };
 
     "40-vms" = {
