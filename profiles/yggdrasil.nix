@@ -4,6 +4,11 @@
   ...
 }:
 {
+  # Yggdrasil's 0200::/7 subnet must never be proxied — traffic to mesh
+  # peers is overlay-internal and sending it through mihomo would either
+  # fail or add pointless latency.
+  networking.tproxy.extraBypassCIDRs.ipv6 = [ "0200::/7" ];
+
   services.yggdrasil = {
     enable = true;
     openMulticastPort = true;

@@ -290,6 +290,8 @@ in
         rules = [
           "RULE-SET,geoip-private,DIRECT,no-resolve"
           "RULE-SET,geosite-private,DIRECT"
+          "DOMAIN-SUFFIX,akenai.ru,DIRECT"
+          "DOMAIN-SUFFIX,akenai.click,DIRECT"
           "AND,((NETWORK,udp),(DST-PORT,443)),REJECT"
           "RULE-SET,torrent-clients,DIRECT"
           "RULE-SET,geosite-telegram,Telegram"
