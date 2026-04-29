@@ -25,7 +25,7 @@
 
     programs.vscode = {
       enable = true;
-      package = pkgs.vscode-fhs;
+      package = pkgs.vscode;
 
       mutableExtensionsDir = false;
       profiles.default.enableUpdateCheck = false;
