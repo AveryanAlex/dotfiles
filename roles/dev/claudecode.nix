@@ -13,7 +13,7 @@ in
 {
   hm.programs.claude-code = {
     enable = true;
-    memory.text = builtins.readFile ./opencode-rules.md;
+    context = ./opencode-rules.md;
     settings = {
       skipDangerousModePermissionPrompt = true;
 
