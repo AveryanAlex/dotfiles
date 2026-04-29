@@ -1,40 +1,43 @@
 let
   name = "qbit";
 in
-  {config, ...}: {
-    systemd.tmpfiles.rules = [
-      "d /persist/${name}/config 700 1000 100 - -"
+{ config, ... }:
+{
+  systemd.tmpfiles.rules = [
+    "d /persist/${name}/config 700 1000 100 - -"
+  ];
+
+  # services.nginx.virtualHosts."qbit.averyan.ru" = {
+  #   useACMEHost = "averyan.ru";
+  #   forceSSL = true;
+  #   locations."/" = {
+  #     proxyPass = "http://10.90.84.2:8173";
+  #     proxyWebsockets = true;
+  #   };
+  # };
+
+  networking.tproxy.forward."pme-${name}" = {
+    # Proxy only HTTP(S) tracker/webseed traffic; keep BitTorrent peer and
+    # DHT/UDP traffic direct.
+    tcp = [
+      80
+      443
     ];
+    udp = [ ];
+  };
 
-    # services.nginx.virtualHosts."qbit.averyan.ru" = {
-    #   useACMEHost = "averyan.ru";
-    #   forceSSL = true;
-    #   locations."/" = {
-    #     proxyPass = "http://10.90.84.2:8173";
-    #     proxyWebsockets = true;
-    #   };
-    # };
-
-    networking.tproxy.forward."pme-${name}" = {
-      # Proxy only HTTP(S) tracker/webseed traffic; keep BitTorrent peer and
-      # DHT/UDP traffic direct.
-      tcp = [
-        80
-        443
-      ];
-      udp = [];
-    };
-
-    virtualisation.quadlet = let
+  virtualisation.quadlet =
+    let
       inherit (config.virtualisation.quadlet) networks;
-    in {
+    in
+    {
       containers = {
         ${name} = {
           containerConfig = {
             image = "lscr.io/linuxserver/qbittorrent:latest";
             autoUpdate = "registry";
             memory = "8g";
-            networks = [networks.${name}.ref];
+            networks = [ networks.${name}.ref ];
             ip = "10.90.84.2";
             volumes = [
               "/persist/${name}/config:/config"
@@ -65,25 +68,27 @@ in
 
       networks = {
         ${name}.networkConfig = {
-          subnets = ["10.90.84.0/24"];
-          podmanArgs = ["--interface-name=pme-${name}"];
+          subnets = [ "10.90.84.0/24" ];
+          podmanArgs = [ "--interface-name=pme-${name}" ];
         };
       };
     };
 
-    networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [8173];
+  networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 8173 ];
 
-    networking.nat.forwardPorts = let
+  networking.nat.forwardPorts =
+    let
       common = {
         destination = "10.90.84.2:12813";
         sourcePort = 12813;
-        loopbackIPs = ["95.165.105.90"];
+        loopbackIPs = [ "95.165.105.90" ];
       };
-    in [
-      (common // {proto = "tcp";})
-      (common // {proto = "udp";})
+    in
+    [
+      (common // { proto = "tcp"; })
+      (common // { proto = "udp"; })
     ];
 
-    networking.firewall.allowedTCPPorts = [12813];
-    networking.firewall.allowedUDPPorts = [12813];
-  }
+  networking.firewall.allowedTCPPorts = [ 12813 ];
+  networking.firewall.allowedUDPPorts = [ 12813 ];
+}
