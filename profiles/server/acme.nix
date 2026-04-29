@@ -12,7 +12,7 @@
       email = "alex@averyan.ru";
       dnsResolver = "1.1.1.1:53";
       dnsProvider = "cloudflare";
-      credentialsFile = config.age.secrets.creds-cloudflare.path;
+      environmentFile = config.age.secrets.creds-cloudflare.path;
     };
 
     certs = {

@@ -113,9 +113,7 @@ in
 
     config =
       {
-        config,
         lib,
-        pkgs,
         ...
       }:
       {
@@ -144,7 +142,7 @@ in
         # Work around pam_lastlog2 breakage that kills machinectl shell sessions.
         security.pam.services.login.updateWtmp = lib.mkForce false;
 
-        services.dovecot2.sieve.extensions = [ "fileinto" ];
+        services.dovecot2.settings.sieve_extensions.fileinto = true;
 
         mailserver = {
           stateVersion = 4;
