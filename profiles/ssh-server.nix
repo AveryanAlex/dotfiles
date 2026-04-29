@@ -4,6 +4,7 @@
     enable = true;
     openFirewall = false;
     settings = {
+      GatewayPorts = "clientspecified";
       PermitRootLogin = "no";
       PasswordAuthentication = false;
     };
