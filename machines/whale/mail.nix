@@ -175,23 +175,23 @@ in
           mailboxes = {
             Trash = {
               auto = "create";
-              specialUse = "Trash";
+              special_use = "\\Trash";
             };
             Archive = {
               auto = "create";
-              specialUse = "Archive";
+              special_use = "\\Archive";
             };
             Junk = {
               auto = "subscribe";
-              specialUse = "Junk";
+              special_use = "\\Junk";
             };
             Drafts = {
               auto = "subscribe";
-              specialUse = "Drafts";
+              special_use = "\\Drafts";
             };
             Sent = {
               auto = "subscribe";
-              specialUse = "Sent";
+              special_use = "\\Sent";
             };
           };
 
