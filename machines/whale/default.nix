@@ -27,7 +27,6 @@ in
   imports = [
     ../../roles/server.nix
 
-    ../../profiles/server/qbit.nix
     # inputs.self.nixosModules.profiles.server.cpmbot
     ../../profiles/server/gayradar.nix
     ../../profiles/server/anoquebot.nix
@@ -98,6 +97,7 @@ in
     ../../apps/newsrelay
     ../../apps/litellm
     # ../../apps/mtproto
+    ../../apps/qbit
   ];
 
   networking.tproxy.output.enable = true;

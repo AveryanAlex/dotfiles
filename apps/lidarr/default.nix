@@ -66,9 +66,6 @@ in
 
   networking.firewall.extraForwardRules = ''
     iifname pme-${name} oifname pme-slskd accept
+    iifname pme-${name} oifname pme-qbit accept
   '';
-
-  networking.firewall.interfaces."pme-${name}".allowedTCPPorts = [
-    8173 # access to qbittorrent on host
-  ];
 }

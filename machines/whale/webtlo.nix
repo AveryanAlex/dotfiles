@@ -31,9 +31,12 @@
     };
 
   networking.firewall.interfaces.pme-webtlo.allowedTCPPorts = [
-    8173 # qbittorrent
     8080 # http proxy
   ];
+
+  networking.firewall.extraForwardRules = ''
+    iifname pme-webtlo oifname pme-qbit accept
+  '';
 
   # access with ssh -L 1844:10.90.26.2:80 whale
 

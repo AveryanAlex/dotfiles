@@ -60,7 +60,7 @@ in
       };
     };
 
-  networking.firewall.interfaces."pme-${name}".allowedTCPPorts = [
-    8173 # access to qbittorrent on host
-  ];
+  networking.firewall.extraForwardRules = ''
+    iifname pme-${name} oifname pme-qbit accept
+  '';
 }

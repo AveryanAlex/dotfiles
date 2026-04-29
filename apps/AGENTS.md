@@ -34,6 +34,7 @@ Use this tree for containerized services; native NixOS services belong in `profi
 
 | Subnet | App |
 |--------|-----|
+| `10.90.84.0/24` | `qbit` |
 | `10.90.85.0/24` | `s2sbot` |
 | `10.90.86.0/24` | `wakapi` |
 | `10.90.87.0/24` | `cinemabot` |
@@ -46,7 +47,7 @@ Use this tree for containerized services; native NixOS services belong in `profi
 | `10.90.94.0/24` | `mtproto` |
 | `10.90.95.0/24` | `litellm` |
 
-`reelsgen` currently omits an explicit subnet. If you need a new explicit app network, pick an unused `/24` after checking this table; `10.90.84.0/24` and `10.90.96.0/24+` are currently unused in `apps/`.
+`reelsgen` currently omits an explicit subnet. If you need a new explicit app network, pick an unused `/24` after checking this table; `10.90.83.0/24` and `10.90.96.0/24+` are currently unused in `apps/`.
 
 ## UID/GID MAPS
 
