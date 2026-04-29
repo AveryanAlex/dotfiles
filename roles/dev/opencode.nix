@@ -1,24 +1,14 @@
 { pkgs, ... }:
 let
-  opus = {
-    model = "anthropic/claude-opus-4-6";
-  };
-  opus-max = opus // {
-    variant = "max";
-  };
   gpt = {
     model = "openai/gpt-5.4";
+  };
+  gpt-high = gpt // {
+    variant = "high";
   };
   gpt-xhigh = gpt // {
     variant = "xhigh";
   };
-  gpt-codex = {
-    model = "openai/gpt-5.3-codex";
-  };
-  gpt-codex-medium = gpt-codex // {
-    variant = "medium";
-  };
-
   gpt-mini = {
     model = "openai/gpt-5.4-mini";
   };
@@ -30,19 +20,24 @@ let
     variant = "high";
   };
 
-  ohMyOpencodeSlimVersion = "0.9.0";
+  allowAll = {
+    skills = [ "*" ];
+    mcps = [ "*" ];
+  };
+
+  ohMyOpencodeSlimVersion = "1.0.1";
 
   ohMyOpencodeSlimConfig = {
     "$schema" = "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json";
     preset = "alex";
     presets = {
       alex = {
-        orchestrator = gpt-xhigh;
-        oracle = gpt-xhigh;
+        orchestrator = gpt-xhigh // allowAll;
+        oracle = gpt-xhigh // allowAll;
         librarian = gpt-mini;
         explorer = gpt-mini;
-        designer = gemini-pro-high;
-        fixer = gpt-codex-medium;
+        designer = gemini-pro-high // allowAll;
+        fixer = gpt-high // allowAll;
       };
     };
   };
@@ -72,7 +67,7 @@ in
         explore.disable = true;
         general.disable = true;
       };
-      model = opus.model;
+      model = gpt.model;
       # small_model = "github-copilot/gpt-5-mini";
       small_model = gpt-mini.model;
       provider.anthropic.options.baseURL = "https://claude.machka.dev/v1";

@@ -5,9 +5,7 @@
 - Projects follow `~/projects/<owner>/<name>` layout; use `origin` and `upstream` remotes for forks
 
 # Planning
-- If awaiting ANY user interaction, you MUST use the question tool instead of asking in plain chat. Todo continuation will force the run to continue if you stop with unfinished todo items and no explicit question-tool block on user input
-- Feel free to ask clarifying questions about requirements and architecture, but use the question tool whenever you need user input
-- Do not rely on hidden thinking for important information; record important conclusions, decisions, and key ideas in chat messages intended for users to review; otherwise, normal thinking tokens can be lost between messages
+- Ask clarifying questions about requirements and architecture when needed
 - For requests with many edits or a large scope, first split the work into small atomic tasks, create or update a todo list, and execute from that list
 - Keep the todo list accurate at all times: unfinished todo items trigger forced continuation, so mark completed tasks immediately, add newly discovered tasks, and never leave stale entries behind
 - If you believe the work is finished, mark every completed todo item as completed before stopping. Do not leave finished work marked as pending or in_progress, or todo continuation will treat the run as unfinished and force more work
@@ -66,23 +64,6 @@ These rules are not exhaustive — on code review, flag any issue you find, even
 - Prefer async I/O for network/disk/blocking; sync is fine for CPU-bound or trivial sequential work
 - Every lint/compiler suppression (`eslint-disable`, `#[allow(...)]`, etc.) must include a short comment justifying why it is safe
 
-## Rust
-- **Errors**: `Result`/`Option` for normal conditions (IO, parsing, network, user input); panics only for bug-indicating invariant violations
-- **Libraries**: `thiserror` for typed error enums; avoid `anyhow` (callers need concrete types)
-- **CLI tools**: `color-eyre` with `eyre::Result`
-- **Propagation**: use `?`; avoid `.unwrap()` unless the invariant is trivially obvious
-- **Ownership**: prefer `&T` over `.clone()` unless necessary; understand the cost of allocation
-- **Idioms**: `match` for control flow, iterators for sequences, `From`/`Into` for conversions
-- **Constants**: consider `#[repr(...)]` enum over separate `const` values for related groups
-- **Enums**: use `#[non_exhaustive]` only when variants genuinely will grow; when a variant accumulates 3+ fields, extract a dedicated struct — keeps the enum definition scannable and lets the struct have its own methods and `impl` blocks
-- **Newtypes**: wrap for distinct units (meters vs feet), opaque handles, validated inputs (`Email`, `NonEmptyVec`); skip when every inner value is valid and no confusion risk
-- **Serde + newtypes**: never `#[derive(Deserialize)]` on validated newtypes — it bypasses validation; use `#[serde(try_from = "...")]`
-- **Numeric casts**: `From`/`Into` for widening, `try_from()`/`try_into()` for narrowing; bare `as` silently truncates
-- **Async lifecycle**: track every `JoinHandle` for join or cancellation; fire-and-forget spawns hide panics and prevent graceful shutdown; long-lived handles should cancel their background task on `Drop`
-- **`select!` safety**: verify every branch is cancellation-safe; if not, use a fused/pinned future or restructure to avoid data loss
-- **Doc comments placement**: place doc comments (`///`, `/** */`) before attributes like `#[derive(...)]` on the item they document
-- **Tooling**: must pass `cargo clippy` without warnings; format with `cargo fmt`
-
 ## Python
 - **Typing**: modern annotations (`str | None`, `list[int]`); complete signatures on public functions
 - **Tooling**: new projects use `ruff` + `uv` + `uv_build`; existing projects follow established toolchain
@@ -93,13 +74,4 @@ These rules are not exhaustive — on code review, flag any issue you find, even
 - **Package manager**: `pnpm` for new projects; follow existing project's choice
 - **Typing**: `unknown` over `any` with type guards; `interface` for object shapes (unless unions/mapped types needed); `as const` for literal tuples
 - **Nullability**: enable `strictNullChecks`; use `?.` and `??` over manual checks
-- **Async**: `async`/`await` over `.then()` chains; always handle rejections — never leave a floating promise
-- **Imports**: ES modules; prefer named exports over default exports for better refactoring and IDE discoverability
 - **Tooling**: `biome` for new projects; follow established toolchain otherwise; `tsx` for running TS scripts
-
-## React
-- Same sizing rules apply to components and hooks — extract sub-components/custom hooks at the same thresholds
-- More than ~8 `useState` calls in one component → split into sub-components with own state, or use `useReducer`
-- Use `useId()` for DOM IDs in reusable components — hardcoded IDs break with multiple instances
-- Don't use `innerHTML` for content React can render — bypasses the virtual DOM and risks XSS
-- Omitted effect dependencies require a comment explaining why the omission is safe when suppressing the lint rule
