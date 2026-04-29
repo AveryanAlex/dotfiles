@@ -537,6 +537,13 @@ in
             ip daddr @bypass4 return
             ip6 daddr @bypass6 return
 
+            # Skip reply packets for inbound connections (SSH, nginx, etc.)
+            # so only locally-initiated outbound flows get proxied.
+            # Note: conntrack UDP timeout is 30s (120s bidirectional) by default;
+            # if an entry expires, the next reply won't match. Tune via
+            # net.netfilter.nf_conntrack_udp_timeout{,_stream} if needed.
+            ct direction reply return
+
             # Loop guard: backend set SO_MARK = backendMark on its own upstream
             # connection, skip us.
             meta mark ${toString cfg.backendMark} return
