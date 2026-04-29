@@ -23,6 +23,11 @@
   # Core system configuration
   security.audit.enable = true;
   security.auditd.enable = true;
+  security.audit.rules = [
+    "-w /home/alex/.ssh -p rwa -k ssh_access"
+    "-w /home/alex/.local/share/gnupg -p rwa -k gpg_access"
+    "-w /home/alex/.local/share/keyrings -p rwa -k keyring_access"
+  ];
 
   nixcfg.inputs = inputs;
   nixcfg.username = "alex";
