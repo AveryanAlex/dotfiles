@@ -2,7 +2,10 @@
   persist = {
     state = {
       homeDirs = [
-        ".ssh"
+        {
+          directory = ".ssh";
+          mode = "u=rwx,g=,o=";
+        }
         "Documents"
         "Downloads"
         "Music"
