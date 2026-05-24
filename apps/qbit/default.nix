@@ -7,14 +7,14 @@ in
     "d /persist/${name}/config 700 1000 100 - -"
   ];
 
-  # services.nginx.virtualHosts."qbit.averyan.ru" = {
-  #   useACMEHost = "averyan.ru";
-  #   forceSSL = true;
-  #   locations."/" = {
-  #     proxyPass = "http://10.90.84.2:8173";
-  #     proxyWebsockets = true;
-  #   };
-  # };
+  services.nginx.virtualHosts."qbit.averyan.ru" = {
+    useACMEHost = "averyan.ru";
+    forceSSL = true;
+    locations."/" = {
+      proxyPass = "http://10.90.84.2:8173";
+      proxyWebsockets = true;
+    };
+  };
 
   networking.tproxy.forward."pme-${name}" = {
     # Proxy only HTTP(S) tracker/webseed traffic; keep BitTorrent peer and
