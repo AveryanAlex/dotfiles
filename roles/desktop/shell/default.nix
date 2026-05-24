@@ -99,5 +99,10 @@
   };
 
   # Keyring persistence
-  persist.state.homeDirs = [ ".local/share/keyrings" ];
+  persist.state.homeDirs = [
+    {
+      directory = ".local/share/keyrings";
+      mode = "u=rwx,g=,o=";
+    }
+  ];
 }
