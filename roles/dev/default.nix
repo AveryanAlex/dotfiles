@@ -1,6 +1,5 @@
 {
   pkgs,
-  inputs,
   ...
 }:
 let
@@ -23,25 +22,6 @@ in
     ./codex.nix
     ./claudecode.nix
     ./mcp.nix
-  ];
-
-  nixpkgs.overlays = [
-    (final: prev: {
-      gastown = inputs.gastown.packages.${prev.system}.gt;
-      beads = inputs.beads.packages.${prev.system}.default;
-      dolt = prev.dolt.overrideAttrs (old: rec {
-        version = "1.82.4";
-        src = prev.fetchFromGitHub {
-          owner = "dolthub";
-          repo = "dolt";
-          tag = "v${version}";
-          hash = "sha256-mavL3y+Kv25hzFlDFXk7W/jeKVKlCBjlc67GkL3Jcwk=";
-        };
-        vendorHash = "sha256-K1KzsqptZxO5OraWKIXeqKuVSzb6E/Mjy3c5PQ7Rs9k=";
-        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.pkg-config ];
-        buildInputs = (old.buildInputs or [ ]) ++ [ prev.icu ];
-      });
-    })
   ];
 
   hm.home.packages = [
@@ -91,10 +71,6 @@ in
     typst
 
     kaggle
-
-    beads
-    dolt
-    gastown
 
     rtk
   ]);
