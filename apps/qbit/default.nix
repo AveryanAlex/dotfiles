@@ -1,7 +1,7 @@
 let
   name = "qbit";
 in
-{ config, ... }:
+{ config, lib, pkgs, ... }:
 {
   systemd.tmpfiles.rules = [
     "d /persist/${name}/config 700 1000 100 - -"
@@ -33,10 +33,24 @@ in
     {
       containers = {
         ${name} = {
+          serviceConfig = {
+            ExecStartPre = lib.mkBefore [
+              (pkgs.writeShellScript "${name}-cleanup-locks" ''
+                set -eu
+
+                rm -f \
+                  /persist/${name}/config/qBittorrent/lockfile \
+                  /persist/${name}/config/qBittorrent/ipc-socket
+              '')
+            ];
+            TimeoutStopSec = "120s";
+          };
+
           containerConfig = {
             image = "lscr.io/linuxserver/qbittorrent:latest";
             autoUpdate = "registry";
             memory = "8g";
+            stopTimeout = 60;
             networks = [ networks.${name}.ref ];
             ip = "10.90.84.2";
             volumes = [
