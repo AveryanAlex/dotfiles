@@ -61,6 +61,7 @@
   ];
 
   services.resolved.enable = lib.mkForce false;
+  networking.resolvconf.enable = false;
   environment.etc."resolv.conf".text = ''
     options edns0
     nameserver 95.165.105.90
