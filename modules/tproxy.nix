@@ -6,6 +6,16 @@
 # headers, so the original destination is preserved for both TCP and UDP. Local
 # output traffic is handled via a fwmark + policy-routing re-injection trick
 # (mark -> table -> `local default dev lo` -> prerouting -> tproxy).
+#
+# UDP caveat: some backends, including mihomo's UDP TProxy listener, deliver
+# packets back to the local application by opening an IP_TRANSPARENT UDP socket
+# bound to the original peer address/port. That can fail with EADDRINUSE when
+# a local UDP daemon is wildcard-bound to the same port as the remote peer, for
+# example local Nebula on *:4242 sending to whale:4242. A broad skipPorts rule
+# avoids the backend socket path but also forces those flows DIRECT, which is
+# wrong for ports that sometimes need proxy routing. Prefer unique fixed listen
+# ports per peer protocol node, TUN/raw-packet backend handling, or a narrowly
+# scoped bypass only when DIRECT is always correct.
 {
   lib,
   config,
@@ -147,12 +157,12 @@ let
       udpDport = if udpPorts == [ ] then "" else " udp dport { ${renderPorts udpPorts} }";
     in
     (optionalString (tcpPorts != [ ]) ''
-      meta nfproto ipv4 meta l4proto tcp${tcpDport} tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark}
-      meta nfproto ipv6 meta l4proto tcp${tcpDport} tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark}
+      meta nfproto ipv4 meta l4proto tcp${tcpDport} tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark} counter
+      meta nfproto ipv6 meta l4proto tcp${tcpDport} tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark} counter
     '')
     + (optionalString (udpPorts != [ ]) ''
-      meta nfproto ipv4 meta l4proto udp${udpDport} tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark}
-      meta nfproto ipv6 meta l4proto udp${udpDport} tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark}
+      meta nfproto ipv4 meta l4proto udp${udpDport} tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark} counter
+      meta nfproto ipv6 meta l4proto udp${udpDport} tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark} counter
     '');
 
   # Mark-set rules for the output chain (no tproxy statement — that happens
@@ -167,10 +177,10 @@ let
       udpDport = if udpPorts == [ ] then "" else " udp dport { ${renderPorts udpPorts} }";
     in
     (optionalString (tcpPorts != [ ]) ''
-      meta l4proto tcp${tcpDport} meta mark set ${toString cfg.mark}
+      meta l4proto tcp${tcpDport} meta mark set ${toString cfg.mark} counter
     '')
     + (optionalString (udpPorts != [ ]) ''
-      meta l4proto udp${udpDport} meta mark set ${toString cfg.mark}
+      meta l4proto udp${udpDport} meta mark set ${toString cfg.mark} counter
     '');
 
   # Source-CIDR filter: when set, only traffic whose source matches one of the
@@ -185,21 +195,21 @@ let
       (
         if v4 != [ ] then
           ''
-            meta nfproto ipv4 ip saddr != { ${commaList v4} } return
+            meta nfproto ipv4 ip saddr != { ${commaList v4} } counter return
           ''
         else
           ''
-            meta nfproto ipv4 return
+            meta nfproto ipv4 counter return
           ''
       )
       + (
         if v6 != [ ] then
           ''
-            meta nfproto ipv6 ip6 saddr != { ${commaList v6} } return
+            meta nfproto ipv6 ip6 saddr != { ${commaList v6} } counter return
           ''
         else
           ''
-            meta nfproto ipv6 return
+            meta nfproto ipv6 counter return
           ''
       )
     );
@@ -221,7 +231,7 @@ let
     let
       uid = if builtins.isInt u then u else config.users.users.${u}.uid;
     in
-    "meta skuid ${toString uid} return  # ${toString u}";
+    "meta skuid ${toString uid} counter return  # ${toString u}";
 
   # Shared option set used by both output and each forward.<iface> submodule.
   # Each field: null = inherit defaults, [] = clear, explicit = override.
@@ -627,6 +637,20 @@ in
     # Safe because the mark is only set by our own nft rules, never by
     # external sources.
     networking.firewall.extraReversePathFilterRules = mkIf (hasOutput || hasForward) ''
+      meta mark ${toString cfg.mark} counter accept
+    '';
+
+    # Same exemption for the input filter chain. After tproxy delivers a
+    # forwarded packet locally, INPUT runs with the *original* dport (e.g.
+    # 443) and iif (e.g. end0) still in the IP header -- tproxy does NOT
+    # rewrite headers, only the socket lookup. nixos-fw input-allow only
+    # opens cfg.port (18298) for forward iifs, so a tproxy'd connection to
+    # 443 has no matching rule and falls through the policy=drop default.
+    # Hosts that happen to run nginx/DNS on 443/53 (e.g. whale) mask this
+    # gap by accident; hosts that don't (e.g. lizard) silently break LAN
+    # forwarding. Accepting on mark is safe for the same reason the
+    # rpfilter exemption is: only our own nft chains ever set this mark.
+    networking.firewall.extraInputRules = mkIf (hasOutput || hasForward) ''
       meta mark ${toString cfg.mark} accept
     '';
   };
