@@ -13,36 +13,36 @@ in
 {
   hm.programs.claude-code = {
     enable = true;
-    context = ./opencode-rules.md;
-    settings = {
-      skipDangerousModePermissionPrompt = true;
-
-      effortLevel = "high";
-
-      attribution = {
-        commit = "";
-        pr = "";
-      };
-      includeCoAuthoredBy = false;
-      git = {
-        includeCoAuthor = false;
-        includePRFooter = false;
-      };
-
-      enabledPlugins = {
-        "claude-code-wakatime@wakatime" = true;
-        "rust-analyzer-lsp@claude-plugins-official" = true;
-        # "beads@beads-marketplace" = true;
-        "frontend-design@claude-plugins-official" = true;
-        "typescript-lsp@claude-plugins-official" = true;
-        "superpowers@claude-plugins-official" = true;
-        "context7@claude-plugins-official" = true;
-        "code-simplifier@claude-plugins-official" = true;
-        "pyright-lsp@claude-plugins-official" = true;
-        # "safety-net@cc-marketplace" = true;
-      };
-      permissions.additionalDirectories = [ "~/.cargo" ];
-    };
+    #     context = ./opencode-rules.md;
+    #     settings = {
+    #       skipDangerousModePermissionPrompt = true;
+    #
+    #       effortLevel = "high";
+    #
+    #       attribution = {
+    #         commit = "";
+    #         pr = "";
+    #       };
+    #       includeCoAuthoredBy = false;
+    #       git = {
+    #         includeCoAuthor = false;
+    #         includePRFooter = false;
+    #       };
+    #
+    #       enabledPlugins = {
+    #         "claude-code-wakatime@wakatime" = true;
+    #         "rust-analyzer-lsp@claude-plugins-official" = true;
+    #         # "beads@beads-marketplace" = true;
+    #         "frontend-design@claude-plugins-official" = true;
+    #         "typescript-lsp@claude-plugins-official" = true;
+    #         "superpowers@claude-plugins-official" = true;
+    #         "context7@claude-plugins-official" = true;
+    #         "code-simplifier@claude-plugins-official" = true;
+    #         "pyright-lsp@claude-plugins-official" = true;
+    #         # "safety-net@cc-marketplace" = true;
+    #       };
+    #       permissions.additionalDirectories = [ "~/.cargo" ];
+    #     };
   };
 
   hm.home.packages = [ vibe ];
