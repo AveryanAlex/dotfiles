@@ -106,6 +106,15 @@ in
           override = {
             udp = true;
             udp-over-tcp = false;
+            # Mirror Happ's `sockopt.dialerProxy: WL-IN` design: every akenai
+            # exit dials its underlying TCP through the `RU Sites` group
+            # (fallback over DIRECT -> WL-01 -> WL-02). When DIRECT can reach
+            # akenai EU IPs the fallback picks DIRECT and there is no extra
+            # hop; when DIRECT fails its gstatic probe (akenai-EU
+            # whitelist-only) the chain transparently switches to a Russian
+            # WL node so the inner REALITY handshake to e.g. de-mirror lands
+            # via a host that *is* allowed to reach it.
+            # dialer-proxy = "RU Sites";
           };
         };
 
@@ -168,6 +177,17 @@ in
             filter = "Финляндия|Австрия|Чехия|Нидерланды";
           }
           {
+            name = "AI";
+            type = "fallback";
+            url = "https://www.gstatic.com/generate_204";
+            interval = 300;
+            lazy = true;
+            proxies = [
+              "__USA"
+              "__Canada"
+            ];
+          }
+          {
             name = "__Sweden";
             type = "select";
             hidden = true;
@@ -180,6 +200,20 @@ in
             hidden = true;
             use = [ "akenai" ];
             filter = "Германия";
+          }
+          {
+            name = "__USA";
+            type = "select";
+            hidden = true;
+            use = [ "akenai" ];
+            filter = "США";
+          }
+          {
+            name = "__Canada";
+            type = "select";
+            hidden = true;
+            use = [ "akenai" ];
+            filter = "Канада";
           }
           # Dedicated latency-based group for Telegram. Probes
           # core.telegram.org so the elected node reflects actual Telegram
@@ -197,17 +231,27 @@ in
             use = [ "akenai" ];
             filter = "Германия|Швеция|Финляндия|Австрия|Чехия|Нидерланды";
           }
+          # RU Sites mirrors Happ's WL-BALANCER + 01/02-FALLBACK loop chain.
+          # `fallback` is checked top-to-bottom by health probe, so the order
+          # matters: try DIRECT first (cheapest, fast for non-geoblocked RU
+          # sites), then the Russian-located WL-01 pool, then the Yandex-CDN
+          # WL-02 pool. Probe interval is short because RU geo-policies flip
+          # quickly (entire CDNs can start blackholing foreign IPs within
+          # minutes during incidents).
+          #
+          # Mihomo's `fallback` only switches when the probe URL fails -- it
+          # cannot mid-stream-reroute the way Xray's loopback inbound trick
+          # does. For nodes that are TCP-up but app-broken, expect a one-
+          # interval stall before failover.
           {
             name = "RU Sites";
-            type = "select";
-            interval = 300;
+            type = "fallback";
             url = "https://www.gstatic.com/generate_204";
+            interval = 60;
+            # lazy = true;
             proxies = [
               "DIRECT"
-              "Proxy"
             ];
-            use = [ "akenai" ];
-            filter = "Россия";
           }
           {
             name = "YouTube";
@@ -288,6 +332,8 @@ in
         };
 
         rules = [
+          "DOMAIN-SUFFIX,chatgpt.com,AI"
+          "DOMAIN-SUFFIX,openai.com,AI"
           "RULE-SET,geoip-private,DIRECT,no-resolve"
           "RULE-SET,geosite-private,DIRECT"
           "AND,((NETWORK,udp),(DST-PORT,443)),REJECT"
