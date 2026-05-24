@@ -1,4 +1,9 @@
-{ inputs, lib, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = [
     ../../roles/core
@@ -18,7 +23,9 @@
     ./frigate.nix
   ];
 
-  hardware.bluetooth.enable = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # hardware.bluetooth.enable = true;
 
   persist.enable = lib.mkForce false;
 
