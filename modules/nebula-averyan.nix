@@ -8,6 +8,25 @@
 with lib;
 let
   cfg = config.networking.nebula-averyan;
+  # Keep fixed Nebula ports unique per host. Mihomo's UDP TProxy writeback
+  # path can collide with local wildcard listeners when a node listens on the
+  # same port as the remote peer it is dialing.
+  listenPorts = {
+    whale = 4242;
+    falcon = 42020;
+    hawk = 42021;
+    lizard = 42030;
+    beaver = 42031;
+    alligator = 42040;
+    hamster = 42041;
+    diamond = 42050;
+    grizzly = 42060;
+    ferret = 42070;
+  };
+  defaultListenPort = attrByPath [ config.networking.hostName ] (
+    if cfg.isLighthouse then 4242 else 0
+  ) listenPorts;
+  effectiveListenPort = if cfg.listenPort != null then cfg.listenPort else defaultListenPort;
 in
 {
   options = {
@@ -21,6 +40,15 @@ in
         type = types.bool;
         default = false;
         description = "Whether to configure this node as lighthouse.";
+      };
+      listenPort = mkOption {
+        type = types.nullOr types.port;
+        default = null;
+        description = ''
+          UDP port Nebula binds for handshakes. null means the module's
+          deterministic per-host port, falling back to 4242 for unknown
+          lighthouses and an ephemeral port for unknown roaming nodes.
+        '';
       };
       firewall = {
         outbound = mkOption {
@@ -52,9 +80,14 @@ in
   };
 
   config = mkIf cfg.enable {
-    # Nebula's listen port must bypass tproxy so peer-to-peer UDP isn't
-    # intercepted and routed through mihomo.
-    networking.tproxy.skipPorts.any = [ 4242 ];
+    # Do not globally bypass Nebula's UDP port in tproxy: some paths need to
+    # go through the RU whitelist proxies. Known nodes use unique fixed ports
+    # instead, so LAN peers can pass firewall rules while mihomo's UDP TProxy
+    # writeback socket does not collide with another wildcard listener on the
+    # same port.
+    # networking.tproxy.skipPorts.any = [ 4242 ];
+
+    networking.firewall.allowedUDPPorts = optional (effectiveListenPort != 0) effectiveListenPort;
 
     users.users.nebula-averyan.uid = 864;
 
@@ -82,7 +115,7 @@ in
       cert = config.age.secrets.nebula-averyan-crt.path;
       ca = config.age.secrets.nebula-averyan-ca.path;
 
-      listen.port = 4242;
+      listen.port = effectiveListenPort;
       isLighthouse = cfg.isLighthouse;
 
       lighthouses = mkIf (!cfg.isLighthouse) [ "10.57.1.10" ];
@@ -91,7 +124,6 @@ in
           "95.165.105.90:4242"
           "192.168.3.1:4242"
         ];
-        "10.57.1.30" = [ "192.168.7.155:4242" ];
         # "10.57.1.20" = [
         #   "150.241.67.193:4242"
         #   # "10.8.7.1:4242"
