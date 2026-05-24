@@ -14,12 +14,14 @@
       controlMaster = "no";
       controlPath = "~/.ssh/master-%r@%n:%p";
       controlPersist = "no";
+      # Only use keys from the agent or explicit IdentityFile — don't probe default paths
+      extraOptions.IdentitiesOnly = "yes";
     };
 
     matchBlocks."serv1.asc.rssi.ru" = {
       forwardAgent = true;
       user = "averyan";
-      # hostname = "localhost";
+      # hostname = "whale";
       # port = 3122;
     };
 
