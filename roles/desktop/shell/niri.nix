@@ -140,6 +140,12 @@ in
           "Shift+Print".action.screenshot-screen = { };
           "Mod+Print".action.screenshot-window = { };
 
+          "Mod+T" = spawn [
+            "flatpak"
+            "run"
+            "--command=io.github.alainm23.planify.quick-add"
+            "io.github.alainm23.planify"
+          ];
         }
         // (lib.listToAttrs (
           map (n: {
