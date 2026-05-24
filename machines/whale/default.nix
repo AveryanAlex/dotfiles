@@ -100,6 +100,8 @@ in
     ../../apps/qbit
   ];
 
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   networking.tproxy.output.enable = true;
   networking.tproxy.forward.${lan} = { };
 
