@@ -32,10 +32,11 @@ in
             volumes = [
               "/persist/${name}:/app"
               "/home/alex/tank/hot/Downloads/Soulseek:/home/alex/tank/hot/Downloads/Soulseek"
+              "/home/alex/tank/hot/Music:/home/alex/tank/hot/Music"
             ];
             environments = {
               SLSKD_REMOTE_CONFIGURATION = "true";
-              # SLSKD_SHARED_DIR = "/music";
+              SLSKD_SHARED_DIR = "/home/alex/tank/hot/Music";
               # TZ = "Europe/Moscow";
             };
             user = "1000:100";
