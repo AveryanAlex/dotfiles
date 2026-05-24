@@ -3,6 +3,12 @@
   imports = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
 
   services.flatpak = {
+    packages = [
+      "com.obsproject.Studio"
+      "org.gnome.Papers"
+      "org.libreoffice.LibreOffice"
+    ];
+
     remotes = [
       {
         name = "flathub";

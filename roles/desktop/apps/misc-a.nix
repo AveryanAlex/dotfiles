@@ -37,8 +37,8 @@
 
       # File viewers
       # gthumb # gtk image viewer
-      evince # gnome document viewer
-      papers
+      # evince # gnome document viewer
+      # papers
       # f3d # simple 3d viewer
 
       # 3D modeling
@@ -55,7 +55,7 @@
 
       # Etc
       # tor-browser-bundle-bin # anonymous browsing
-      libreoffice-fresh # office
+      # libreoffice-fresh # office
       # octaveFull # math software
       # kgraphviewer # graphviz viewer
       # stellarium # planetarium
@@ -79,7 +79,7 @@
     xdg.mimeApps = {
       enable = true;
       defaultApplications = {
-        "application/pdf" = "org.gnome.Evince.desktop";
+        "application/pdf" = "org.gnome.Papers.desktop";
         "text/html" = "firefox.desktop";
         "x-scheme-handler/http" = "firefox.desktop";
         "x-scheme-handler/https" = "firefox.desktop";
@@ -90,7 +90,7 @@
 
     # services.kdeconnect.enable = true;
 
-    programs.obs-studio.enable = true;
+    # programs.obs-studio.enable = true;
   };
 
   # nixpkgs.config.permittedInsecurePackages = [
