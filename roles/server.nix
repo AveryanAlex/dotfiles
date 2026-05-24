@@ -25,6 +25,8 @@
   powerManagement.cpuFreqGovernor = lib.mkDefault "performance";
 
   boot.kernel.sysctl = {
+    # CAP_SYS_PTRACE only: no debuggers on servers, block credential dumping
+    "kernel.yama.ptrace_scope" = 2;
     # VM tuning for server throughput
     "vm.dirty_ratio" = 40;
     "vm.dirty_background_ratio" = 10;
