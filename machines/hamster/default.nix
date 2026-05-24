@@ -26,11 +26,11 @@
 
   persist.tmpfsSize = "6G";
 
-  # services.power-profiles-daemon.enable = false;
+  services.power-profiles-daemon.enable = false;
   services.tlp = {
-    # enable = true;
+    enable = true;
     settings = {
-      STOP_CHARGE_THRESH_BAT0 = 1;
+      STOP_CHARGE_THRESH_BAT0 = 100;
     };
   };
 
