@@ -19,6 +19,9 @@
       ".superpowers"
       ".wakatime-project"
       "**/.claude/settings.local.json"
+      ".opencode/plans"
+      ".opencode/specs"
+      ".opencode/brainstorm"
     ];
 
     settings = {
