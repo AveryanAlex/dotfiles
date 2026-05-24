@@ -3,32 +3,32 @@
     enable = true;
     enableDefaultConfig = false;
 
-    matchBlocks."*" = {
-      forwardAgent = false;
-      addKeysToAgent = "yes";
-      compression = false;
-      serverAliveInterval = 0;
-      serverAliveCountMax = 3;
-      hashKnownHosts = false;
-      userKnownHostsFile = "~/.ssh/known_hosts";
-      controlMaster = "no";
-      controlPath = "~/.ssh/master-%r@%n:%p";
-      controlPersist = "no";
+    settings."*" = {
+      ForwardAgent = false;
+      AddKeysToAgent = "yes";
+      Compression = false;
+      ServerAliveInterval = 0;
+      ServerAliveCountMax = 3;
+      HashKnownHosts = false;
+      UserKnownHostsFile = "~/.ssh/known_hosts";
+      ControlMaster = "no";
+      ControlPath = "~/.ssh/master-%r@%n:%p";
+      ControlPersist = "no";
       # Only use keys from the agent or explicit IdentityFile — don't probe default paths
-      extraOptions.IdentitiesOnly = "yes";
+      IdentitiesOnly = "yes";
     };
 
-    matchBlocks."serv1.asc.rssi.ru" = {
-      forwardAgent = true;
-      user = "averyan";
-      # hostname = "whale";
-      # port = 3122;
+    settings."serv1.asc.rssi.ru" = {
+      ForwardAgent = true;
+      User = "averyan";
+      # HostName = "whale";
+      # Port = 3122;
     };
 
-    matchBlocks."circles.averyan.ru" = {
-      forwardAgent = true;
-      user = "ubuntu";
-      hostname = "195.209.218.189";
+    settings."circles.averyan.ru" = {
+      ForwardAgent = true;
+      User = "ubuntu";
+      HostName = "195.209.218.189";
     };
   };
 }
