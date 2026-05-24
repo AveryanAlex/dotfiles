@@ -3,9 +3,45 @@
   persist.enable = lib.mkForce false;
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/427a2dc1-f576-4e69-a439-5846acd44027";
-    fsType = "ext4";
-    options = [ "discard" ];
+    device = "/dev/alligator/root";
+    fsType = "btrfs";
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@"
+    ];
+  };
+
+  fileSystems."/home" = {
+    device = "/dev/alligator/root";
+    fsType = "btrfs";
+    neededForBoot = true;
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@home"
+    ];
+  };
+
+  fileSystems."/nix" = {
+    device = "/dev/alligator/root";
+    fsType = "btrfs";
+    neededForBoot = true;
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@nix"
+    ];
+  };
+
+  fileSystems."/var/log" = {
+    device = "/dev/alligator/root";
+    fsType = "btrfs";
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@logs"
+    ];
   };
 
   fileSystems."/boot" = {
