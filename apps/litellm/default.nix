@@ -1,5 +1,22 @@
 let
   name = "litellm";
+  vhost = acmeHost: {
+    useACMEHost = acmeHost;
+    forceSSL = true;
+
+    locations."/" = {
+      proxyPass = "http://10.90.95.2:4000";
+      proxyWebsockets = true;
+
+      extraConfig = ''
+        proxy_connect_timeout 900s;
+        proxy_send_timeout 900s;
+        proxy_read_timeout 900s;
+        send_timeout 900s;
+        proxy_buffering off;
+      '';
+    };
+  };
 in
 { config, ... }:
 {
@@ -8,23 +25,8 @@ in
   ];
 
   services.nginx.virtualHosts = {
-    "litellm.averyan.ru" = {
-      useACMEHost = "averyan.ru";
-      forceSSL = true;
-
-      locations."/" = {
-        proxyPass = "http://10.90.95.2:4000";
-        proxyWebsockets = true;
-
-        extraConfig = ''
-          proxy_connect_timeout 900s;
-          proxy_send_timeout 900s;
-          proxy_read_timeout 900s;
-          send_timeout 900s;
-          proxy_buffering off;
-        '';
-      };
-    };
+    "litellm.averyan.ru" = vhost "averyan.ru";
+    "litellm.neutrino.su" = vhost "neutrino.su";
   };
 
   # TODO: restrict nebula egress to specific hosts/ports instead of full network access

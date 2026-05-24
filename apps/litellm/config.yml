@@ -11,9 +11,9 @@ litellm_settings:
   json_logs: true
 
   max_internal_user_budget: 1000
-  internal_user_budget_duration: "1mo"
+  internal_user_budget_duration: "1m"
 
   default_internal_user_params:
     user_role: "internal_user"
-    max_budget: 10
-    budget_duration: 30d
+    max_budget: 0
+    budget_duration: 1m

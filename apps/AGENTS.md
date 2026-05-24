@@ -46,8 +46,11 @@ Use this tree for containerized services; native NixOS services belong in `profi
 | `10.90.93.0/24` | `prowlarr` |
 | `10.90.94.0/24` | `mtproto` |
 | `10.90.95.0/24` | `litellm` |
+| `10.90.96.0/24` | `cliproxyapi` |
+| `10.90.97.0/24` | `omniroute` |
+| `10.90.98.0/24` | `aptabase` |
 
-`reelsgen` currently omits an explicit subnet. If you need a new explicit app network, pick an unused `/24` after checking this table; `10.90.83.0/24` and `10.90.96.0/24+` are currently unused in `apps/`.
+`reelsgen` currently omits an explicit subnet. If you need a new explicit app network, pick an unused `/24` after checking this table; `10.90.83.0/24` and `10.90.99.0/24+` are currently unused in `apps/`.
 
 ## UID/GID MAPS
 
