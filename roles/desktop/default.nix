@@ -50,6 +50,9 @@
   # programs.appimage.enable = true;
   # environment.systemPackages = with pkgs; [ocl-icd];
 
+  # Parent-only: block cross-process ptrace (credential dumping from agents)
+  boot.kernel.sysctl."kernel.yama.ptrace_scope" = 1;
+
   nixcfg.desktop = true;
 
   # hm.services.network-manager-applet.enable = true;
