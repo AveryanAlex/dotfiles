@@ -53,7 +53,6 @@ in
 
     privateNetwork = true;
     hostBridge = "vms";
-    localAddress = "192.168.12.50/24";
 
     extraFlags = [
       "--system-call-filter=@keyring"
@@ -99,6 +98,15 @@ in
         system.stateVersion = "23.05";
 
         networking = {
+          # Configure eth0 inside the container so NixOS also installs the
+          # declared defaultGateway. Top-level localAddress with hostBridge is
+          # preconfigured by container-init before scripted networking runs.
+          interfaces.eth0.ipv4.addresses = [
+            {
+              address = "192.168.12.50";
+              prefixLength = 24;
+            }
+          ];
           defaultGateway = {
             address = "192.168.12.1";
             interface = "eth0";

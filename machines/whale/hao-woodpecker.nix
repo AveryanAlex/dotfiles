@@ -33,7 +33,6 @@
 
     privateNetwork = true;
     hostBridge = "haowpbr";
-    localAddress = "192.168.31.2/24";
 
     extraFlags = [
       "--system-call-filter=@keyring"
@@ -67,6 +66,15 @@
         ];
 
         networking = {
+          # Configure eth0 inside the container so NixOS also installs the
+          # declared defaultGateway. Top-level localAddress with hostBridge is
+          # preconfigured by container-init before scripted networking runs.
+          interfaces.eth0.ipv4.addresses = [
+            {
+              address = "192.168.31.2";
+              prefixLength = 24;
+            }
+          ];
           defaultGateway = {
             address = "192.168.31.1";
             interface = "eth0";

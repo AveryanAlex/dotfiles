@@ -48,7 +48,6 @@
 
     privateNetwork = true;
     hostBridge = "dockerbr";
-    localAddress = "192.168.30.2/24";
 
     extraFlags = [
       "--system-call-filter=@keyring"
@@ -86,6 +85,17 @@
         ];
 
         networking = {
+          # Configure eth0 inside the container instead of using top-level
+          # localAddress. With hostBridge + localAddress, current nixpkgs
+          # preconfigures the address in container-init but does not install
+          # the declared defaultGateway, leaving the container without a
+          # default route.
+          interfaces.eth0.ipv4.addresses = [
+            {
+              address = "192.168.30.2";
+              prefixLength = 24;
+            }
+          ];
           defaultGateway = {
             address = "192.168.30.1";
             interface = "eth0";
