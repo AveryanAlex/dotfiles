@@ -10,7 +10,7 @@
     ./jq.nix
     ./misc-s.nix
     ./nethogs.nix
-    ./neovim
+    # ./neovim
     ./ssh.nix
     ./tmux.nix
     ./tmux-auto.nix
