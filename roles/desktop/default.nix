@@ -19,6 +19,7 @@
     ./tuning.nix
     ./tank.nix
     ./distrobox.nix
+    ./lc3.nix
     ../../profiles/embedded.nix
     ../../profiles/filemanager.nix
     ../../profiles/flatpak.nix
