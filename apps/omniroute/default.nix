@@ -36,7 +36,7 @@ in
     {
       containers.${name} = {
         containerConfig = {
-          image = "ghcr.io/averyanalex/omniroute:latest";
+          image = "docker.io/diegosouzapw/omniroute:latest"; # "ghcr.io/averyanalex/omniroute:latest";
           autoUpdate = "registry";
           memory = "5g";
           networks = [ networks.${name}.ref ];
@@ -44,12 +44,23 @@ in
           volumes = [ "/persist/${name}/data:/app/data" ];
           environments = {
             AUTH_COOKIE_SECURE = "true";
+            # Main request/history analytics
+            CALL_LOG_RETENTION_DAYS = "365000";
+            CALL_LOG_MAX_ENTRIES = "2147483647";
+            CALL_LOGS_TABLE_MAX_ROWS = "2147483647";
             DATA_DIR = "/app/data";
             HOSTNAME = "0.0.0.0";
             NEXT_PUBLIC_BASE_URL = "https://omniroute.neutrino.su";
             NODE_OPTIONS = "--max-old-space-size=4096";
             REQUIRE_API_KEY = "true";
             TZ = "Europe/Moscow";
+            # App/audit/proxy logs
+            APP_LOG_RETENTION_DAYS = "365000";
+            APP_LOG_MAX_FILES = "2147483647";
+            PROXY_LOGS_TABLE_MAX_ROWS = "2147483647";
+            # DB backup cleanup
+            DB_BACKUP_RETENTION_DAYS = "0";
+            DB_BACKUP_MAX_FILES = "2147483647";
           };
           environmentFiles = [ config.age.secrets.${name}.path ];
           gidMaps = [ "0:100000:100000" ];

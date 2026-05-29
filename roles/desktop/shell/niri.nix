@@ -91,7 +91,7 @@ in
 
           # Window management
           "Mod+Q".action.close-window = { };
-          "Mod+F".action.maximize-column = { };
+          "Mod+F".action.maximize-window-to-edges = { };
           "Mod+Shift+F".action.fullscreen-window = { };
           "Mod+Shift+V".action.toggle-window-floating = { };
 

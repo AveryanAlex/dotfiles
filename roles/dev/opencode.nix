@@ -141,7 +141,7 @@ in
   hm.home.sessionVariables = {
     OMO_SEND_ANONYMOUS_TELEMETRY = "0";
     OMO_DISABLE_POSTHOG = "1";
-    OPENCODE_EXPERIMENTAL = "true";
+    # OPENCODE_EXPERIMENTAL = "true";
     RTK_TELEMETRY_DISABLED = "1";
   };
 

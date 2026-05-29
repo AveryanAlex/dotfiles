@@ -1,7 +1,12 @@
 {pkgs, ...}: {
   hm = {
     # enable distrobox
-    programs.distrobox.enable = true;
+    programs.distrobox = {
+      enable = true;
+      settings = {
+        container_manager = "lilipod";
+      };
+    };
 
     home.packages = with pkgs; [lilipod];
 
