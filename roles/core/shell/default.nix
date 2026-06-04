@@ -10,6 +10,7 @@
     ./jq.nix
     ./misc-s.nix
     ./nethogs.nix
+    ./onefetch.nix
     # ./neovim
     ./ssh.nix
     ./tmux.nix
