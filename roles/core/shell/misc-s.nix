@@ -43,6 +43,7 @@
       immich-cli
       jq
       arp-scan
+      tokei
     ];
 
     home.sessionVariables = {
