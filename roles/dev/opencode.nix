@@ -1,5 +1,11 @@
-{ pkgs, ... }:
+{
+  inputs,
+  pkgs,
+  ...
+}:
 let
+  llmAgents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+
   gpt-55 = {
     model = "openai/gpt-5.5";
   };
@@ -89,6 +95,7 @@ in
 {
   hm.programs.opencode = {
     enable = true;
+    package = llmAgents.opencode;
     # enableMcpIntegration = true;
     # settings = {
     #   enabled_providers = [

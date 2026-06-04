@@ -1,7 +1,15 @@
-{ ... }:
+{
+  inputs,
+  pkgs,
+  ...
+}:
+let
+  llmAgents = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
+in
 {
   hm.programs.codex = {
     enable = true;
+    package = llmAgents.codex;
     # enableMcpIntegration = true;
     #     settings = {
     #       # Grants unrestricted system access: AI can read/write any file and execute

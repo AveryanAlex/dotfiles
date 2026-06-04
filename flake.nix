@@ -23,6 +23,7 @@
     nixos-hardware.url = "github:nixos/nixos-hardware";
 
     flake-utils.url = "github:numtide/flake-utils";
+    llm-agents.url = "github:numtide/llm-agents.nix";
     rust-overlay.url = "github:oxalica/rust-overlay";
 
     ragenix = {
