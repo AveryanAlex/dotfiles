@@ -25,8 +25,10 @@
   # virtualisation.podman.dockerSocket.enable = true;
   # TODO: monitoring
 
-  # remove once is will be default value
-  virtualisation.quadlet.autoEscape = true;
+  virtualisation.quadlet.autoUpdate = {
+    enable = true;
+    calendar = "*-*-* 04:00:00";
+  };
 
   # pme-* external, pmi-* internal
 
