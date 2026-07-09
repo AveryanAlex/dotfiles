@@ -94,6 +94,7 @@ in
 
     ./ardupilot-proxy.nix
     ../../apps/aptabase
+    ../../apps/memexpert
     # ../../apps/cinemabot
     ../../apps/wakapi
     # ../../apps/s2sbot
