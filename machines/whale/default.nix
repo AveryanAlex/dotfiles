@@ -91,8 +91,8 @@ in
     # ./hermes.nix
     ./hao-woodpecker.nix
     ./xray.nix
-
     ./ardupilot-proxy.nix
+
     ../../apps/aptabase
     ../../apps/memexpert
     # ../../apps/cinemabot
@@ -181,8 +181,8 @@ in
         proxy_send_timeout 600;
       '';
     };
-    "hydra.averyan.ru" = makeAveryanHost "http://whale:2875";
     "hermes.averyan.ru" = makeAveryanHost "http://10.77.0.45:9119";
+    "hydra.averyan.ru" = makeAveryanHost "http://whale:2875";
     "ntfy.averyan.ru" = makeAveryanHost "http://127.0.0.1:8163";
     "oc.averyan.ru" = makeAveryanHost "http://alligator:8088" // {
       # basicAuthFile = config.age.secrets.openchamber-http-basic-auth.path;
