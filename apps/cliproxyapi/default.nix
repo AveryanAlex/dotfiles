@@ -63,7 +63,7 @@ in
         containerConfig = {
           image = "docker.io/eceasy/cli-proxy-api:latest";
           autoUpdate = "registry";
-          memory = "1g";
+          memory = "4g";
           networks = [ networks.${name}.ref ];
           ip = "10.90.96.2";
           volumes = [
@@ -79,18 +79,6 @@ in
         };
         serviceConfig = {
           EnvironmentFile = config.age.secrets.${name}.path;
-          ExecStartPre = lib.mkBefore [
-            (pkgs.writeShellScript "${name}-render-config" ''
-              set -eu
-
-              ${pkgs.envsubst}/bin/envsubst \
-                < ${./config.yaml} \
-                > /persist/${name}/config.yaml
-
-              chmod 600 /persist/${name}/config.yaml
-              chown 100000:100000 /persist/${name}/config.yaml
-            '')
-          ];
         };
       };
 

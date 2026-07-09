@@ -4,7 +4,7 @@ in
 { config, ... }:
 {
   systemd.tmpfiles.rules = [
-    "d /persist/${name}/data 700 100000 100000 - -"
+    "d /persist/${name}/data 700 101000 101000 - -"
   ];
 
   services.nginx.virtualHosts."omniroute.neutrino.su" = {
@@ -28,6 +28,10 @@ in
   age.secrets.${name}.file = ./main.age;
 
   networking.tproxy.forward."pme-${name}" = { };
+
+  networking.firewall.interfaces."pme-${name}".allowedTCPPorts = [
+    8080 # http proxy
+  ];
 
   virtualisation.quadlet =
     let

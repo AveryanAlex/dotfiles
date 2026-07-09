@@ -102,8 +102,8 @@ in
     ../../apps/nextcloud
     ../../apps/newsrelay
     ../../apps/litellm
-    # ../../apps/cliproxyapi
-    ../../apps/omniroute
+    ../../apps/cliproxyapi
+    # ../../apps/omniroute
     # ../../apps/mtproto
     ../../apps/qbit
   ];
