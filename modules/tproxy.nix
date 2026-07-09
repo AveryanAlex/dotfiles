@@ -462,7 +462,19 @@ in
     boot.kernelModules = [
       "nft_tproxy"
       "nft_socket"
+      "br_netfilter"
     ];
+
+    # bridge-netfilter runs inet prerouting from the bridge path, before the IP
+    # stack finalizes skb socket ownership. That breaks kernel TPROXY delivery for
+    # bridged Incus guests: nft counters increase, but the backend never accepts
+    # the connection. Routed/NAT traffic still traverses normal IP hooks with
+    # these disabled, which is what the tproxy module expects.
+    boot.kernel.sysctl = {
+      "net.bridge.bridge-nf-call-arptables" = 0;
+      "net.bridge.bridge-nf-call-ip6tables" = 0;
+      "net.bridge.bridge-nf-call-iptables" = 0;
+    };
 
     # Name avoids the `tproxy` keyword which nft's parser would consume as the
     # tproxy statement instead of as an identifier.
@@ -482,10 +494,12 @@ in
 
         # Divert catches packets that already belong to an existing transparent
         # socket (established flows). Runs before the main prerouting chain so
-        # those packets skip the tproxy statement entirely.
+        # those packets skip the tproxy statement entirely. It still has to set
+        # the routing mark: without it forwarded packets may leave the local
+        # delivery table on follow-up packets.
         chain divert {
           type filter hook prerouting priority mangle - 5; policy accept;
-          meta l4proto { tcp, udp } socket transparent 1 accept
+          meta l4proto { tcp, udp } socket transparent 1 meta mark set ${toString cfg.mark} counter accept
         }
 
         chain prerouting {

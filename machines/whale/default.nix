@@ -55,6 +55,7 @@ in
     # inputs.self.nixosModules.profiles.server.avtor24bot
     # inputs.self.nixosModules.profiles.server.aibox
 
+    ../../profiles/incus.nix
     ../../profiles/libvirt.nix
     ../../profiles/persist-yggdrasil.nix
     ../../profiles/remote-builder-host.nix
@@ -62,6 +63,7 @@ in
 
     ./hardware.nix
     ./mounts.nix
+    ./incus.nix
 
     # ./firesquare.nix
     ./hass.nix

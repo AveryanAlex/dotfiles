@@ -5,6 +5,7 @@
     ../../profiles/netman.nix
     ../../profiles/openrgb.nix
     ../../profiles/libvirt.nix
+    ../../profiles/incus.nix
     ../../profiles/persist-yggdrasil.nix
     ../../profiles/pmbootstrap.nix
     ../../roles/desktop
