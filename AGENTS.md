@@ -85,6 +85,7 @@ When adding or migrating packages, first trace the current machine's import chai
 - Persistent host data usually goes through `persist.state`, `persist.derivative`, or `persist.cache`. App containers are the main exception: they usually create `/persist/<app>/...` via `systemd.tmpfiles.rules`.
 - Hardware modules are referenced as `inputs.self.nixosModules.hardware.<name>`; custom modules as `inputs.self.nixosModules.modules.<name>`.
 - CI is split: GitHub Actions handles formatting and flake.lock updates; Woodpecker runs lint plus `nix flake check`.
+- For local NixOS switches, use `sudo nixos-rebuild switch --flake .`; do not use `nh`, because it is a human-facing utility with excessive interactive output.
 - `roles/family.nix` overrides `persist.username` to `olga` and locale to `ru_RU.UTF-8`; the family role is not `alex`-centric.
 - `roles/server.nix` imports core and adds server hardening: systemd watchdog, disabled sleep/suspend, BBR congestion control, and sysctl tuning.
 
@@ -103,8 +104,7 @@ When adding or migrating packages, first trace the current machine's import chai
 treefmt
 nix run nixpkgs#nixfmt-tree -- --ci
 nix flake check
-nh os build
-nh os switch
+sudo nixos-rebuild switch --flake .
 nix-instantiate --parse <path-to-file>.nix
 direnv allow
 ./deploy.sh <hostname> [switch|boot|test]
