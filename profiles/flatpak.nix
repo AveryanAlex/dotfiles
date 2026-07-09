@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ config, inputs, lib, ... }:
 {
   imports = [ inputs.nix-flatpak.nixosModules.nix-flatpak ];
 
@@ -7,7 +7,14 @@
       "com.obsproject.Studio"
       "org.gnome.Papers"
       "org.libreoffice.LibreOffice"
+      "com.brave.Browser"
+      "org.signal.Signal"
     ];
+
+    update.auto = {
+      enable = true;
+      onCalendar = "daily";
+    };
 
     remotes = [
       {
@@ -37,6 +44,19 @@
 
   services.flatpak.enable = true;
   services.dbus.enable = true;
+
+  systemd.services = {
+    flatpak-managed-install = {
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
+    };
+
+    flatpak-managed-install-timer = lib.mkIf config.services.flatpak.update.auto.enable {
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
+    };
+  };
+
   persist.state.dirs = [ "/var/lib/flatpak" ];
   persist.state.homeDirs = [ ".var/app" ];
 }
