@@ -91,6 +91,7 @@ in
     ./hao-woodpecker.nix
     ./xray.nix
 
+    ./ardupilot-proxy.nix
     ../../apps/aptabase
     # ../../apps/cinemabot
     ../../apps/wakapi
