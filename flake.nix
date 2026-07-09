@@ -19,6 +19,10 @@
     };
 
     quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nixos-hardware.url = "github:nixos/nixos-hardware";
 

@@ -88,6 +88,7 @@ in
     ./borgserve.nix
     ./printing.nix
     ./docker.nix
+    # ./hermes.nix
     ./hao-woodpecker.nix
     ./xray.nix
 
@@ -180,6 +181,7 @@ in
       '';
     };
     "hydra.averyan.ru" = makeAveryanHost "http://whale:2875";
+    "hermes.averyan.ru" = makeAveryanHost "http://10.77.0.45:9119";
     "ntfy.averyan.ru" = makeAveryanHost "http://127.0.0.1:8163";
     "oc.averyan.ru" = makeAveryanHost "http://alligator:8088" // {
       # basicAuthFile = config.age.secrets.openchamber-http-basic-auth.path;
