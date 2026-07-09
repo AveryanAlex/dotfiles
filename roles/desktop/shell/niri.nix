@@ -6,6 +6,34 @@
 }:
 let
   niri-pkgs = inputs.niri-flake.packages.${pkgs.system};
+  niri-vrr-toggle = pkgs.writeShellScript "niri-vrr-toggle" ''
+    set -eu
+
+    outputs_json="$(${niri-pkgs.niri-unstable}/bin/niri msg --json outputs)"
+
+    if printf '%s\n' "$outputs_json" | ${pkgs.jq}/bin/jq -e 'to_entries[] | select(.value.vrr_supported and .value.vrr_enabled)' >/dev/null; then
+      next=on-demand
+    else
+      next=on
+    fi
+
+    outputs="$(printf '%s\n' "$outputs_json" | ${pkgs.jq}/bin/jq -r 'to_entries[] | select(.value.vrr_supported) | .key')"
+    if [ -z "$outputs" ]; then
+      ${pkgs.libnotify}/bin/notify-send "niri VRR" "No VRR-capable outputs"
+      exit 0
+    fi
+
+    printf '%s\n' "$outputs" |
+    while IFS= read -r output; do
+      if [ "$next" = "on-demand" ]; then
+        ${niri-pkgs.niri-unstable}/bin/niri msg output "$output" vrr on --on-demand
+      else
+        ${niri-pkgs.niri-unstable}/bin/niri msg output "$output" vrr on
+      fi
+    done
+
+    ${pkgs.libnotify}/bin/notify-send "niri VRR" "VRR $next"
+  '';
 in
 {
   imports = [ inputs.niri-flake.nixosModules.niri ];
@@ -48,6 +76,7 @@ in
         };
         warp-mouse-to-focus.enable = true;
         focus-follows-mouse.enable = true;
+        focus-follows-mouse.max-scroll-amount = "0%";
         # workspace-auto-back-and-forth = true;
       };
 
@@ -139,6 +168,9 @@ in
           "Print".action.screenshot = { };
           "Shift+Print".action.screenshot-screen = { };
           "Mod+Print".action.screenshot-window = { };
+
+          # Display
+          "Mod+R" = spawn "${niri-vrr-toggle}";
 
           "Mod+T" = spawn [
             "flatpak"

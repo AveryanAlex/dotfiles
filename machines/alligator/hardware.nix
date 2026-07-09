@@ -34,11 +34,22 @@
   environment.systemPackages = [ pkgs.ddcutil ];
   boot.extraModulePackages = [ config.boot.kernelPackages.ddcci-driver ];
   boot.kernelModules = [ "ddcci" ];
+  # Xiaomi Mi Monitor (XMI3444) advertises a 48-144 Hz EDID VRR range,
+  # but keeps the AMDGPU DP DPCD FreeSync gate disabled when the OSD is stuck.
+  # Force VRR for this EDID and clamp the effective floor to 70 Hz to avoid
+  # low-refresh edge color artifacts.
+  boot.kernelPatches = [
+    {
+      name = "amdgpu-xmi3444-force-vrr";
+      patch = ./amdgpu-xmi3444-force-vrr.patch;
+    }
+  ];
 
   boot.kernelParams = [
     "video=DP-1:3440x1440@144"
   ];
   hm = {
+    programs.niri.settings.debug.skip-cursor-only-updates-during-vrr = [ ];
     programs.niri.settings.outputs."DP-1" = {
       mode = {
         width = 3440;
@@ -46,6 +57,7 @@
         refresh = 144.0;
       };
       scale = 1.25;
+      variable-refresh-rate = "on-demand";
       position = {
         x = 0;
         y = 0;

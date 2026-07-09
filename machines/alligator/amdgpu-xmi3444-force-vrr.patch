@@ -1,0 +1,28 @@
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 73b35204f3bf..7b8139468247 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -13267,6 +13267,9 @@ void amdgpu_dm_update_freesync_caps(struct drm_connector *connector,
+ 	const struct edid *edid;
+ 	bool freesync_capable = false;
+ 	enum adaptive_sync_type as_type = ADAPTIVE_SYNC_TYPE_NONE;
++	static const struct drm_edid_ident xmi3444_force_vrr_edid =
++		DRM_EDID_IDENT_INIT('X', 'M', 'I', 0x3444, "Mi Monitor");
++	bool force_vrr = drm_edid_match(drm_edid, &xmi3444_force_vrr_edid);
+ 
+ 	if (!connector->state) {
+ 		drm_err(adev_to_drm(adev), "%s - Connector has no state", __func__);
+@@ -13304,7 +13307,12 @@ void amdgpu_dm_update_freesync_caps(struct drm_connector *connector,
+ 	if (edid && (sink->sink_signal == SIGNAL_TYPE_DISPLAY_PORT ||
+ 		     sink->sink_signal == SIGNAL_TYPE_EDP)) {
+ 		if (amdgpu_dm_connector->dc_link &&
+-		    amdgpu_dm_connector->dc_link->dpcd_caps.allow_invalid_MSA_timing_param) {
++		    (amdgpu_dm_connector->dc_link->dpcd_caps.allow_invalid_MSA_timing_param ||
++		     force_vrr)) {
+			amdgpu_dm_connector->min_vfreq = connector->display_info.monitor_range.min_vfreq;
+			amdgpu_dm_connector->max_vfreq = connector->display_info.monitor_range.max_vfreq;
++			if (force_vrr && amdgpu_dm_connector->min_vfreq < 70) {
++				amdgpu_dm_connector->min_vfreq = 70;
++				connector->display_info.monitor_range.min_vfreq = 70;
++			}
+			if (amdgpu_dm_connector->max_vfreq - amdgpu_dm_connector->min_vfreq > 10)
