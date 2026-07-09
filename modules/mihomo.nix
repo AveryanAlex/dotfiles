@@ -171,5 +171,10 @@ in
       # is misleading -- we are NOT using mihomo's TUN device.
       tunMode = true;
     };
+
+    systemd.services.mihomo.serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
   };
 }

@@ -93,7 +93,7 @@ in
           # agenix-decrypted EnvironmentFile. See systemd override below.
           url = "\${AKENAI_URL}";
           path = "./proxy_providers/akenai.yaml";
-          interval = 86400;
+          interval = 3600;
           proxy = "DIRECT";
           health-check = {
             enable = true;
@@ -118,6 +118,63 @@ in
           };
         };
 
+        # proxy-providers.dima = {
+        #   type = "http";
+        #   # Placeholder substituted at service start by envsubst reading the
+        #   # agenix-decrypted EnvironmentFile. See systemd override below.
+        #   url = "\${DIMA_URL}";
+        #   path = "./proxy_providers/dima.yaml";
+        #   interval = 86400;
+        #   proxy = "DIRECT";
+        #   health-check = {
+        #     enable = true;
+        #     url = "https://www.gstatic.com/generate_204";
+        #     interval = 300;
+        #     timeout = 15000;
+        #     lazy = false;
+        #     expected-status = 204;
+        #   };
+        # };
+
+        proxy-providers.cute = {
+          type = "http";
+          # Placeholder substituted at service start by envsubst reading the
+          # agenix-decrypted EnvironmentFile. See systemd override below.
+          url = "\${CUTE_URL}";
+          path = "./proxy_providers/cute.yaml";
+          interval = 3600;
+          proxy = "DIRECT";
+          health-check = {
+            enable = true;
+            url = "https://www.gstatic.com/generate_204";
+            interval = 300;
+            timeout = 15000;
+            lazy = false;
+            expected-status = 204;
+          };
+        };
+
+        proxies = [
+          {
+            name = "Dima AMD";
+            type = "vless";
+            server = "\${DIMA_VLESS_ADDRESS}";
+            port = 443;
+            uuid = "\${DIMA_VLESS_UUID}";
+            udp = true;
+            tls = true;
+            network = "tcp";
+            flow = "xtls-rprx-vision";
+            servername = "www.amd.com";
+            client-fingerprint = "chrome";
+            reality-opts = {
+              public-key = "\${DIMA_VLESS_PUBLIC_KEY}";
+              short-id = "\${DIMA_VLESS_SHORT_ID}";
+              spider-x = "\${DIMA_VLESS_SPIDERX}";
+            };
+          }
+        ];
+
         # Group naming: non-akenai groups are English; akenai-provided
         # proxy names (the country labels like "🇩🇪 Германия") stay as-is
         # because they come from the provider.
@@ -128,7 +185,9 @@ in
         # proxies out of the provider. `filter` is a regex; we use unique
         # substrings of display names, which are sufficient because nothing
         # else in the provider list shares those substrings.
-        proxy-groups = [
+        proxy-groups = let
+          best_filter = "Швеция|Германия|Финляндия|Австрия|Чехия|Нидерланды|al";
+        in [
           # Default is the MATCH-rule target. First member (Proxy) is the
           # initial pick on fresh machines. Switching it to DIRECT turns
           # mihomo into a transparent pass-through; switching to REJECT
@@ -152,8 +211,11 @@ in
             # Auto is listed first, so fresh machines default to
             # latency-based auto-pick. Dashboard still lets you pin a
             # specific country for debugging.
-            proxies = [ "Auto" ];
-            use = [ "akenai" ];
+            proxies = [
+              "Auto"
+              "Dima AMD"
+            ];
+            use = [ "akenai" "cute" ];
           }
           # Auto is a fallback group: iterates its member list
           # top-to-bottom and picks the first one that's alive. Ordered
@@ -165,16 +227,16 @@ in
           # `use: [akenai] + filter` appends the rest.
           {
             name = "Auto";
-            type = "fallback";
+            type = "url-test";
             url = "https://www.gstatic.com/generate_204";
-            interval = 300;
-            lazy = true;
+            interval = 60;
+            tolerance = 30;
+            lazy = false;
             proxies = [
-              "__Sweden"
-              "__Germany"
+              "Dima AMD"
             ];
-            use = [ "akenai" ];
-            filter = "Финляндия|Австрия|Чехия|Нидерланды";
+            use = [ "akenai" "cute" ];
+            filter = best_filter;
           }
           {
             name = "AI";
@@ -185,22 +247,23 @@ in
             proxies = [
               "__USA"
               "__Canada"
+              "Dima AMD"
             ];
           }
-          {
-            name = "__Sweden";
-            type = "select";
-            hidden = true;
-            use = [ "akenai" ];
-            filter = "Швеция";
-          }
-          {
-            name = "__Germany";
-            type = "select";
-            hidden = true;
-            use = [ "akenai" ];
-            filter = "Германия";
-          }
+          # {
+          #   name = "__Sweden";
+          #   type = "select";
+          #   hidden = true;
+          #   use = [ "akenai" ];
+          #   filter = "Швеция";
+          # }
+          # {
+          #   name = "__Germany";
+          #   type = "select";
+          #   hidden = true;
+          #   use = [ "akenai" ];
+          #   filter = "Германия";
+          # }
           {
             name = "__USA";
             type = "select";
@@ -225,11 +288,15 @@ in
             type = "url-test";
             url = "https://core.telegram.org/";
             expected-status = "200";
-            interval = 300;
+            interval = 120;
             tolerance = 30;
             lazy = true;
-            use = [ "akenai" ];
-            filter = "Германия|Швеция|Финляндия|Австрия|Чехия|Нидерланды";
+            proxies = [
+              "DIRECT"
+              "Dima AMD"
+            ];
+            use = [ "akenai" "cute" ];
+            filter = best_filter;
           }
           # RU Sites mirrors Happ's WL-BALANCER + 01/02-FALLBACK loop chain.
           # `fallback` is checked top-to-bottom by health probe, so the order
@@ -369,10 +436,11 @@ in
       # add them here.
       networking.firewall.interfaces."nebula.averyan".allowedTCPPorts = [ 9090 ];
 
-      # Agenix-encrypted `AKENAI_URL=...` line. systemd loads it as an
+      # Agenix-encrypted environment file with subscription/custom proxy
+      # values. systemd loads it as an
       # EnvironmentFile on mihomo.service; the ExecStartPre script below
       # runs envsubst over the generated yaml (which contains the literal
-      # "${AKENAI_URL}" placeholder) and writes the resolved config to a
+      # "${AKENAI_URL}"-style placeholders) and writes the resolved config to a
       # tmpfs runtime dir. Mihomo loads that resolved file via ExecStart
       # override.
       age.secrets.mihomo-akenai-url.file = "${secrets}/mihomo/akenai-url.age";
@@ -388,7 +456,7 @@ in
           # root-owned file that the DynamicUser cannot read.
           (pkgs.writeShellScript "mihomo-envsubst" ''
             set -eu
-            ${pkgs.envsubst}/bin/envsubst '$AKENAI_URL' \
+            ${pkgs.envsubst}/bin/envsubst '$AKENAI_URL $CUTE_URL $DIMA_VLESS_ADDRESS $DIMA_VLESS_UUID $DIMA_VLESS_PUBLIC_KEY $DIMA_VLESS_SHORT_ID $DIMA_VLESS_SPIDERX' \
               < "$CREDENTIALS_DIRECTORY/config.yaml" \
               > /run/mihomo/config.yaml
           '')
