@@ -93,6 +93,8 @@
     # programs.obs-studio.enable = true;
   };
 
+  programs.partition-manager.enable = true;
+
   # nixpkgs.config.permittedInsecurePackages = [
   #   "electron-22.3.27"
   # ];

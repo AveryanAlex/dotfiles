@@ -12,7 +12,7 @@
         high-quality = {
           hwdec = "vaapi";
           ao = "pipewire";
-          vo = "dmabuf-wayland";
+          vo = "gpu-next";
           # video-sync = "display-resample";
           # interpolation = true;
           # tscale = "oversample";

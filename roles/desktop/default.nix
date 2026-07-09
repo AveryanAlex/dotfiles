@@ -90,6 +90,7 @@
 
   home-manager.users.alex = {
     home.stateVersion = lib.mkForce "26.05";
+    home.sessionVariables.SOPS_AGE_KEY_CMD = "${pkgs.ssh-to-age}/bin/ssh-to-age -private-key -i $HOME/.ssh/id_ed25519";
 
     dconf.settings = {
       "org/virt-manager/virt-manager".xmleditor-enabled = true;
