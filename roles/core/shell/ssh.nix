@@ -21,8 +21,8 @@
     settings."serv1.asc.rssi.ru" = {
       ForwardAgent = true;
       User = "averyan";
-      HostName = "whale";
-      Port = 3122;
+      # HostName = "whale";
+      # Port = 3122;
     };
 
     settings."circles.averyan.ru" = {
