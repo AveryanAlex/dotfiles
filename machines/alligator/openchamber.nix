@@ -5,7 +5,7 @@
   ...
 }:
 let
-  openchamberVersion = "1.10.4";
+  openchamberVersion = "1.14.1";
   openchamber = pkgs.writeShellScriptBin "openchamber" ''
     export PATH=${pkgs.bash}/bin:${pkgs.nodejs_latest}/bin:$PATH
     exec ${pkgs.nodejs_latest}/bin/npx -y @openchamber/web@${openchamberVersion} "$@"

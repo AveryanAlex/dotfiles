@@ -5,5 +5,5 @@
 }:
 {
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
-  boot.extraModulePackages = [ config.boot.kernelPackages.amneziawg ];
+  # boot.extraModulePackages = [ config.boot.kernelPackages.amneziawg ];
 }
