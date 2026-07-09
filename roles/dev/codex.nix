@@ -9,7 +9,7 @@ in
 {
   hm.programs.codex = {
     enable = true;
-    package = llmAgents.codex;
+    # package = llmAgents.codex;
     # enableMcpIntegration = true;
     #     settings = {
     #       # Grants unrestricted system access: AI can read/write any file and execute

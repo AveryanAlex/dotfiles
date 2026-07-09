@@ -159,6 +159,6 @@ in
     agent-browser
     playwright-test
     playwright-mcp
-    opencode-desktop
+    # llmAgents.opencode-desktop
   ];
 }
