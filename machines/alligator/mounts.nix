@@ -23,6 +23,26 @@
     ];
   };
 
+  fileSystems."/home/alex/.var/app/com.valvesoftware.Steam" = {
+    device = "/dev/alligator/secondary";
+    fsType = "btrfs";
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@steam"
+    ];
+  };
+
+  fileSystems."/home/alex/.var/app/com.usebottles.bottles" = {
+    device = "/dev/alligator/secondary";
+    fsType = "btrfs";
+    options = [
+      "discard=async"
+      "compress=zstd"
+      "subvol=@bottles"
+    ];
+  };
+
   fileSystems."/nix" = {
     device = "/dev/alligator/root";
     fsType = "btrfs";

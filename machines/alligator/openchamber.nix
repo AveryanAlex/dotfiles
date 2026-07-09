@@ -32,6 +32,8 @@ in
       RemainAfterExit = true;
       Restart = "on-failure";
       RestartSec = "10s";
+      # openchamber stop has repeatedly delayed reboot by ~75s; keep shutdown bounded.
+      TimeoutStopSec = "5s";
       EnvironmentFile = config.age.secrets.openchamber-ui-password.path;
       ExecStartPre = "${pkgs.bash}/bin/bash -c 'until ${pkgs.iproute2}/bin/ip -4 addr show dev nebula.averyan to 10.57.1.40/32 >/dev/null 2>&1; do sleep 1; done && source ${config.age.secrets.bash-init.path} && exec ${openchamber}/bin/openchamber stop --port 8088'";
       ExecStart = "${pkgs.bash}/bin/bash -c 'source ${config.age.secrets.bash-init.path} && exec ${openchamber}/bin/openchamber --port 8088'";

@@ -19,7 +19,7 @@
 
   system.stateVersion = "24.05";
 
-  networking.nat.externalInterface = "wlan0";
+  networking.nat.externalInterface = "wlp7s0";
 
   networking.nat.forwardPorts = [
     {
