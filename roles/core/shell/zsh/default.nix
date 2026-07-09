@@ -71,6 +71,7 @@
 
         upd = "nh os switch";
         claude = "claude --dangerously-skip-permissions";
+        whale-hermes = ''ssh -t whale 'sudo machinectl shell root@hermes-alex /run/current-system/sw/bin/bash -lc "exec /run/current-system/sw/bin/hermes"'';
         # sudo = "echo Permission denied:";
         # "_" = "/run/wrappers/bin/sudo";
       };

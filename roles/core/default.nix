@@ -32,6 +32,8 @@
   nixcfg.inputs = inputs;
   nixcfg.username = "alex";
 
+  # boot.tmp.useTmpfs = true;
+
   boot.kernelModules = [ "tcp_bbr" ];
 
   time.timeZone = "Europe/Moscow";
