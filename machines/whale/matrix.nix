@@ -89,7 +89,7 @@ in
 
       app_service_config_files = [
         "/var/lib/matrix-synapse/telegram-registration.yaml"
-        "/var/lib/matrix-synapse/discord-registration.yaml"
+        # "/var/lib/matrix-synapse/discord-registration.yaml"
       ];
       listeners = [
         {
@@ -247,26 +247,26 @@ in
   ];
 
   # Discord bridge
-  age.secrets.matrix-appservice-discord.file = "${secrets}/creds/matrix-appservice-discord.age";
+  # age.secrets.matrix-appservice-discord.file = "${secrets}/creds/matrix-appservice-discord.age";
 
-  services.matrix-appservice-discord = {
-    # enable = true;
-    environmentFile = config.age.secrets.matrix-appservice-discord.path;
-    settings = {
-      bridge = {
-        domain = "neutrino.su";
-        homeserverUrl = "https://matrix.neutrino.su";
-        enableSelfServiceBridging = true;
-        adminMxid = "@averyanalex:neutrino.su";
-      };
-      auth.usePrivilegedIntents = true;
-      database = {
-        filename = "";
-        connString = "postgresql:///matrix-appservice-discord?host=/run/postgresql";
-      };
-      ghosts.usernamePattern = ":id";
-    };
-  };
+  # services.matrix-appservice-discord = {
+  #   enable = true;
+  #   environmentFile = config.age.secrets.matrix-appservice-discord.path;
+  #   settings = {
+  #     bridge = {
+  #       domain = "neutrino.su";
+  #       homeserverUrl = "https://matrix.neutrino.su";
+  #       enableSelfServiceBridging = true;
+  #       adminMxid = "@averyanalex:neutrino.su";
+  #     };
+  #     auth.usePrivilegedIntents = true;
+  #     database = {
+  #       filename = "";
+  #       connString = "postgresql:///matrix-appservice-discord?host=/run/postgresql";
+  #     };
+  #     ghosts.usernamePattern = ":id";
+  #   };
+  # };
 
   # users.users.matrix-appservice-discord = {
   #   isSystemUser = true;
