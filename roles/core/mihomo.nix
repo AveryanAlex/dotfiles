@@ -248,6 +248,7 @@ in
               "__USA"
               "__Canada"
               "Dima AMD"
+              "Proxy"
             ];
           }
           # {
@@ -294,6 +295,7 @@ in
             proxies = [
               "DIRECT"
               "Dima AMD"
+              "Proxy"
             ];
             use = [ "akenai" "cute" ];
             filter = best_filter;
@@ -318,6 +320,7 @@ in
             # lazy = true;
             proxies = [
               "DIRECT"
+              "Proxy"
             ];
           }
           {
