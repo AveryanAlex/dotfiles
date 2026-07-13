@@ -6,7 +6,7 @@
 
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-kernel.url = "github:nixos/nixpkgs/d407951447dcd00442e97087bf374aad70c04cea";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-26.05";
     nixpkgs-master.url = "github:nixos/nixpkgs";
     # nixpkgs-fork.url = "git+file:///home/alex/projects/averyanalex/nixpkgs";
     # nixpkgs-fork.url = "github:averyanalex/nixpkgs/test";
