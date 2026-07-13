@@ -84,6 +84,7 @@ in
     ./matrix.nix
     # ./cosmovert.nix
     ./webtlo.nix
+    ./reploy.nix
     ./dns.nix
     ./borgserve.nix
     ./printing.nix

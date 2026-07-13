@@ -20,6 +20,10 @@
     };
 
     quadlet-nix.url = "github:SEIAROTg/quadlet-nix";
+    reploy = {
+      url = "github:AveryanAlex/reploy";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     hermes-agent = {
       url = "github:NousResearch/hermes-agent";
       inputs.nixpkgs.follows = "nixpkgs";

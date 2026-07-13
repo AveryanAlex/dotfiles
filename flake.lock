@@ -2393,6 +2393,26 @@
         "type": "github"
       }
     },
+    "reploy": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783948057,
+        "narHash": "sha256-oYJpvgEI8BXGw2BWGvIAeLlnWS7KbYdWQq5AcHUxD5o=",
+        "owner": "AveryanAlex",
+        "repo": "reploy",
+        "rev": "0f592c7702bcabb4bb9991d5a99a83b076303cdd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AveryanAlex",
+        "repo": "reploy",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "anoquebot": "anoquebot",
@@ -2431,6 +2451,7 @@
         "picsavbot": "picsavbot",
         "quadlet-nix": "quadlet-nix",
         "ragenix": "ragenix",
+        "reploy": "reploy",
         "rust-overlay": "rust-overlay_8"
       }
     },
