@@ -128,10 +128,11 @@ let
   };
 
   workerEnvironment = commonAppEnvironment // {
+    PIPELINE_TRANSCODE_TIMEOUT_SECONDS = "180.0";
     PIPELINE_OCR_PROVIDER_MODE = "live";
     PIPELINE_OCR_PRIMARY_ENGINE = "paddleocr";
     PIPELINE_OCR_PADDLE_COMMAND = "/opt/paddleocr-venv/bin/python /app/scripts/paddleocr_json.py --input {input}";
-    PIPELINE_OCR_TIMEOUT_SECONDS = "30.0";
+    PIPELINE_OCR_TIMEOUT_SECONDS = "120.0";
     PIPELINE_OCR_LOW_CONFIDENCE_THRESHOLD = "0.6";
   };
 in
