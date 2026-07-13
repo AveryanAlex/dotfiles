@@ -191,6 +191,12 @@ in
     "prism.averyan.ru" = makeAveryanHost "http://whale:2342";
     "search.averyan.ru" = makeAveryanHost "http://127.0.0.1:8278";
     "yacy.averyan.ru" = makeAveryanHost "http://whale:8627";
+    "zellij.averyan.ru" = makeAveryanHost "http://alligator:8082" // {
+      extraConfig = ''
+        proxy_read_timeout 1h;
+        proxy_send_timeout 1h;
+      '';
+    };
     "lab.averyan.ru" = makeAveryanHost "http://127.0.0.1:8874";
     "memexpert.net" = makeHost "http://127.0.0.1:3000" // {
       useACMEHost = "memexpert.net";
