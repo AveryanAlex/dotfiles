@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   config,
   inputs,
   modulesPath,
@@ -28,6 +29,11 @@
   ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   services.lvm.boot.thin.enable = true;
+
+  # Keep the patched Zen kernel stable across main nixpkgs updates.
+  boot.kernelPackages = lib.mkForce (
+    inputs."nixpkgs-kernel".legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxKernel.packages.linux_zen
+  );
 
   # SCREEN
   # brightness control

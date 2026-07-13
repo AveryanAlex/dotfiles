@@ -7,6 +7,9 @@
 {
   services.qdrant = {
     enable = true;
+    # Current nixpkgs fails to compile Qdrant with an LLVM AVX-512 selector error.
+    # This normal nixpkgs revision provides the last known-good Qdrant 1.18.2 build.
+    package = inputs.nixpkgs-kernel.legacyPackages.${pkgs.stdenv.hostPlatform.system}.qdrant;
   };
 
   systemd.services.qdrant.serviceConfig = {
