@@ -5,9 +5,13 @@
   ...
 }:
 let
-  openchamberVersion = "1.14.1";
+  openchamberVersion = "1.15.0";
+  openchamberLibraries = pkgs.lib.makeLibraryPath [
+    pkgs.stdenv.cc.cc.lib
+  ];
   openchamber = pkgs.writeShellScriptBin "openchamber" ''
     export PATH=${pkgs.bash}/bin:${pkgs.nodejs_latest}/bin:$PATH
+    export LD_LIBRARY_PATH="${openchamberLibraries}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
     exec ${pkgs.nodejs_latest}/bin/npx -y @openchamber/web@${openchamberVersion} "$@"
   '';
 in

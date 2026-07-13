@@ -11,7 +11,7 @@
     ../../roles/desktop
 
     ./hardware.nix
-    ./openchamber.nix
+    # ./openchamber.nix
     # ./kimaki.nix
     ./mounts.nix
     # ./ollama.nix
