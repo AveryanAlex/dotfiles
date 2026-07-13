@@ -386,6 +386,11 @@ in
             After = Requires;
           };
           serviceConfig = oneShotServiceConfig // {
+            # Reploy restarts the long-running app units, not this removed
+            # one-shot container. Leave migrations inactive after success so
+            # Requires= pulls a fresh migration run into every app restart
+            # transaction before any new image starts.
+            RemainAfterExit = false;
             Environment = registryAuthEnvironment;
           };
         };
