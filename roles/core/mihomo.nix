@@ -185,154 +185,165 @@ in
         # proxies out of the provider. `filter` is a regex; we use unique
         # substrings of display names, which are sufficient because nothing
         # else in the provider list shares those substrings.
-        proxy-groups = let
-          best_filter = "Швеция|Германия|Финляндия|Австрия|Чехия|Нидерланды|al";
-        in [
-          # Default is the MATCH-rule target. First member (Proxy) is the
-          # initial pick on fresh machines. Switching it to DIRECT turns
-          # mihomo into a transparent pass-through; switching to REJECT
-          # becomes a kill-switch.
-          {
-            name = "Default";
-            type = "select";
-            interval = 300;
-            url = "https://www.gstatic.com/generate_204";
-            proxies = [
-              "Proxy"
-              "DIRECT"
-              "REJECT"
-            ];
-          }
-          {
-            name = "Proxy";
-            type = "select";
-            interval = 300;
-            url = "https://www.gstatic.com/generate_204";
-            # Auto is listed first, so fresh machines default to
-            # latency-based auto-pick. Dashboard still lets you pin a
-            # specific country for debugging.
-            proxies = [
-              "Auto"
-              "Dima AMD"
-            ];
-            use = [ "akenai" "cute" ];
-          }
-          # Auto is a fallback group: iterates its member list
-          # top-to-bottom and picks the first one that's alive. Ordered
-          # preference: Sweden first, then Germany, then whichever of the
-          # remaining EU whitelist is reachable (in akenai provider order).
-          # `fallback` can't reference provider proxies by name, so
-          # Sweden/Germany are pinned via tiny hidden select groups that
-          # each wrap a single filtered akenai proxy; the trailing
-          # `use: [akenai] + filter` appends the rest.
-          {
-            name = "Auto";
-            type = "url-test";
-            url = "https://www.gstatic.com/generate_204";
-            interval = 60;
-            tolerance = 30;
-            lazy = false;
-            proxies = [
-              "Dima AMD"
-            ];
-            use = [ "akenai" "cute" ];
-            filter = best_filter;
-          }
-          {
-            name = "AI";
-            type = "fallback";
-            url = "https://www.gstatic.com/generate_204";
-            interval = 300;
-            lazy = true;
-            proxies = [
-              "__USA"
-              "__Canada"
-              "Dima AMD"
-              "Proxy"
-            ];
-          }
-          # {
-          #   name = "__Sweden";
-          #   type = "select";
-          #   hidden = true;
-          #   use = [ "akenai" ];
-          #   filter = "Швеция";
-          # }
-          # {
-          #   name = "__Germany";
-          #   type = "select";
-          #   hidden = true;
-          #   use = [ "akenai" ];
-          #   filter = "Германия";
-          # }
-          {
-            name = "__USA";
-            type = "select";
-            hidden = true;
-            use = [ "akenai" ];
-            filter = "США";
-          }
-          {
-            name = "__Canada";
-            type = "select";
-            hidden = true;
-            use = [ "akenai" ];
-            filter = "Канада";
-          }
-          # Dedicated latency-based group for Telegram. Probes
-          # core.telegram.org so the elected node reflects actual Telegram
-          # RTT rather than gstatic's CDN (which can mislead if a proxy is
-          # close to Google but far from Telegram's DCs). Whitelist is the
-          # same 6 EU countries.
-          {
-            name = "Telegram";
-            type = "url-test";
-            url = "https://core.telegram.org/";
-            expected-status = "200";
-            interval = 120;
-            tolerance = 30;
-            lazy = true;
-            proxies = [
-              "DIRECT"
-              "Dima AMD"
-              "Proxy"
-            ];
-            use = [ "akenai" "cute" ];
-            filter = best_filter;
-          }
-          # RU Sites mirrors Happ's WL-BALANCER + 01/02-FALLBACK loop chain.
-          # `fallback` is checked top-to-bottom by health probe, so the order
-          # matters: try DIRECT first (cheapest, fast for non-geoblocked RU
-          # sites), then the Russian-located WL-01 pool, then the Yandex-CDN
-          # WL-02 pool. Probe interval is short because RU geo-policies flip
-          # quickly (entire CDNs can start blackholing foreign IPs within
-          # minutes during incidents).
-          #
-          # Mihomo's `fallback` only switches when the probe URL fails -- it
-          # cannot mid-stream-reroute the way Xray's loopback inbound trick
-          # does. For nodes that are TCP-up but app-broken, expect a one-
-          # interval stall before failover.
-          {
-            name = "RU Sites";
-            type = "fallback";
-            url = "https://www.gstatic.com/generate_204";
-            interval = 60;
-            # lazy = true;
-            proxies = [
-              "DIRECT"
-              "Proxy"
-            ];
-          }
-          {
-            name = "YouTube";
-            type = "select";
-            interval = 300;
-            url = "https://www.gstatic.com/generate_204";
-            proxies = [ "Proxy" ];
-            use = [ "akenai" ];
-            filter = "Глобальный YouTube";
-          }
-        ];
+        proxy-groups =
+          let
+            best_filter = "Швеция|Германия|Финляндия|Австрия|Чехия|Нидерланды|al";
+          in
+          [
+            # Default is the MATCH-rule target. First member (Proxy) is the
+            # initial pick on fresh machines. Switching it to DIRECT turns
+            # mihomo into a transparent pass-through; switching to REJECT
+            # becomes a kill-switch.
+            {
+              name = "Default";
+              type = "select";
+              interval = 300;
+              url = "https://www.gstatic.com/generate_204";
+              proxies = [
+                "Proxy"
+                "DIRECT"
+                "REJECT"
+              ];
+            }
+            {
+              name = "Proxy";
+              type = "select";
+              interval = 300;
+              url = "https://www.gstatic.com/generate_204";
+              # Auto is listed first, so fresh machines default to
+              # latency-based auto-pick. Dashboard still lets you pin a
+              # specific country for debugging.
+              proxies = [
+                "Auto"
+                "Dima AMD"
+              ];
+              use = [
+                "akenai"
+                "cute"
+              ];
+            }
+            # Auto is a fallback group: iterates its member list
+            # top-to-bottom and picks the first one that's alive. Ordered
+            # preference: Sweden first, then Germany, then whichever of the
+            # remaining EU whitelist is reachable (in akenai provider order).
+            # `fallback` can't reference provider proxies by name, so
+            # Sweden/Germany are pinned via tiny hidden select groups that
+            # each wrap a single filtered akenai proxy; the trailing
+            # `use: [akenai] + filter` appends the rest.
+            {
+              name = "Auto";
+              type = "url-test";
+              url = "https://www.gstatic.com/generate_204";
+              interval = 60;
+              tolerance = 30;
+              lazy = false;
+              proxies = [
+                "Dima AMD"
+              ];
+              use = [
+                "akenai"
+                "cute"
+              ];
+              filter = best_filter;
+            }
+            {
+              name = "AI";
+              type = "fallback";
+              url = "https://www.gstatic.com/generate_204";
+              interval = 300;
+              lazy = true;
+              proxies = [
+                "__USA"
+                "__Canada"
+                "Dima AMD"
+                "Proxy"
+              ];
+            }
+            # {
+            #   name = "__Sweden";
+            #   type = "select";
+            #   hidden = true;
+            #   use = [ "akenai" ];
+            #   filter = "Швеция";
+            # }
+            # {
+            #   name = "__Germany";
+            #   type = "select";
+            #   hidden = true;
+            #   use = [ "akenai" ];
+            #   filter = "Германия";
+            # }
+            {
+              name = "__USA";
+              type = "select";
+              hidden = true;
+              use = [ "akenai" ];
+              filter = "США";
+            }
+            {
+              name = "__Canada";
+              type = "select";
+              hidden = true;
+              use = [ "akenai" ];
+              filter = "Канада";
+            }
+            # Dedicated latency-based group for Telegram. Probes
+            # core.telegram.org so the elected node reflects actual Telegram
+            # RTT rather than gstatic's CDN (which can mislead if a proxy is
+            # close to Google but far from Telegram's DCs). Whitelist is the
+            # same 6 EU countries.
+            {
+              name = "Telegram";
+              type = "url-test";
+              url = "https://core.telegram.org/";
+              expected-status = "200";
+              interval = 120;
+              tolerance = 30;
+              lazy = true;
+              proxies = [
+                "DIRECT"
+                "Dima AMD"
+                "Proxy"
+              ];
+              use = [
+                "akenai"
+                "cute"
+              ];
+              filter = best_filter;
+            }
+            # RU Sites mirrors Happ's WL-BALANCER + 01/02-FALLBACK loop chain.
+            # `fallback` is checked top-to-bottom by health probe, so the order
+            # matters: try DIRECT first (cheapest, fast for non-geoblocked RU
+            # sites), then the Russian-located WL-01 pool, then the Yandex-CDN
+            # WL-02 pool. Probe interval is short because RU geo-policies flip
+            # quickly (entire CDNs can start blackholing foreign IPs within
+            # minutes during incidents).
+            #
+            # Mihomo's `fallback` only switches when the probe URL fails -- it
+            # cannot mid-stream-reroute the way Xray's loopback inbound trick
+            # does. For nodes that are TCP-up but app-broken, expect a one-
+            # interval stall before failover.
+            {
+              name = "RU Sites";
+              type = "fallback";
+              url = "https://www.gstatic.com/generate_204";
+              interval = 60;
+              # lazy = true;
+              proxies = [
+                "DIRECT"
+                "Proxy"
+              ];
+            }
+            {
+              name = "YouTube";
+              type = "select";
+              interval = 300;
+              url = "https://www.gstatic.com/generate_204";
+              proxies = [ "Proxy" ];
+              use = [ "akenai" ];
+              filter = "Глобальный YouTube";
+            }
+          ];
 
         rule-providers = {
           geosite-ru = {

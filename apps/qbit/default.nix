@@ -1,7 +1,12 @@
 let
   name = "qbit";
 in
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   systemd.tmpfiles.rules = [
     "d /persist/${name}/config 700 1000 100 - -"
