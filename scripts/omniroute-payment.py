@@ -4,13 +4,17 @@
 The script reads Omniroute's ``domain_cost_history`` table, groups token costs by
 API key, and applies the payment rule used for the shared subscription:
 
-1. Every included key pays a fixed base contribution.
-2. The included token-cost total is divided by the included key count; this is
-   the token usage covered by the base contribution for every key.
-3. For every key, that equal token-cost share is subtracted from its usage.
-4. If the base contributions do not cover the subscription, the remaining
-   subscription payment is split only between keys whose usage remains positive,
-   proportionally to that remaining usage.
+1. Every included key receives an equal base allocation, capped so the total
+   base pool cannot exceed the subscription.
+2. The fraction of the subscription covered by that base pool determines how
+   much of the average token cost is covered equally for every key.
+3. That covered token-cost share is subtracted from every key's usage.
+4. The remaining subscription payment is split between keys whose uncovered
+   usage remains positive, proportionally to that remaining usage.
+
+This makes a zero base contribution a pure usage-proportional split, while a
+base contribution at or above the equal per-key subscription share produces an
+effectively equal split.
 """
 
 from __future__ import annotations
@@ -114,6 +118,7 @@ class BillingRow:
     equal_share_usd: Decimal
     usage_after_share_usd: Decimal
     positive_usage_after_share_usd: Decimal
+    base_usd: Decimal
     extra_usd: Decimal
     payment_usd: Decimal
     cost_events: int
@@ -371,6 +376,18 @@ def allocate_cents(total: Decimal, weights: dict[str, Decimal]) -> dict[str, Dec
     return {key_id: Decimal(cents) / 100 for key_id, cents in allocation.items()}
 
 
+def allocate_equal_cents(total: Decimal, key_ids: list[str]) -> dict[str, Decimal]:
+    if total <= 0 or not key_ids:
+        return {key_id: Decimal("0") for key_id in key_ids}
+
+    total_cents = int((total * 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    cents_per_key, remainder = divmod(total_cents, len(key_ids))
+    return {
+        key_id: Decimal(cents_per_key + (1 if index < remainder else 0)) / 100
+        for index, key_id in enumerate(key_ids)
+    }
+
+
 def calculate_bill(
     keys: list[ApiKey],
     usage_by_key: dict[str, Usage],
@@ -415,9 +432,17 @@ def calculate_bill(
 
     key_count = len(included_keys)
     total_usage_usd = sum((usage_by_key.get(key.id, Usage(Decimal("0"), 0)).usage_usd for key in included_keys), Decimal("0"))
-    equal_share_usd = total_usage_usd / key_count
-    base_total_usd = base_contribution_usd * key_count
-    remaining_subscription_usd = max(subscription_usd - base_total_usd, Decimal("0"))
+    subscription_total_usd = money(subscription_usd)
+    average_usage_usd = total_usage_usd / key_count
+    requested_base_total_usd = base_contribution_usd * key_count
+    target_base_total_usd = min(requested_base_total_usd, subscription_total_usd)
+    bases = allocate_equal_cents(target_base_total_usd, [key.id for key in included_keys])
+    base_total_usd = sum(bases.values(), Decimal("0"))
+    base_coverage_fraction = (
+        base_total_usd / subscription_total_usd if subscription_total_usd > 0 else Decimal("0")
+    )
+    equal_share_usd = average_usage_usd * base_coverage_fraction
+    remaining_subscription_usd = subscription_total_usd - base_total_usd
 
     weights: dict[str, Decimal] = {}
     intermediate: dict[str, tuple[Decimal, Decimal, int]] = {}
@@ -436,6 +461,7 @@ def calculate_bill(
     for key in included_keys:
         usage_usd, usage_after_share, cost_events = intermediate[key.id]
         positive_after_share = max(usage_after_share, Decimal("0"))
+        base_usd = bases.get(key.id, Decimal("0"))
         extra_usd = extras.get(key.id, Decimal("0"))
         rows.append(
             BillingRow(
@@ -444,8 +470,9 @@ def calculate_bill(
                 equal_share_usd=equal_share_usd,
                 usage_after_share_usd=usage_after_share,
                 positive_usage_after_share_usd=positive_after_share,
+                base_usd=base_usd,
                 extra_usd=extra_usd,
-                payment_usd=base_contribution_usd + extra_usd,
+                payment_usd=base_usd + extra_usd,
                 cost_events=cost_events,
             )
         )
@@ -460,11 +487,14 @@ def calculate_bill(
         "unmatched_skips": unmatched_skips,
         "key_count": key_count,
         "total_usage_usd": total_usage_usd,
+        "average_usage_usd": average_usage_usd,
         "equal_share_usd": equal_share_usd,
+        "base_coverage_fraction": float(base_coverage_fraction),
+        "requested_base_total_usd": requested_base_total_usd,
         "base_total_usd": base_total_usd,
         "remaining_subscription_usd": remaining_subscription_usd,
         "unallocated_usd": unallocated_usd,
-        "total_payment_usd": sum((base_contribution_usd + row.extra_usd for row in rows), Decimal("0")),
+        "total_payment_usd": sum((row.payment_usd for row in rows), Decimal("0")),
         "extra_total_usd": sum((row.extra_usd for row in rows), Decimal("0")),
     }
 
@@ -494,14 +524,20 @@ def print_text_report(
     print(f"Included keys: {result['key_count']}")
     print(f"Subscription: {money_str(subscription_usd)}")
     print(
-        "Base contribution: "
-        f"{money_str(base_contribution_usd)} × {result['key_count']} = {money_str(result['base_total_usd'])}"
+        "Requested base pool: "
+        f"{money_str(base_contribution_usd)} × {result['key_count']} = "
+        f"{money_str(result['requested_base_total_usd'])}"
+    )
+    print(
+        f"Effective base pool: {money_str(result['base_total_usd'])} "
+        f"({result['base_coverage_fraction'] * 100:.2f}% of subscription)"
     )
     print(f"Token cost in included keys: {money_str(result['total_usage_usd'])}")
-    print(f"Token-cost share subtracted from every key: {money_str(result['equal_share_usd'])}")
+    print(f"Average token cost per key: {money_str(result['average_usage_usd'])}")
+    print(f"Token-cost share covered by the base pool: {money_str(result['equal_share_usd'])}")
     print(f"Subscription remainder distributed by positive remaining usage: {money_str(result['remaining_subscription_usd'])}")
-    if result["base_total_usd"] > subscription_usd:
-        print(f"Base contribution exceeds subscription by: {money_str(result['base_total_usd'] - subscription_usd)}")
+    if result["requested_base_total_usd"] > subscription_usd:
+        print("Requested base pool was capped at the subscription total")
     if result["unallocated_usd"] > 0:
         print(f"WARNING: no key has positive remaining usage; unallocated: {money_str(result['unallocated_usd'])}")
     if result["excluded_keys"]:
@@ -513,13 +549,14 @@ def print_text_report(
 
     print(
         table(
-            ["key", "usage", "minus share", "positive", "extra", "payment", "events"],
+            ["key", "usage", "minus covered", "positive", "base", "extra", "payment", "events"],
             [
                 [
                     row.key.name,
                     money_str(row.usage_usd),
                     money_str(row.usage_after_share_usd),
                     money_str(row.positive_usage_after_share_usd),
+                    money_str(row.base_usd),
                     money_str(row.extra_usd),
                     money_str(row.payment_usd),
                     str(row.cost_events),
@@ -551,6 +588,7 @@ def json_decimal(value: Any) -> Any:
             "equal_share_usd": json_decimal(value.equal_share_usd),
             "usage_after_share_usd": json_decimal(value.usage_after_share_usd),
             "positive_usage_after_share_usd": json_decimal(value.positive_usage_after_share_usd),
+            "base_usd": json_decimal(value.base_usd),
             "extra_usd": json_decimal(value.extra_usd),
             "payment_usd": json_decimal(value.payment_usd),
             "cost_events": value.cost_events,
@@ -590,7 +628,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--base-contribution-usd",
         type=parse_usd,
         default=BASE_CONTRIBUTION_USD,
-        help="Fixed amount paid by every included key before distributing the remainder.",
+        help="Requested equal base amount per key before distributing the remainder; capped at the subscription.",
     )
     parser.add_argument("--all-keys", action="store_true", help="Include every api_keys row, even inactive keys without usage.")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON instead of a text table.")
