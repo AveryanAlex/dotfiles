@@ -173,13 +173,21 @@ let
     };
     ocr = {
       ip = "${subnet}.17";
-      prefetch = 1;
-      poolSize = 1;
+      # Run two isolated Paddle helpers with up to eight CPU threads each.
+      prefetch = 2;
+      poolSize = 2;
       maxOverflow = 1;
-      memory = "6g";
-      cpuQuota = "400%";
-      pidsLimit = 256;
+      memory = "8g";
+      cpuQuota = "1600%";
+      pidsLimit = 384;
       startupRetries = 20;
+      extraEnvironment = {
+        PIPELINE_OCR_PADDLE_COMMAND = "/opt/paddleocr-venv/bin/python /app/scripts/paddleocr_json.py --input {input} --cpu-threads 8";
+        OMP_NUM_THREADS = "8";
+        OPENBLAS_NUM_THREADS = "8";
+        MKL_NUM_THREADS = "8";
+        NUMEXPR_NUM_THREADS = "8";
+      };
     };
     enrichment = {
       ip = "${subnet}.18";
@@ -296,13 +304,16 @@ in
           networks = [ network ];
           ip = roleConfig.ip;
           pidsLimit = roleConfig.pidsLimit;
-          environments = workerEnvironment // {
-            PIPELINE_WORKER_PREFETCH_COUNT = toString roleConfig.prefetch;
-            DATABASE_POOL_SIZE = toString roleConfig.poolSize;
-            DATABASE_MAX_OVERFLOW = toString roleConfig.maxOverflow;
-            DATABASE_POOL_TIMEOUT_SECONDS = "5.0";
-            DATABASE_APPLICATION_NAME = "${name}-worker-${role}";
-          };
+          environments =
+            workerEnvironment
+            // (roleConfig.extraEnvironment or { })
+            // {
+              PIPELINE_WORKER_PREFETCH_COUNT = toString roleConfig.prefetch;
+              DATABASE_POOL_SIZE = toString roleConfig.poolSize;
+              DATABASE_MAX_OVERFLOW = toString roleConfig.maxOverflow;
+              DATABASE_POOL_TIMEOUT_SECONDS = "5.0";
+              DATABASE_APPLICATION_NAME = "${name}-worker-${role}";
+            };
           environmentFiles = [ secretFile ];
           exec = [
             "memexpert-workers"
