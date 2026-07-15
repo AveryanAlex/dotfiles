@@ -38,6 +38,11 @@ let
   commonAppEnvironment = {
     APP_HOST = "0.0.0.0";
     APP_PORT = "8000";
+    DATABASE_CONNECT_TIMEOUT_SECONDS = "5.0";
+    DATABASE_POOL_SIZE = "4";
+    DATABASE_MAX_OVERFLOW = "2";
+    DATABASE_POOL_TIMEOUT_SECONDS = "5.0";
+    DATABASE_APPLICATION_NAME = name;
     REDIS_URL = "redis://${name}-redis:6379/0";
     QDRANT_URL = "http://${name}-qdrant:6333";
     MEILISEARCH_URL = "http://${name}-meilisearch:7700";
@@ -50,7 +55,20 @@ let
     MEDIA_PUBLIC_BASE_URL = "https://${publicHost}/api/v1/media/files";
     PIPELINE_ALLOWED_MIME_TYPES = "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm";
     PIPELINE_BROKER_CONNECTION_TIMEOUT_SECONDS = "10.0";
+    PIPELINE_CAPACITY_CLOSE_PENDING_COUNT = "1000";
+    PIPELINE_CAPACITY_REOPEN_PENDING_COUNT = "500";
+    PIPELINE_CAPACITY_CLOSE_OLDEST_AGE_SECONDS = "3600";
+    PIPELINE_CAPACITY_REOPEN_OLDEST_AGE_SECONDS = "900";
+    PIPELINE_CIRCUIT_FAILURE_THRESHOLD = "3";
+    PIPELINE_CIRCUIT_COOLDOWN_SECONDS = "30";
+    PIPELINE_STUCK_RECLAIM_AFTER_SECONDS = "900";
+    RECOVERY_TELEGRAM_POLL_INTERVAL_SECONDS = "5";
+    RECOVERY_TELEGRAM_BATCH_SIZE = "10";
     PIPELINE_STORAGE_CONNECTION_TIMEOUT_SECONDS = "10.0";
+    RUNTIME_HEALTH_FILE = "/tmp/memexpert-runtime-health.json";
+    RUNTIME_HEALTH_INTERVAL_SECONDS = "10.0";
+    RUNTIME_HEALTH_STALE_AFTER_SECONDS = "45.0";
+    RUNTIME_HEALTH_OPERATION_TIMEOUT_SECONDS = "900.0";
     PIPELINE_VOYAGE_PROVIDER_MODE = "live";
     PIPELINE_VOYAGE_MODEL = "voyage-multimodal-3.5";
     PIPELINE_VOYAGE_OUTPUT_DIMENSIONS = "1024";
@@ -123,6 +141,11 @@ let
     SCHEDULER_RABBITMQ_OUTBOX_PUBLISHER_INTERVAL_SECONDS = "5";
     SCHEDULER_RABBITMQ_OUTBOX_PUBLISHER_BATCH_SIZE = "100";
     SCHEDULER_RABBITMQ_OUTBOX_PUBLISHER_STALE_TIMEOUT_SECONDS = "300";
+    SCHEDULER_RECOVERY_DISPATCH_ENABLED = "true";
+    SCHEDULER_RECOVERY_DISPATCH_INTERVAL_SECONDS = "5";
+    SCHEDULER_RECOVERY_DISPATCH_BATCH_SIZE = "50";
+    SCHEDULER_PIPELINE_CAPACITY_REFRESH_ENABLED = "true";
+    SCHEDULER_PIPELINE_CAPACITY_REFRESH_INTERVAL_SECONDS = "15";
     SCHEDULER_ADVISORY_LOCK_ENABLED = "true";
     SCHEDULER_ADVISORY_LOCK_KEY = "0,0";
   };
@@ -134,6 +157,59 @@ let
     PIPELINE_OCR_PADDLE_COMMAND = "/opt/paddleocr-venv/bin/python /app/scripts/paddleocr_json.py --input {input}";
     PIPELINE_OCR_TIMEOUT_SECONDS = "120.0";
     PIPELINE_OCR_LOW_CONFIDENCE_THRESHOLD = "0.6";
+  };
+
+  workerRoles = {
+    media = {
+      ip = "${subnet}.11";
+      prefetch = 1;
+      poolSize = 2;
+      maxOverflow = 1;
+      memory = "4g";
+      cpuQuota = "400%";
+      pidsLimit = 256;
+      startupRetries = 8;
+    };
+    ocr = {
+      ip = "${subnet}.17";
+      prefetch = 1;
+      poolSize = 1;
+      maxOverflow = 1;
+      memory = "6g";
+      cpuQuota = "400%";
+      pidsLimit = 256;
+      startupRetries = 20;
+    };
+    enrichment = {
+      ip = "${subnet}.18";
+      prefetch = 2;
+      poolSize = 3;
+      maxOverflow = 1;
+      memory = "4g";
+      cpuQuota = "400%";
+      pidsLimit = 192;
+      startupRetries = 8;
+    };
+    sync = {
+      ip = "${subnet}.19";
+      prefetch = 4;
+      poolSize = 3;
+      maxOverflow = 1;
+      memory = "2g";
+      cpuQuota = "200%";
+      pidsLimit = 128;
+      startupRetries = 8;
+    };
+    telegram = {
+      ip = "${subnet}.20";
+      prefetch = 1;
+      poolSize = 2;
+      maxOverflow = 1;
+      memory = "2g";
+      cpuQuota = "200%";
+      pidsLimit = 128;
+      startupRetries = 8;
+    };
   };
 in
 {
@@ -198,6 +274,65 @@ in
     let
       inherit (config.virtualisation.quadlet) networks;
       network = networks.${name}.ref;
+      runtimeHealthConfig = {
+        healthCmd = "memexpert-runtime-health";
+        healthInterval = "15s";
+        healthTimeout = "5s";
+        healthRetries = 3;
+        healthOnFailure = "kill";
+        healthStartupCmd = "memexpert-runtime-health";
+        healthStartupInterval = "15s";
+        healthStartupTimeout = "5s";
+        healthStartupSuccess = 1;
+        notify = "healthy";
+      };
+      mkWorker = role: roleConfig: {
+        containerConfig = runtimeHealthConfig // {
+          image = workerImage;
+          autoUpdate = "registry";
+          memory = roleConfig.memory;
+          networks = [ network ];
+          ip = roleConfig.ip;
+          pidsLimit = roleConfig.pidsLimit;
+          environments = workerEnvironment // {
+            PIPELINE_WORKER_PREFETCH_COUNT = toString roleConfig.prefetch;
+            DATABASE_POOL_SIZE = toString roleConfig.poolSize;
+            DATABASE_MAX_OVERFLOW = toString roleConfig.maxOverflow;
+            DATABASE_POOL_TIMEOUT_SECONDS = "5.0";
+            DATABASE_APPLICATION_NAME = "${name}-worker-${role}";
+          };
+          environmentFiles = [ secretFile ];
+          exec = [
+            "memexpert-workers"
+            "--role"
+            role
+          ];
+          healthStartupRetries = roleConfig.startupRetries;
+          inherit uidMaps gidMaps;
+        };
+        unitConfig = rec {
+          Requires = [
+            "${name}-migrate.service"
+            "${name}-rabbitmq.service"
+          ];
+          After = Requires;
+          Conflicts = [ "${name}-workers.service" ];
+          StartLimitIntervalSec = "10min";
+          StartLimitBurst = 6;
+        };
+        serviceConfig = {
+          Environment = registryAuthEnvironment;
+          RestartSec = "10s";
+          MemorySwapMax = 0;
+          CPUQuota = roleConfig.cpuQuota;
+        };
+      };
+      workerContainers = builtins.listToAttrs (
+        builtins.map (role: {
+          name = "${name}-worker-${role}";
+          value = mkWorker role workerRoles.${role};
+        }) (builtins.attrNames workerRoles)
+      );
     in
     {
       networks.${name}.networkConfig = {
@@ -364,7 +499,9 @@ in
             memory = "2g";
             networks = [ network ];
             ip = "${subnet}.15";
-            environments = commonAppEnvironment;
+            environments = commonAppEnvironment // {
+              DATABASE_APPLICATION_NAME = "${name}-migrate";
+            };
             environmentFiles = [ secretFile ];
             exec = [
               "alembic"
@@ -402,74 +539,71 @@ in
             memory = "6g";
             networks = [ network ];
             ip = "${subnet}.10";
-            environments = commonAppEnvironment;
+            environments = commonAppEnvironment // {
+              DATABASE_APPLICATION_NAME = "${name}-api";
+            };
             environmentFiles = [ secretFile ];
             inherit uidMaps gidMaps;
           };
           unitConfig = rec {
             Requires = [ "${name}-migrate.service" ];
-            After = Requires;
-          };
-          serviceConfig.Environment = registryAuthEnvironment;
-        };
-
-        "${name}-workers" = {
-          containerConfig = {
-            image = workerImage;
-            autoUpdate = "registry";
-            memory = "8g";
-            networks = [ network ];
-            ip = "${subnet}.11";
-            environments = workerEnvironment;
-            environmentFiles = [ secretFile ];
-            inherit uidMaps gidMaps;
-          };
-          unitConfig = rec {
-            Requires = [
-              "${name}-migrate.service"
-              "${name}-rabbitmq.service"
-            ];
             After = Requires;
           };
           serviceConfig.Environment = registryAuthEnvironment;
         };
 
         "${name}-telegram-crawler" = {
-          containerConfig = {
+          containerConfig = runtimeHealthConfig // {
             image = workerImage;
             autoUpdate = "registry";
             memory = "4g";
             networks = [ network ];
             ip = "${subnet}.12";
-            environments = workerEnvironment;
+            environments = workerEnvironment // {
+              DATABASE_APPLICATION_NAME = "${name}-telegram-crawler";
+            };
             environmentFiles = [ secretFile ];
             exec = [ "memexpert-telegram-crawler" ];
+            healthStartupRetries = 20;
             inherit uidMaps gidMaps;
           };
           unitConfig = rec {
             Requires = [ "${name}-migrate.service" ];
             After = Requires;
+            StartLimitIntervalSec = "10min";
+            StartLimitBurst = 6;
           };
-          serviceConfig.Environment = registryAuthEnvironment;
+          serviceConfig = {
+            Environment = registryAuthEnvironment;
+            RestartSec = "10s";
+          };
         };
 
         "${name}-scheduler" = {
-          containerConfig = {
+          containerConfig = runtimeHealthConfig // {
             image = mainImage;
             autoUpdate = "registry";
             memory = "2g";
             networks = [ network ];
             ip = "${subnet}.13";
-            environments = commonAppEnvironment;
+            environments = commonAppEnvironment // {
+              DATABASE_APPLICATION_NAME = "${name}-scheduler";
+            };
             environmentFiles = [ secretFile ];
             exec = [ "memexpert-scheduler" ];
+            healthStartupRetries = 8;
             inherit uidMaps gidMaps;
           };
           unitConfig = rec {
             Requires = [ "${name}-migrate.service" ];
             After = Requires;
+            StartLimitIntervalSec = "10min";
+            StartLimitBurst = 6;
           };
-          serviceConfig.Environment = registryAuthEnvironment;
+          serviceConfig = {
+            Environment = registryAuthEnvironment;
+            RestartSec = "10s";
+          };
         };
 
         "${name}-frontend" = {
@@ -502,7 +636,9 @@ in
             memory = "2g";
             networks = [ network ];
             ip = "${subnet}.16";
-            environments = commonAppEnvironment;
+            environments = commonAppEnvironment // {
+              DATABASE_APPLICATION_NAME = "${name}-bot";
+            };
             environmentFiles = [ secretFile ];
             exec = [ "memexpert-bot" ];
             inherit uidMaps gidMaps;
@@ -513,6 +649,7 @@ in
           };
           serviceConfig.Environment = registryAuthEnvironment;
         };
-      };
+      }
+      // workerContainers;
     };
 }
