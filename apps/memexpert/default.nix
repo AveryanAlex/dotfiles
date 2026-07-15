@@ -7,6 +7,7 @@ let
   mainImage = "ghcr.io/averyanalex/memexpert/main:main";
   workerImage = "ghcr.io/averyanalex/memexpert/worker:main";
   frontendImage = "ghcr.io/averyanalex/memexpert/frontend:main";
+  workerStopTimeoutSeconds = 240;
 
   s3AccessKey = name;
   s3Bucket = name;
@@ -291,6 +292,7 @@ in
           image = workerImage;
           autoUpdate = "registry";
           memory = roleConfig.memory;
+          stopTimeout = workerStopTimeoutSeconds;
           networks = [ network ];
           ip = roleConfig.ip;
           pidsLimit = roleConfig.pidsLimit;
@@ -323,6 +325,7 @@ in
         serviceConfig = {
           Environment = registryAuthEnvironment;
           RestartSec = "10s";
+          TimeoutStopSec = "${toString (workerStopTimeoutSeconds + 30)}s";
           MemorySwapMax = 0;
           CPUQuota = roleConfig.cpuQuota;
         };
