@@ -15,9 +15,11 @@ This makes a zero base contribution a pure usage-proportional split, while a
 base contribution at or above the equal per-key subscription share produces an
 effectively equal split.
 
-Usage and estimated cost come from CPA Usage Keeper's authenticated analysis
-API. The script logs in inside the remote keeper container, so the login password
-does not leave the container or appear in the local process list.
+Usage and final USD cost come from CPA Usage Keeper's authenticated analysis
+API. Keeper's cost includes configured pricing multipliers, such as the priority
+service tier used by ``/fast``. The script logs in inside the remote keeper
+container, so the login password does not leave the container or appear in the
+local process list.
 """
 
 from __future__ import annotations
@@ -39,8 +41,8 @@ from zoneinfo import ZoneInfo
 
 # --- Adjustable billing constants -------------------------------------------------
 
-SUBSCRIPTION_USD = Decimal("200")
-BASE_CONTRIBUTION_USD = Decimal("10")
+SUBSCRIPTION_USD = Decimal("600")
+BASE_CONTRIBUTION_USD = Decimal("0")
 DEFAULT_TIME_ZONE = "Europe/Moscow"
 
 # Active keys without usage still participate in the base split. Historical keys
@@ -440,6 +442,8 @@ def parse_keeper_payload(
         if not bool(item.get("cost_available")):
             missing_cost_labels.append(label)
             continue
+        # This is Keeper's final USD price after model and matching pricing-rule
+        # multipliers (including the priority service tier used by /fast).
         usage[key_id] = Usage(
             usage_usd=decimal_from_json(item.get("cost_usd")),
             requests=int(item.get("requests") or 0),
@@ -670,24 +674,28 @@ def print_text_report(
         )
     print()
 
-    print(
-        table(
-            ["key", "usage cost", "minus covered", "positive", "base", "extra", "payment", "requests"],
+    if base_contribution_usd == 0:
+        headers = ["key", "usage cost", "payment"]
+        table_rows = [
+            [row.key.name, money_str(row.usage_usd), money_str(row.payment_usd)]
+            for row in rows
+        ]
+    else:
+        headers = ["key", "usage cost", "minus covered", "positive", "base", "extra", "payment", "requests"]
+        table_rows = [
             [
-                [
-                    row.key.name,
-                    money_str(row.usage_usd),
-                    money_str(row.usage_after_share_usd),
-                    money_str(row.positive_usage_after_share_usd),
-                    money_str(row.base_usd),
-                    money_str(row.extra_usd),
-                    money_str(row.payment_usd),
-                    f"{row.requests:,}",
-                ]
-                for row in rows
-            ],
-        )
-    )
+                row.key.name,
+                money_str(row.usage_usd),
+                money_str(row.usage_after_share_usd),
+                money_str(row.positive_usage_after_share_usd),
+                money_str(row.base_usd),
+                money_str(row.extra_usd),
+                money_str(row.payment_usd),
+                f"{row.requests:,}",
+            ]
+            for row in rows
+        ]
+    print(table(headers, table_rows))
     print()
     print(f"Extra allocated: {money_str(result['extra_total_usd'])}")
     print(f"Total to collect: {money_str(result['total_payment_usd'])}")
