@@ -1,0 +1,4 @@
+interface:
+  display_name: "NixOS Flake Update"
+  short_description: "Safely update and deploy this NixOS flake"
+  default_prompt: "Use $nixos-flake-update to update this dotfiles flake and safely deploy the requested hosts."
