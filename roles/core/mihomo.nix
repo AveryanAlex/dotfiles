@@ -51,16 +51,16 @@ in
           respect-rules = true;
           enhanced-mode = "normal";
           default-nameserver = [
+            "1.1.1.1"
             "8.8.8.8"
-            "8.8.4.4"
           ];
           proxy-server-nameserver = [
+            "1.1.1.1"
             "8.8.8.8"
-            "8.8.4.4"
           ];
           nameserver = [
+            "1.1.1.1"
             "8.8.8.8"
-            "8.8.4.4"
           ];
           direct-nameserver = [ "77.88.8.8#DIRECT" ];
         };
@@ -275,7 +275,7 @@ in
               name = "__USA";
               type = "select";
               hidden = true;
-              use = [ "akenai" ];
+              use = [ "cute" ];
               filter = "США";
             }
             {

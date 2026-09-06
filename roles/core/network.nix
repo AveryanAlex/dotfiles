@@ -18,8 +18,9 @@
       # Keep resolved as the system stub and route all unicast DNS through
       # mihomo's loopback listener.
       DNS = [ "127.0.0.1:1053" ];
-      # TODO: consider switching to strict DNSSEC validation
-      DNSSEC = "allow-downgrade";
+      # Mihomo's DNS proxy does not preserve the signatures required for
+      # systemd-resolved to validate DNSSEC responses.
+      DNSSEC = false;
       FallbackDNS = [ ];
       # The local resolved -> mihomo hop is plain DNS. Upstream encryption,
       # when desired, is configured in mihomo itself.
