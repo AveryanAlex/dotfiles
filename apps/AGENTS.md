@@ -55,8 +55,9 @@ Use this tree for containerized services; native NixOS services belong in `profi
 | `10.90.100.0/24` | `immich` |
 | `10.90.101.0/24` | `open-webui` |
 | `10.90.102.0/24` | `bambuddy` |
+| `10.90.103.0/24` | `avitobot` |
 
-`reelsgen` currently omits an explicit subnet. If you need a new explicit app network, pick an unused `/24` after checking this table; `10.90.83.0/24` and `10.90.103.0/24+` are currently unused in `apps/`.
+`reelsgen` currently omits an explicit subnet. If you need a new explicit app network, pick an unused `/24` after checking this table; `10.90.83.0/24` and `10.90.104.0/24+` are currently unused in `apps/`.
 
 ## UID/GID MAPS
 

@@ -99,6 +99,7 @@ in
 
     ../../apps/aptabase
     ../../apps/memexpert
+    ../../apps/avitobot
     ../../apps/wakapi
     ../../apps/nextcloud
     ../../apps/litellm
