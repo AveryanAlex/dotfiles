@@ -20,11 +20,11 @@
     };
   };
 
-  services.logind.extraConfig = ''
-    HandlePowerKey=hibernate
-    HandleLidSwitch=suspend-then-hibernate
-    HandleLidSwitchExternalPower=ignore
-  '';
+  services.logind.settings.Login = {
+    HandlePowerKey = "hibernate";
+    HandleLidSwitch = "suspend-then-hibernate";
+    HandleLidSwitchExternalPower = "ignore";
+  };
 
   systemd.sleep.settings.Sleep = {
     HibernateDelaySec = "30m";
