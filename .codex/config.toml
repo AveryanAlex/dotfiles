@@ -1,0 +1,4 @@
+[mcp_servers.nixos]
+command = "uvx"
+args = ["mcp-nixos"]
+startup_timeout_sec = 60
