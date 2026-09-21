@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
   imports = [
     inputs.home-manager.darwinModules.home-manager
@@ -82,6 +82,7 @@
         sessionVariables.NODE_EXTRA_CA_CERTS = "/Users/averyanalex/.claude/yandex-ca.pem";
       };
 
+      programs.git.signing.signByDefault = lib.mkForce false;
       programs.home-manager.enable = true;
       programs.ssh.settings = {
         yandex-ml-inference = inputs.home-manager.lib.hm.dag.entryBefore [ "yandex" ] {
