@@ -1,8 +1,8 @@
 { lib, pkgs, ... }:
 {
-  hm.home.packages = [ pkgs.onefetch ];
+  home.packages = [ pkgs.onefetch ];
 
-  hm.programs.zsh.initContent = lib.mkAfter ''
+  programs.zsh.initContent = lib.mkAfter ''
     _onefetch_on_git_project_enter() {
       [[ -o interactive ]] || return
 

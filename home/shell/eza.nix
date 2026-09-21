@@ -1,9 +1,7 @@
 {
-  hm.programs.eza = {
-    enable = true;
-  };
+  programs.eza.enable = true;
 
-  hm.home.shellAliases = {
+  home.shellAliases = {
     ls = "eza --icons -l";
     la = "eza --icons -la";
     lt = "eza --icons --tree";

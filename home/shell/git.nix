@@ -1,8 +1,8 @@
 { lib, pkgs, ... }:
 {
-  hm.home.packages = [ pkgs.git-xet ];
+  home.packages = [ pkgs.git-xet ];
 
-  hm.programs.git = {
+  programs.git = {
     enable = true;
     lfs.enable = true;
 
@@ -40,7 +40,7 @@
     };
   };
 
-  hm.programs.delta = {
+  programs.delta = {
     enable = true;
     enableGitIntegration = true;
   };

@@ -1,0 +1,3 @@
+{
+  programs.asciinema.enable = true;
+}

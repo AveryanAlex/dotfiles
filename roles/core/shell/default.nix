@@ -1,22 +1,25 @@
 {
+  config,
+  lib,
+  ...
+}:
+{
   imports = [
-    ./asciinema.nix
     ./direnv.nix
-    ./eza.nix
-    ./fzf.nix
-    ./gh.nix
-    ./git.nix
     ./gpg
-    ./jq.nix
-    ./misc-s.nix
+    ./linux.nix
     ./nethogs.nix
-    ./onefetch.nix
     # ./neovim
-    ./ssh.nix
     ./tmux.nix
     ./tmux-auto.nix
     ./zellij.nix
     ./zoxide.nix
     ./zsh
   ];
+
+  home-manager.users.alex.imports = [
+    ../../../home/shell
+    ../../../home/shell/heavy-tools.nix
+  ]
+  ++ lib.optional (config.networking.hostName != "lizard") ../../../home/shell/fastfetch.nix;
 }

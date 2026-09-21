@@ -1,0 +1,20 @@
+{
+  imports = [
+    ./asciinema.nix
+    ./atuin.nix
+    ./bat.nix
+    ./direnv.nix
+    ./eza.nix
+    ./fzf.nix
+    ./gh.nix
+    ./git.nix
+    ./gpg.nix
+    ./jq.nix
+    ./micro.nix
+    ./onefetch.nix
+    ./packages.nix
+    ./ssh.nix
+    ./zoxide.nix
+    ./zsh.nix
+  ];
+}
