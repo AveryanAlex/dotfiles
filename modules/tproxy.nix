@@ -151,18 +151,19 @@ let
     {
       tcpPorts,
       udpPorts,
+      port ? cfg.port,
     }:
     let
       tcpDport = if tcpPorts == [ ] then "" else " tcp dport { ${renderPorts tcpPorts} }";
       udpDport = if udpPorts == [ ] then "" else " udp dport { ${renderPorts udpPorts} }";
     in
     (optionalString (tcpPorts != [ ]) ''
-      meta nfproto ipv4 meta l4proto tcp${tcpDport} tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark} counter
-      meta nfproto ipv6 meta l4proto tcp${tcpDport} tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark} counter
+      meta nfproto ipv4 meta l4proto tcp${tcpDport} tproxy ip to :${toString port} meta mark set ${toString cfg.mark} counter
+      meta nfproto ipv6 meta l4proto tcp${tcpDport} tproxy ip6 to :${toString port} meta mark set ${toString cfg.mark} counter
     '')
     + (optionalString (udpPorts != [ ]) ''
-      meta nfproto ipv4 meta l4proto udp${udpDport} tproxy ip to :${toString cfg.port} meta mark set ${toString cfg.mark} counter
-      meta nfproto ipv6 meta l4proto udp${udpDport} tproxy ip6 to :${toString cfg.port} meta mark set ${toString cfg.mark} counter
+      meta nfproto ipv4 meta l4proto udp${udpDport} tproxy ip to :${toString port} meta mark set ${toString cfg.mark} counter
+      meta nfproto ipv6 meta l4proto udp${udpDport} tproxy ip6 to :${toString port} meta mark set ${toString cfg.mark} counter
     '');
 
   # Mark-set rules for the output chain (no tproxy statement — that happens
@@ -281,7 +282,15 @@ let
     };
   };
 
-  forwardIfaceOpts = types.submodule { options = interceptOpts; };
+  forwardIfaceOpts = types.submodule {
+    options = interceptOpts // {
+      port = mkOption {
+        type = types.port;
+        default = cfg.port;
+        description = "Backend listener port for this interface. Defaults to networking.tproxy.port.";
+      };
+    };
+  };
 in
 {
   options.networking.tproxy = {
@@ -541,7 +550,10 @@ in
             ''
               chain fwd-${iface} {
                 ${mkSrcFilter resolved.srcCIDRs}
-                ${mkTproxyRules { inherit (resolved) tcpPorts udpPorts; }}
+                ${mkTproxyRules {
+                  inherit (resolved) tcpPorts udpPorts;
+                  port = cfg.forward.${iface}.port;
+                }}
               }
             ''
           ) forwardIfaces
@@ -632,8 +644,8 @@ in
     networking.firewall.interfaces = mkMerge (
       map (iface: {
         ${iface} = {
-          allowedTCPPorts = [ cfg.port ];
-          allowedUDPPorts = [ cfg.port ];
+          allowedTCPPorts = [ cfg.forward.${iface}.port ];
+          allowedUDPPorts = [ cfg.forward.${iface}.port ];
         };
       }) forwardIfaces
     );

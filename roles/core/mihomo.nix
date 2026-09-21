@@ -41,6 +41,24 @@ in
 
     (lib.mkIf config.services.mihomo-tproxy.enable {
       services.mihomo-tproxy.settings = {
+        # Listener-level proxy selection bypasses every domain/geographic rule.
+        # Keep the ordinary listener: settings lists replace module defaults.
+        listeners = [
+          {
+            name = "tproxy-in";
+            type = "tproxy";
+            port = config.services.mihomo-tproxy.tproxyPort;
+            udp = true;
+          }
+          {
+            name = "vpn-only";
+            type = "tproxy";
+            port = 18300;
+            udp = true;
+            proxy = "vpn-only";
+          }
+        ];
+
         # systemd-resolved remains the host-facing stub on 127.0.0.53:53 and
         # forwards unicast DNS to this loopback listener. Keep Mihomo's
         # bootstrap resolvers independent from resolved to avoid a DNS loop.
@@ -188,6 +206,19 @@ in
             best_filter = "Швеция|Германия|Финляндия|Австрия|Чехия|Нидерланды|al|Европа";
           in
           [
+            # Independent selector with no DIRECT or shared policy groups.
+            {
+              name = "vpn-only";
+              type = "select";
+              proxies = [
+                "Dima AMD"
+                "REJECT"
+              ];
+              use = [
+                "akenai"
+                "cute"
+              ];
+            }
             # Default is the MATCH-rule target. First member (Proxy) is the
             # initial pick on fresh machines. Switching it to DIRECT turns
             # mihomo into a transparent pass-through; switching to REJECT
