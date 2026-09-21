@@ -305,6 +305,7 @@
             devShells.default = pkgs.mkShell {
               buildInputs = [
                 inputs.colmena.packages.${system}.colmena
+                pkgs.nixos-rebuild-ng
                 pkgs.ragenix
                 pkgs.nebula
                 pkgs.wireguard-tools
