@@ -45,6 +45,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # nix-ld = {
     #   url = "github:Mic92/nix-ld";
     #   inputs.nixpkgs.follows = "nixpkgs";
@@ -218,6 +223,11 @@
       nixosModules.hardware = builtins.listToAttrs (findModules ./hardware);
       nixosModules.modules = builtins.listToAttrs (findModules ./modules);
 
+      darwinConfigurations."averyanalex-yandex" = inputs.nix-darwin.lib.darwinSystem {
+        specialArgs = { inherit inputs; };
+        modules = [ ./darwin/averyanalex-yandex ];
+      };
+
       nixosConfigurations =
         with nixpkgs.lib;
         let
@@ -284,6 +294,7 @@
         (with flake-utils.lib.system; [
           x86_64-linux
           aarch64-linux
+          aarch64-darwin
         ])
         (
           system:
