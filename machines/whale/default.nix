@@ -259,7 +259,7 @@ in
         PoolOffset = 100;
         PoolSize = 50;
         EmitDNS = true;
-        DNS = "1.1.1.1";
+        DNS = "192.168.3.1";
       };
       dhcpServerStaticLeases = [
         # ASUS Wi-Fi AP

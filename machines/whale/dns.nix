@@ -4,6 +4,9 @@
   ...
 }:
 {
+  # Serve LAN clients through Mihomo; whale itself keeps using CoreDNS.
+  services.mihomo-tproxy.settings.dns.listen = lib.mkForce "192.168.3.1:53";
+
   services.coredns = {
     enable = true;
 

@@ -77,10 +77,11 @@ in
             "8.8.8.8"
           ];
           nameserver = [
-            "1.1.1.1"
-            "8.8.8.8"
+            "https://8.8.8.8/dns-query#DNS"
+            "https://8.8.4.4/dns-query#DNS"
           ];
           direct-nameserver = [ "77.88.8.8#DIRECT" ];
+          nameserver-policy."+.yandex.net" = [ "77.88.8.8#DIRECT" ];
         };
 
         # Sniff HTTP Host / TLS SNI / QUIC SNI so domain-based rules can
@@ -263,6 +264,27 @@ in
               name = "Auto";
               type = "url-test";
               url = "https://www.gstatic.com/generate_204";
+              interval = 60;
+              tolerance = 30;
+              lazy = false;
+              proxies = [
+                "Dima AMD"
+              ];
+              use = [
+                "akenai"
+                "cute"
+              ];
+              filter = best_filter;
+            }
+            # Select the lowest-latency exit using an actual Google Public DNS
+            # lookup, then carry normal DNS traffic to Google over DoH through
+            # that exit. This keeps DNS health independent from Auto's generic
+            # gstatic probe and detects exits where DNS itself is unusable.
+            {
+              name = "DNS";
+              type = "url-test";
+              url = "https://8.8.8.8/resolve?name=google.com&type=A";
+              expected-status = "200";
               interval = 60;
               tolerance = 30;
               lazy = false;
