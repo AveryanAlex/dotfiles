@@ -95,7 +95,9 @@ in
     # ./hao-woodpecker.nix
     ./xray.nix
     ./ardupilot-proxy.nix
+    ./serv1-proxy.nix
     ./serv2-proxy.nix
+    ./serv1-inference.nix
 
     ../../apps/aptabase
     ../../apps/memexpert
