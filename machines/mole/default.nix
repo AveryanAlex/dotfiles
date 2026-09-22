@@ -1,7 +1,7 @@
 { lib, ... }:
 {
   imports = [
-    ../../roles/desktop
+    ../../roles/server.nix
 
     ../../profiles/netman.nix
 
@@ -13,7 +13,6 @@
   persist.enable = lib.mkForce false;
   services.syncthing.enable = lib.mkForce false;
   services.displayManager.autoLogin.enable = false;
-  services.tankMount.enable = false;
 
   system.stateVersion = "26.05";
 }
