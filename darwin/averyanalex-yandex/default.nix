@@ -38,6 +38,7 @@
       "telegram"
       "visual-studio-code"
       "yandex-music"
+      "prismlauncher"
     ];
 
     onActivation.cleanup = "uninstall";
