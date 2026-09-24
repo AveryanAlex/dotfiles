@@ -1,4 +1,4 @@
-{ inputs, lib, ... }:
+{ inputs, lib, pkgs, ... }:
 {
   imports = [
     inputs.home-manager.darwinModules.home-manager
@@ -8,6 +8,11 @@
   nixpkgs.hostPlatform = "aarch64-darwin";
 
   nix.enable = false;
+
+  fonts.packages = with pkgs; [
+    meslo-lgs-nf
+    monaspace
+  ];
 
   environment.systemPath = [ "/usr/local/jamf/bin" ];
 
