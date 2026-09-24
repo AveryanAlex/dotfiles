@@ -71,6 +71,7 @@
 
     users.averyanalex = {
       imports = [
+        ../../home/apps/orca-slicer
         ../../home/shell
         ../../home/shell/fastfetch.nix
       ];
