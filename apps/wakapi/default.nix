@@ -14,6 +14,18 @@ let
 in
 { config, ... }:
 {
+  services.rusticBackup.jobs.wakapi = {
+    paths = [ "/persist/wakapi/data" ];
+    requiresUnits = [ "wakapi-db.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    prepareScript = ''
+      podman exec --user postgres wakapi-db pg_dump \
+        --username=wakapi --no-password --format=custom --compress=0 wakapi \
+        > "$BACKUP_STAGING_DIR/wakapi.dump"
+    '';
+  };
+
   systemd.slices.${sliceName}.description = "Wakapi application services";
 
   systemd.tmpfiles.rules = [

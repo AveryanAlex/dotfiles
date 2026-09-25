@@ -12,8 +12,55 @@ let
     StartLimitBurst = 6;
   };
 in
-{ config, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  sqliteBackup = (import ../lib/sqlite-backup.nix { inherit lib pkgs; }) {
+    container = "slskd";
+    databases = [
+      {
+        host = "/persist/slskd/data/transfers.db";
+        path = "/app/data/transfers.db";
+        target = "data/transfers.db";
+      }
+      {
+        host = "/persist/slskd/data/events.db";
+        path = "/app/data/events.db";
+        target = "data/events.db";
+      }
+      {
+        host = "/persist/slskd/data/messaging.db";
+        path = "/app/data/messaging.db";
+        target = "data/messaging.db";
+      }
+      {
+        host = "/persist/slskd/data/search.db";
+        path = "/app/data/search.db";
+        target = "data/search.db";
+      }
+    ];
+  };
+in
+{
+  services.rusticBackup.jobs.slskd = {
+    paths = [ "/persist/slskd" ];
+    exclude = sqliteBackup.exclude ++ [
+      "/persist/slskd/logs"
+      "/persist/slskd/downloads"
+      "/persist/slskd/incomplete"
+      "/persist/slskd/data/backups"
+      "/persist/slskd/data/shares.local.bak.db"
+    ];
+    requiresUnits = [ "slskd.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    inherit (sqliteBackup) prepareScript;
+  };
+
   systemd.slices.${sliceName}.description = "slskd application services";
 
   systemd.tmpfiles.rules = [
@@ -43,6 +90,7 @@ in
             networks = [ networks.${name}.ref ];
             ip = "10.90.91.2";
             volumes = [
+              sqliteBackup.volume
               "/persist/${name}:/app"
               "/home/alex/tank/hot/Downloads/Soulseek:/home/alex/tank/hot/Downloads/Soulseek"
               "/home/alex/tank/hot/Music:/home/alex/tank/hot/Music"

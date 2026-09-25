@@ -20,7 +20,35 @@ in
   pkgs,
   ...
 }:
+let
+  sqliteBackup = (import ../lib/sqlite-backup.nix { inherit lib pkgs; }) {
+    container = "cliproxyapi-usage-keeper";
+    databases = [
+      {
+        host = "/persist/cliproxyapi/usage-keeper/app.db";
+        path = "/data/app.db";
+        target = "app.db";
+      }
+    ];
+  };
+in
 {
+  services.rusticBackup.jobs.cliproxyapi = {
+    paths = [
+      "/persist/cliproxyapi/config.yaml"
+      "/persist/cliproxyapi/auths"
+      "/persist/cliproxyapi/usage-keeper"
+    ];
+    exclude = sqliteBackup.exclude ++ [
+      "/persist/cliproxyapi/usage-keeper/logs"
+      "/persist/cliproxyapi/usage-keeper/backups"
+    ];
+    requiresUnits = [ "cliproxyapi-usage-keeper.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    inherit (sqliteBackup) prepareScript;
+  };
+
   systemd.slices.${sliceName}.description = "CLIProxyAPI application services";
 
   systemd.tmpfiles.rules = [
@@ -103,7 +131,10 @@ in
           memory = "1g";
           networks = [ networks.${name}.ref ];
           ip = "10.90.96.3";
-          volumes = [ "/persist/${name}/usage-keeper:/data" ];
+          volumes = [
+            "/persist/${name}/usage-keeper:/data"
+            sqliteBackup.volume
+          ];
           environments = {
             APP_BASE_PATH = keeperBasePath;
             APP_PORT = "8080";

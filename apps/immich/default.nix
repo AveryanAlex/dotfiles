@@ -46,6 +46,31 @@ let
   '';
 in
 {
+  services.rusticBackup.jobs.immich = {
+    paths = [
+      "/home/alex/tank/Immich/library"
+      "/home/alex/tank/Immich/upload"
+      "/home/alex/tank/Immich/profile"
+    ];
+    # Start after the smaller daily jobs; allow time for the initial media upload.
+    calendar = "*-*-* 06:00:00 Europe/Moscow";
+    timeout = "48h";
+    requiresUnits = [ "immich-database.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    prepareScript = ''
+      # Live backup: the database and media are not an atomic snapshot.
+      podman exec --user postgres immich-database pg_dump \
+        --username=postgres --no-password --format=custom --compress=0 immich \
+        > "$BACKUP_STAGING_DIR/immich.dump"
+      # Record actual image IDs because the server's v3 tag can move.
+      podman container inspect \
+        --format '{{.Name}} {{.ImageName}} {{.Image}}' \
+        immich-server immich-database immich-machine-learning immich-valkey \
+        > "$BACKUP_STAGING_DIR/container-images.txt"
+    '';
+  };
+
   systemd.tmpfiles.rules = [
     "d /persist/${name} 700 0 0 - -"
     "d /persist/${name}/postgres 700 100999 100999 - -"

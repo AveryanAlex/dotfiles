@@ -12,8 +12,41 @@ let
     StartLimitBurst = 6;
   };
 in
-{ config, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  sqliteBackup = (import ../lib/sqlite-backup.nix { inherit lib pkgs; }) {
+    container = "prowlarr";
+    databases = [
+      {
+        host = "/persist/prowlarr/config/prowlarr.db";
+        path = "/config/prowlarr.db";
+        target = "prowlarr.db";
+      }
+    ];
+  };
+in
+{
+  services.rusticBackup.jobs.prowlarr = {
+    paths = [ "/persist/prowlarr/config" ];
+    exclude = sqliteBackup.exclude ++ [
+      "/persist/prowlarr/config/logs"
+      "/persist/prowlarr/config/logs.db"
+      "/persist/prowlarr/config/logs.db-wal"
+      "/persist/prowlarr/config/logs.db-shm"
+      "/persist/prowlarr/config/logs.db-journal"
+      "/persist/prowlarr/config/Backups"
+    ];
+    requiresUnits = [ "prowlarr.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    inherit (sqliteBackup) prepareScript;
+  };
+
   systemd.slices.${sliceName}.description = "Prowlarr application services";
 
   systemd.tmpfiles.rules = [
@@ -44,7 +77,10 @@ in
             memory = "1g";
             networks = [ networks.${name}.ref ];
             ip = "10.90.93.2";
-            volumes = [ "/persist/${name}/config:/config" ];
+            volumes = [
+              sqliteBackup.volume
+              "/persist/${name}/config:/config"
+            ];
             environments = {
               PUID = "1000";
               PGID = "100";

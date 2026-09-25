@@ -31,6 +31,17 @@ let
 in
 { config, ... }:
 {
+  services.rusticBackup.jobs.litellm = {
+    requiresUnits = [ "litellm-db.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    prepareScript = ''
+      podman exec --user postgres litellm-db pg_dump \
+        --username=litellm --no-password --format=custom --compress=0 litellm \
+        > "$BACKUP_STAGING_DIR/litellm.dump"
+    '';
+  };
+
   systemd.slices.${sliceName}.description = "LiteLLM application services";
 
   systemd.tmpfiles.rules = [

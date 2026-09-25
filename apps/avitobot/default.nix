@@ -39,6 +39,17 @@ let
   };
 in
 {
+  services.rusticBackup.jobs.avitobot = {
+    requiresUnits = [ "avitobot-db.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    prepareScript = ''
+      podman exec --user postgres avitobot-db pg_dump \
+        --username=wondercraft --no-password --format=custom --compress=0 wondercraft \
+        > "$BACKUP_STAGING_DIR/wondercraft.dump"
+    '';
+  };
+
   age.secrets."${name}-env".file = ./env.age;
   age.secrets."${name}-db".file = ./db.age;
   # Use whale's existing outbound routing, as the memexpert containers do.

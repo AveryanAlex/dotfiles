@@ -21,8 +21,40 @@ let
   vhostName =
     instance: if instance == "alex" then "${name}.averyan.ru" else "${name}-${instance}.averyan.ru";
 in
-{ config, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  sqliteBackups = map (
+    instance:
+    (import ../lib/sqlite-backup.nix { inherit lib pkgs; }) {
+      container = containerName instance;
+      sqlite = "/usr/bin/sqlite3";
+      databases = [
+        {
+          host = "/persist/navidrome/${instance}/navidrome.db";
+          path = "/data/navidrome.db";
+          target = "${instance}/navidrome.db";
+        }
+      ];
+    }
+  ) instances;
+in
+{
+  services.rusticBackup.jobs.navidrome = {
+    paths = map (instance: "/persist/navidrome/${instance}") instances;
+    exclude = lib.concatMap (backup: backup.exclude) sqliteBackups ++ [
+      "/persist/navidrome/*/cache"
+    ];
+    requiresUnits = map (instance: "${containerName instance}.service") instances;
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    prepareScript = lib.concatMapStringsSep "\n" (backup: backup.prepareScript) sqliteBackups;
+  };
+
   systemd.slices.${sliceName}.description = "Navidrome application services";
 
   systemd.tmpfiles.rules = map (

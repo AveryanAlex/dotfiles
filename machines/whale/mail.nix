@@ -16,6 +16,15 @@ let
   certDir = config.security.acme.certs."averyan.ru".directory;
 in
 {
+  # Back up live mail data without pausing delivery or staging a local copy.
+  services.rusticBackup.jobs.mail = {
+    paths = [
+      "/persist/mail/vmail"
+      "/persist/mail/sieve"
+      "/persist/mail/dkim"
+    ];
+  };
+
   systemd.tmpfiles.rules = [
     "d /persist/mail/dkim 755 221 221 - -"
     "d /persist/mail/sieve 770 5000 5000 - -"

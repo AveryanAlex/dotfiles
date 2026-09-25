@@ -12,8 +12,41 @@ let
     StartLimitBurst = 6;
   };
 in
-{ config, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  sqliteBackup = (import ../lib/sqlite-backup.nix { inherit lib pkgs; }) {
+    container = "lidarr";
+    databases = [
+      {
+        host = "/persist/lidarr/config/lidarr.db";
+        path = "/config/lidarr.db";
+        target = "lidarr.db";
+      }
+    ];
+  };
+in
+{
+  services.rusticBackup.jobs.lidarr = {
+    paths = [ "/persist/lidarr/config" ];
+    exclude = sqliteBackup.exclude ++ [
+      "/persist/lidarr/config/logs"
+      "/persist/lidarr/config/logs.db"
+      "/persist/lidarr/config/logs.db-wal"
+      "/persist/lidarr/config/logs.db-shm"
+      "/persist/lidarr/config/logs.db-journal"
+      "/persist/lidarr/config/Backups"
+    ];
+    requiresUnits = [ "lidarr.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    inherit (sqliteBackup) prepareScript;
+  };
+
   systemd.slices.${sliceName}.description = "Lidarr application services";
 
   systemd.tmpfiles.rules = [
@@ -45,6 +78,7 @@ in
             networks = [ networks.${name}.ref ];
             ip = "10.90.90.2";
             volumes = [
+              sqliteBackup.volume
               "/persist/${name}/config:/config"
               "/home/alex/tank/hot:/home/alex/tank/hot"
               # "/home/alex/tank/hot:/data"

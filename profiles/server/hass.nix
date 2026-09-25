@@ -14,6 +14,53 @@ let
   };
 in
 {
+  services.rusticBackup.jobs = {
+    hass = {
+      paths = [ "/persist/hass/config" ];
+      exclude = [
+        "/persist/hass/config/zigbee.db"
+        "/persist/hass/config/zigbee.db-wal"
+        "/persist/hass/config/zigbee.db-shm"
+        "/persist/hass/config/zigbee.db-journal"
+      ];
+      requiresUnits = [
+        "hass-db.service"
+        "hass.service"
+      ];
+      runtimePackages = [
+        config.virtualisation.podman.package
+      ];
+      backupStaging = true;
+      prepareScript = ''
+        podman exec --user postgres hass-db pg_dump \
+          --username=hass --no-password --format=custom --compress=0 hass \
+          > "$BACKUP_STAGING_DIR/hass.dump"
+        podman exec --user root -i hass python3 - <<'PYTHON' > "$BACKUP_STAGING_DIR/zigbee.db"
+        import pathlib, shutil, sqlite3, sys, tempfile
+        source = pathlib.Path("/config/zigbee.db")
+        with tempfile.TemporaryDirectory(prefix=".rustic-", dir=source.parent) as tmp:
+            copy = pathlib.Path(tmp) / "backup.db"
+            with sqlite3.connect(source.as_uri() + "?mode=ro", uri=True) as src:
+                with sqlite3.connect(copy) as dst:
+                    src.backup(dst, pages=256)
+            with copy.open("rb") as stream:
+                shutil.copyfileobj(stream, sys.stdout.buffer, length=1024 * 1024)
+        PYTHON
+        chown --reference=/persist/hass/config/zigbee.db "$BACKUP_STAGING_DIR/zigbee.db"
+        chmod --reference=/persist/hass/config/zigbee.db "$BACKUP_STAGING_DIR/zigbee.db"
+      '';
+    };
+    esphome = {
+      paths = [ "/var/lib/esphome" ];
+      exclude = [
+        "/var/lib/esphome/.esphome/build"
+        "/var/lib/esphome/.esphome/platformio"
+        "/var/lib/esphome/.esphome/.espressif"
+        "/var/lib/esphome/.esphome/.uv_cache"
+      ];
+    };
+  };
+
   systemd.slices = {
     ${hassSliceName}.description = "Home Assistant application services";
     ${esphomeSliceName}.description = "ESPHome application services";

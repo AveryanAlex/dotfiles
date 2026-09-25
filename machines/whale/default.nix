@@ -63,6 +63,7 @@ in
 
     ./hardware.nix
     ./mounts.nix
+    ./backup.nix
     ./incus.nix
 
     # ./firesquare.nix

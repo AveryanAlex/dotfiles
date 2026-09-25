@@ -18,6 +18,52 @@ let
 in
 { config, ... }:
 {
+  services.rusticBackup.jobs.open-webui = {
+    paths = [ "/persist/open-webui/data" ];
+    exclude = [
+      "/persist/open-webui/data/webui.db"
+      "/persist/open-webui/data/webui.db-wal"
+      "/persist/open-webui/data/webui.db-shm"
+      "/persist/open-webui/data/webui.db-journal"
+      "/persist/open-webui/data/vector_db/chroma.sqlite3"
+      "/persist/open-webui/data/vector_db/chroma.sqlite3-wal"
+      "/persist/open-webui/data/vector_db/chroma.sqlite3-shm"
+      "/persist/open-webui/data/vector_db/chroma.sqlite3-journal"
+    ];
+    requiresUnits = [ "open-webui.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    prepareScript = ''
+      podman exec --user root -i open-webui python3 - <<'PYTHON' > "$BACKUP_STAGING_DIR/webui.db"
+      import pathlib, shutil, sqlite3, sys, tempfile
+      source = pathlib.Path("/app/backend/data/webui.db")
+      with tempfile.TemporaryDirectory(prefix=".rustic-", dir=source.parent) as tmp:
+          copy = pathlib.Path(tmp) / "backup.db"
+          with sqlite3.connect(source.as_uri() + "?mode=ro", uri=True) as src:
+              with sqlite3.connect(copy) as dst:
+                  src.backup(dst, pages=256)
+          with copy.open("rb") as stream:
+              shutil.copyfileobj(stream, sys.stdout.buffer, length=1024 * 1024)
+      PYTHON
+      chown --reference=/persist/open-webui/data/webui.db "$BACKUP_STAGING_DIR/webui.db"
+      chmod --reference=/persist/open-webui/data/webui.db "$BACKUP_STAGING_DIR/webui.db"
+      mkdir -p "$BACKUP_STAGING_DIR/vector_db"
+      podman exec --user root -i open-webui python3 - <<'PYTHON' > "$BACKUP_STAGING_DIR/vector_db/chroma.sqlite3"
+      import pathlib, shutil, sqlite3, sys, tempfile
+      source = pathlib.Path("/app/backend/data/vector_db/chroma.sqlite3")
+      with tempfile.TemporaryDirectory(prefix=".rustic-", dir=source.parent) as tmp:
+          copy = pathlib.Path(tmp) / "backup.db"
+          with sqlite3.connect(source.as_uri() + "?mode=ro", uri=True) as src:
+              with sqlite3.connect(copy) as dst:
+                  src.backup(dst, pages=256)
+          with copy.open("rb") as stream:
+              shutil.copyfileobj(stream, sys.stdout.buffer, length=1024 * 1024)
+      PYTHON
+      chown --reference=/persist/open-webui/data/vector_db/chroma.sqlite3 "$BACKUP_STAGING_DIR/vector_db/chroma.sqlite3"
+      chmod --reference=/persist/open-webui/data/vector_db/chroma.sqlite3 "$BACKUP_STAGING_DIR/vector_db/chroma.sqlite3"
+    '';
+  };
+
   systemd.tmpfiles.rules = [
     "d /persist/${name} 700 0 0 - -"
     "d /persist/${name}/data 700 100000 100000 - -"

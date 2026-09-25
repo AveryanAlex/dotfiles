@@ -1,5 +1,9 @@
 { config, secrets, ... }:
 {
+  services.rusticBackup.jobs.radicale = {
+    paths = [ "/var/lib/radicale/collections" ];
+  };
+
   age.secrets.radicale-password = {
     file = "${secrets}/accounts/radicale.age";
     owner = "radicale";

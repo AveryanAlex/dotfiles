@@ -1,5 +1,19 @@
 { config, ... }:
 {
+  services.rusticBackup.jobs.forgejo = {
+    paths = [ "/var/lib/forgejo" ];
+    requiresUnits = [ "postgresql.service" ];
+    runtimePackages = [ config.services.postgresql.package ];
+    backupStaging = true;
+    prepareScript = ''
+      # Let rustic handle compression and deduplication of the dump.
+      runuser -u postgres -- pg_dump \
+        --host=/run/postgresql --no-password \
+        --format=custom --compress=0 forgejo \
+        > "$BACKUP_STAGING_DIR/forgejo.dump"
+    '';
+  };
+
   services.forgejo = {
     enable = true;
     settings = {

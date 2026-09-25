@@ -17,6 +17,34 @@ let
 in
 { config, ... }:
 {
+  services.rusticBackup.jobs.bambuddy = {
+    paths = [ "/persist/bambuddy/data" ];
+    exclude = [
+      "/persist/bambuddy/data/bambuddy.db"
+      "/persist/bambuddy/data/bambuddy.db-wal"
+      "/persist/bambuddy/data/bambuddy.db-shm"
+      "/persist/bambuddy/data/bambuddy.db-journal"
+    ];
+    requiresUnits = [ "bambuddy.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    prepareScript = ''
+      podman exec --user root -i bambuddy python3 - <<'PYTHON' > "$BACKUP_STAGING_DIR/bambuddy.db"
+      import pathlib, shutil, sqlite3, sys, tempfile
+      source = pathlib.Path("/app/data/bambuddy.db")
+      with tempfile.TemporaryDirectory(prefix=".rustic-", dir=source.parent) as tmp:
+          copy = pathlib.Path(tmp) / "backup.db"
+          with sqlite3.connect(source.as_uri() + "?mode=ro", uri=True) as src:
+              with sqlite3.connect(copy) as dst:
+                  src.backup(dst, pages=256)
+          with copy.open("rb") as stream:
+              shutil.copyfileobj(stream, sys.stdout.buffer, length=1024 * 1024)
+      PYTHON
+      chown --reference=/persist/bambuddy/data/bambuddy.db "$BACKUP_STAGING_DIR/bambuddy.db"
+      chmod --reference=/persist/bambuddy/data/bambuddy.db "$BACKUP_STAGING_DIR/bambuddy.db"
+    '';
+  };
+
   systemd.slices.${sliceName}.description = "Bambuddy application services";
 
   systemd.tmpfiles.rules = [

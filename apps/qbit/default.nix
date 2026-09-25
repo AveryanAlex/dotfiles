@@ -19,6 +19,18 @@ in
   ...
 }:
 {
+  services.rusticBackup.jobs.qbit = {
+    paths = [
+      "/persist/qbit/config"
+      "/home/alex/tank/Torrents"
+    ];
+    exclude = [
+      "/persist/qbit/config/qBittorrent/logs"
+      "/persist/qbit/config/qBittorrent/lockfile"
+      "/persist/qbit/config/qBittorrent/ipc-socket"
+    ];
+  };
+
   systemd.slices.${sliceName}.description = "qBittorrent application services";
 
   systemd.tmpfiles.rules = [

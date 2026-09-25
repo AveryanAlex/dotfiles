@@ -14,6 +14,24 @@ let
 in
 { config, ... }:
 {
+  services.rusticBackup.jobs.nextcloud = {
+    # External Downloads/Import mounts are outside this job's scope.
+    paths = [
+      "/persist/nextcloud/config"
+      "/home/alex/tank/nextcloud"
+    ];
+    requiresUnits = [ "nextcloud-db.service" ];
+    runtimePackages = [ config.virtualisation.podman.package ];
+    backupStaging = true;
+    prepareScript = ''
+      podman exec nextcloud-db sh -eu -c '
+        export MYSQL_PWD="$MYSQL_PASSWORD"
+        exec mariadb-dump --user="$MYSQL_USER" --single-transaction --quick \
+          --hex-blob --default-character-set=utf8mb4 "$MYSQL_DATABASE"
+      ' > "$BACKUP_STAGING_DIR/nextcloud.sql"
+    '';
+  };
+
   systemd.slices.${sliceName}.description = "Nextcloud application services";
 
   systemd.tmpfiles.rules = [

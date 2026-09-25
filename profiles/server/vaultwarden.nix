@@ -1,4 +1,19 @@
+{ config, ... }:
 {
+  services.rusticBackup.jobs.vaultwarden = {
+    paths = [ "/var/lib/bitwarden_rs" ];
+    requiresUnits = [ "postgresql.service" ];
+    runtimePackages = [ config.services.postgresql.package ];
+    backupStaging = true;
+    prepareScript = ''
+      # Let rustic handle compression and deduplication of the dump.
+      runuser -u postgres -- pg_dump \
+        --host=/run/postgresql --no-password \
+        --format=custom --compress=0 vaultwarden \
+        > "$BACKUP_STAGING_DIR/vaultwarden.dump"
+    '';
+  };
+
   services.vaultwarden = {
     enable = true;
     dbBackend = "postgresql";
