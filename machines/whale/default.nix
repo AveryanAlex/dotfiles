@@ -171,7 +171,7 @@ in
     "bw.averyan.ru" = makeAveryanHost "http://whale:8222";
     "dacha.averyan.ru" = makeAveryanHost "http://lizard:8123";
     "dacha-frigate.averyan.ru" = makeAveryanHost "http://lizard:8971";
-    "xartik-home.averyan.ru" = makeAveryanHost "http://[201:2e23:9bf2:f5c5:a9c8:7607:e359:2ea6]:8123";
+    "xartik-home.averyan.ru" = makeAveryanHost "http://[200:88b5:6472:9f35:65a:e509:84d5:1475]:8123";
     "xartik-immich.averyan.ru" = makeAveryanHost "http://[201:2e23:9bf2:f5c5:a9c8:7607:e359:2ea6]:2283";
     "dav.averyan.ru" = makeAveryanHost "http://[::1]:5232";
     "git.averyan.ru" = makeAveryanHost "http://whale:3816";
