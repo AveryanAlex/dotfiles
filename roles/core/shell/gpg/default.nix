@@ -1,6 +1,7 @@
 { config, ... }:
 {
-  home-manager.users.alex.programs.gpg.homedir = "${config.home-manager.users.alex.xdg.dataHome}/gnupg";
+  home-manager.users.alex.programs.gpg.homedir =
+    "${config.home-manager.users.alex.xdg.dataHome}/gnupg";
 
   persist.state.homeDirs = [
     {
