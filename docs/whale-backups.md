@@ -141,7 +141,8 @@ The separate `sync-documents` job backs up
 `/home/alex/tank/hot/sync/Documents` from the `hot` filesystem. It uses the
 same daily schedule and repository as `tank`; its source path is a mount
 dependency. It does not include the rest of `hot`. Deployed on 2026-09-26;
-the timer is enabled and active. The first snapshot has not yet been verified.
+the timer is enabled and active. The first snapshot, `8b0eff16`, completed
+successfully; restore verification remains pending.
 
 ## Immich
 
