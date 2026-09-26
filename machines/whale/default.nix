@@ -107,6 +107,7 @@ in
     ../../apps/nextcloud
     ../../apps/litellm
     ../../apps/cliproxyapi
+    ../../apps/cliproxy-billing-bot
     ../../apps/qbit
   ];
 
