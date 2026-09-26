@@ -36,7 +36,6 @@
       "firefox"
       "ghostty"
       "hammerspoon"
-      "karabiner-elements"
       "openmtp"
       "shottr"
       "steam"
