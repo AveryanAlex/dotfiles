@@ -71,8 +71,9 @@ in
         };
       };
       folders = {
-        "Documents" = commonFolder "Documents";
-        "projects" = commonFolder "projects";
+        "Documents" = commonFolder "Documents" // {
+          devices = devices ++ lib.optional (config.networking.hostName == "whale") "yandex";
+        };
         "Music" = commonFolder "Music"; # // {devices = allDevices ++ ["swan"];};
         "Notes" = commonFolder "Notes";
         "Pictures" = commonFolder "Pictures"; # // {devices = allDevices ++ ["swan"];};
