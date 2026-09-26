@@ -34,6 +34,7 @@
       "node"
       "pnpm"
       "rustup"
+      "uv"
     ];
 
     casks = [
