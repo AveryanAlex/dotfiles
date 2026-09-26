@@ -44,6 +44,7 @@
       "openmtp"
       "shottr"
       "steam"
+      "syncthing-app"
       "telegram"
       "visual-studio-code"
       "yandex-music"

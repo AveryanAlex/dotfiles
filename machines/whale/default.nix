@@ -127,6 +127,10 @@ in
   persist.tmpfsSize = "16G";
 
   services.syncthing.dataDir = "/home/alex/tank/hot/sync";
+  services.syncthing.settings.devices.yandex = {
+    id = "26ME5TL-ZMC4YVB-ZFLE3EL-V52YQVR-D7UZJL2-HPUPXHT-WDM7HSP-UHJFDQB";
+    compression = "always";
+  };
 
   # Monitoring
   services.prometheus.exporters.node.enabledCollectors = [ "zoneinfo" ];
