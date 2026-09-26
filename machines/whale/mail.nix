@@ -22,6 +22,7 @@ in
       "/persist/mail/vmail"
       "/persist/mail/sieve"
       "/persist/mail/dkim"
+      "/persist/mail/redis-rspamd"
     ];
   };
 
