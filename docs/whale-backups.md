@@ -117,7 +117,7 @@ snapshot `a0572608` completed successfully. The general tank job excludes it.
 ## Personal tank
 
 The `tank` job backs up `/home/alex/tank`. Both nested filesystems, `hot` and
-`cold`, are excluded for now and are not mount dependencies of this job. It inherits the daily 04:00 Europe/Moscow schedule
+`cold`, are excluded from this job and are not its mount dependencies. It inherits the daily 04:00 Europe/Moscow schedule
 and 15-minute jitter, with a 7-day timeout for the initial multi-terabyte upload.
 It has its own job lock and can run alongside other backups. Files are read live.
 
@@ -126,7 +126,7 @@ Excluded paths relative to tank:
 - `Immich`, `nextcloud`, `Torrents`: dedicated jobs; Immich generated content is
   intentionally omitted altogether. Deploy the qBit Torrents addition together
   with this job.
-- `hot` and `cold`: both entire filesystems, excluded at the user's request for now.
+- `hot` and `cold`: both entire filesystems are excluded from the `tank` job.
 - `.snapshots` at any depth, plus root `.Trash-1000` and `.mypy_cache`.
 
 Everything else is included, notably `Archive`, `Обработать`,
@@ -136,6 +136,12 @@ outside an excluded directory are included when their other path is scanned.
 Deployed on 2026-09-25. The first backup started at 11:45 MSK and began uploading
 successfully with the exclusions verified in the live profile. Completion of the
 first snapshot and restore verification remain pending.
+
+The separate `sync-documents` job backs up
+`/home/alex/tank/hot/sync/Documents` from the `hot` filesystem. It uses the
+same daily schedule and repository as `tank`; its source path is a mount
+dependency. It does not include the rest of `hot`. Deployed on 2026-09-26;
+the timer is enabled and active. The first snapshot has not yet been verified.
 
 ## Immich
 

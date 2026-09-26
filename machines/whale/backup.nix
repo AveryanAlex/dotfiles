@@ -43,6 +43,9 @@
         "/home/alex/tank/.mypy_cache"
       ];
     };
+    jobs.sync-documents = {
+      paths = [ "/home/alex/tank/hot/sync/Documents" ];
+    };
   };
 
   persist.cache.dirs = [
