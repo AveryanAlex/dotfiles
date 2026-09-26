@@ -6,6 +6,7 @@
 {
   imports = [
     ./direnv.nix
+    ./ghostty.nix
     ./gpg
     ./linux.nix
     ./nethogs.nix
