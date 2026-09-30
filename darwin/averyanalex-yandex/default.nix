@@ -51,6 +51,7 @@
       "yandex-music"
       "prismlauncher"
       "freecad"
+      "linearmouse"
     ];
 
     onActivation.cleanup = "uninstall";
