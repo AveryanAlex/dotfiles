@@ -142,6 +142,7 @@ in
             CPA_BASE_URL = "http://${name}:8317";
             REDIS_QUEUE_ADDR = "${name}:8317";
             TZ = "Europe/Moscow";
+            TRUSTED_PROXY_CIDRS = "10.90.96.1/32";
             WORK_DIR = "/data";
           };
           environmentFiles = [ config.age.secrets.${name}.path ];

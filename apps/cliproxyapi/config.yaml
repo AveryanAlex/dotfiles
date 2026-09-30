@@ -1,6 +1,9 @@
 host: ""
 port: 8317
 
+trusted-proxies:
+  - "10.90.96.1"
+
 tls:
   enable: false
   cert: ""
