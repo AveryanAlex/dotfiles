@@ -50,6 +50,7 @@
       "visual-studio-code"
       "yandex-music"
       "prismlauncher"
+      "freecad"
     ];
 
     onActivation.cleanup = "uninstall";
