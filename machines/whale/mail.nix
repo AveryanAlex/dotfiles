@@ -32,7 +32,9 @@ in
     "d /persist/mail/vmail 6760 5000 5000 - -"
     "d /persist/mail/dovecot 755 0 0 - -"
     "d /persist/mail/postfix 755 0 0 - -"
-    "d /persist/mail/redis-rspamd 700 997 997 - -"
+    # redis-rspamd's UID is assigned inside the container; its StateDirectory
+    # setup owns the bind-mounted directory without pinning that UID here.
+    "d /persist/mail/redis-rspamd 700 - - - -"
     "d /persist/mail/rspamd 700 225 225 - -"
     "d /persist/mail/spool 1777 0 0 - -"
   ];
