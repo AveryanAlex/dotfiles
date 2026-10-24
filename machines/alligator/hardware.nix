@@ -35,6 +35,15 @@
     inputs."nixpkgs-kernel".legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxKernel.packages.linux_zen
   );
 
+  # Keep module assembly paired with the pinned kernel, which predates the
+  # per-module signing certificates required by the current aggregator.
+  nixpkgs.overlays = [
+    (_final: prev: {
+      aggregateModules =
+        inputs."nixpkgs-kernel".legacyPackages.${prev.stdenv.hostPlatform.system}.aggregateModules;
+    })
+  ];
+
   # SCREEN
   # brightness control
   environment.systemPackages = [ pkgs.ddcutil ];

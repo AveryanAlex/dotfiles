@@ -4,7 +4,7 @@
 }:
 {
   imports = [
-    inputs.nixcfg.nixosModules.default
+    ./nixcfg.nix
     inputs.home-manager.nixosModules.default
     inputs.quadlet-nix.nixosModules.quadlet
     inputs.self.nixosModules.modules.nebula-averyan
@@ -30,7 +30,9 @@
     "-w /home/alex/.local/share/keyrings -p rwa -k keyring_access"
   ];
 
-  nixcfg.inputs = inputs;
+  # A pkgs.kernel package-set alias is also picked up by callPackage's optional
+  # kernel arguments (e.g. ZFS), mixing the pinned and current toolchains.
+  nixcfg.inputs = builtins.removeAttrs inputs [ "nixpkgs-kernel" ];
   nixcfg.username = "alex";
 
   # boot.tmp.useTmpfs = true;

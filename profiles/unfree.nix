@@ -16,5 +16,6 @@
       "antigravity"
       "code"
       "claude-code"
+      "rtk"
     ];
 }

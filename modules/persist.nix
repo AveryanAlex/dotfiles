@@ -120,12 +120,13 @@ in
       neededForBoot = true;
     };
 
-    boot.initrd.postMountCommands = mkIf cfg.linkNix ''
-      mkdir -p /mnt-root/nix
-      mount --bind /mnt-root${cfg.persistRoot}/nix /mnt-root/nix
-      chmod 755 /mnt-root
-    '';
-
-    boot.initrd.systemd.enable = false;
+    # systemd mounts this in the initrd, after the persistent filesystem.
+    fileSystems."/nix" = mkIf cfg.linkNix {
+      device = "${cfg.persistRoot}/nix";
+      fsType = "none";
+      options = [ "bind" ];
+      neededForBoot = true;
+      depends = [ cfg.persistRoot ];
+    };
   };
 }
