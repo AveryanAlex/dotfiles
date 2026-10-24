@@ -4,6 +4,70 @@ let
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   mergedBambuCa = import ../../../roles/desktop/bambu-certs/package.nix { inherit pkgs; };
 
+  orcaSource = pkgs.fetchFromGitHub {
+    owner = "OrcaSlicer";
+    repo = "OrcaSlicer";
+    rev = "857896dc6b3fdfbf5cebc5057bde5a179a29b1ba";
+    hash = "sha256-wskZIXObZ1Km8lGhW+yLZMW9aoH0DV5HJXLLVHd2Yhg=";
+  };
+
+  # Match main's CAD dependencies and its OCCT triangulation fix.
+  opencascade = pkgs.stdenv.mkDerivation {
+    pname = "opencascade-occt";
+    version = "8.0.1";
+    src = pkgs.fetchurl {
+      url = "https://github.com/Open-Cascade-SAS/OCCT/archive/refs/tags/V8_0_1.zip";
+      hash = "sha256-fAM9kX7o8EDAUS0oncxfAsFIiJ1brBfD4lY5rMtE8No=";
+    };
+    patches = [ "${orcaSource}/deps/OCCT/0001-BRepMesh-seam-pcurve-at-edge-parameter.patch" ];
+    nativeBuildInputs = [
+      pkgs.cmake
+      pkgs.ninja
+      pkgs.unzip
+    ];
+    buildInputs = [ pkgs.freetype ];
+    cmakeFlags = [
+      (lib.cmakeFeature "CMAKE_CXX_STANDARD" "17")
+      (lib.cmakeFeature "BUILD_LIBRARY_TYPE" "Shared")
+      (lib.cmakeBool "USE_TK" false)
+      (lib.cmakeBool "USE_TBB" false)
+      (lib.cmakeBool "USE_FFMPEG" false)
+      (lib.cmakeBool "USE_VTK" false)
+      (lib.cmakeBool "BUILD_DOC_Overview" false)
+      (lib.cmakeBool "BUILD_MODULE_ApplicationFramework" false)
+      (lib.cmakeBool "BUILD_MODULE_Draw" false)
+      (lib.cmakeBool "BUILD_MODULE_FoundationClasses" false)
+      (lib.cmakeBool "BUILD_MODULE_ModelingAlgorithms" true)
+      (lib.cmakeBool "BUILD_MODULE_ModelingData" false)
+      (lib.cmakeBool "BUILD_MODULE_Visualization" false)
+    ];
+  };
+
+  slvs = pkgs.stdenv.mkDerivation {
+    pname = "libslvs";
+    version = "0-unstable-2018-10-16";
+    src = pkgs.fetchurl {
+      url = "https://github.com/JacobStoren/SolveSpaceLib/archive/4d8704523e4bf212fadf5189f92484244f670fea.zip";
+      hash = "sha256-HEvd6cPG7yDqS1C3NgHeVnafLrExs2kn18ZInxAubDA=";
+    };
+    nativeBuildInputs = [
+      pkgs.cmake
+      pkgs.unzip
+    ];
+    postPatch = ''
+      cp ${orcaSource}/deps/SLVS/CMakeLists.txt.in CMakeLists.txt
+    '';
+  };
+
+  cgal = pkgs.cgal.overrideAttrs (old: {
+    version = "6.2.1";
+    src = pkgs.fetchurl {
+      url = "https://github.com/CGAL/cgal/releases/download/v6.2.1/CGAL-6.2.1.zip";
+      hash = "sha256-7r1zfZt/AZlke6XB+fbHo9BlGqzvnC/U3txS2mwl7b4=";
+    };
+    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.unzip ];
+  });
+
   # The 2.4.2 nixpkgs recipe pins Boost 1.86, but current OpenVDB uses 1.89.
   # Keep Orca on the same Boost ABI so both versions are not loaded at once.
   boost = pkgs.boost.override {
@@ -68,34 +132,25 @@ let
   };
 
   orca-slicer-main = pkgs.orca-slicer.overrideAttrs (old: {
-    version = "unstable-2026-08-26";
+    version = "unstable-2026-10-21";
 
-    src = pkgs.fetchFromGitHub {
-      owner = "OrcaSlicer";
-      repo = "OrcaSlicer";
-      rev = "5552ed6cf1383a58321b2196317fe0c69a78b1a6";
-      hash = "sha256-RB722SVMqj0Zb9PVTOhrVTTDVfcc/mZulkgfarKmlrI=";
-    };
+    src = orcaSource;
 
-    # Current main moved the OpenCV link block, so replace the stale nixpkgs
-    # patch with an equivalent patch rebased onto the pinned revision.
+    # Rebase nixpkgs' OpenCV and configurable update-check patches onto main.
     patches =
       pkgs.lib.filter (
         patch:
         !(pkgs.lib.hasInfix "dont-link-opencv-world-orca.patch" (toString patch))
+        && !(pkgs.lib.hasInfix "pr-7650-configurable-update-check.patch" (toString patch))
         && !(isDarwin && pkgs.lib.hasInfix "Link-against-webkit2gtk" (toString patch))
       ) (old.patches or [ ])
       ++ [
         ./patches/orca-slicer-dont-link-opencv-world.patch
+        ./patches/orca-slicer-configurable-update-check.patch
         (pkgs.fetchpatch {
           name = "x2d-ams-sync-filament-arrays.patch";
           url = "https://github.com/AveryanAlex/OrcaSlicer/commit/c5cd4a8f4b0d5432814c38c6696cefa9343d9f38.patch";
           hash = "sha256-z8LqYcGMPFlb35R/1+HG6FnL1rxFQpA+ahMq0M+o9Bw=";
-        })
-        (pkgs.fetchpatch {
-          name = "orca-cloud-api-https.patch";
-          url = "https://github.com/AveryanAlex/OrcaSlicer/commit/67ff6bd34bae10dfadaa83d3f641d05f1d65ae77.patch";
-          hash = "sha256-6RHl6cT4V6HPuLEtF85Z2poisDnwNSzuR3s0YZobsiw=";
         })
       ];
 
@@ -123,7 +178,6 @@ let
         if isDarwin then
           (with pkgs; [
             cereal
-            cgal_5
             curl
             draco
             eigen_5
@@ -137,7 +191,6 @@ let
             libpng
             mpfr
             nlopt
-            opencascade-occt_7_6
             openvdb
             onetbb
             wxWidgets
@@ -146,7 +199,13 @@ let
           ])
         else
           pkgs.lib.filter (
-            input: (input.pname or "") != "boost" && (toString input) != (toString pkgs.gcc-unwrapped)
+            input:
+            !(builtins.elem (input.pname or "") [
+              "boost"
+              "cgal"
+              "opencascade-occt"
+            ])
+            && (toString input) != (toString pkgs.gcc-unwrapped)
           ) (old.buildInputs or [ ])
       )
       ++ [
@@ -154,7 +213,12 @@ let
         boost.out
         pkgs.boost.dev
         pkgs.assimp
+        pkgs.libdatachannel
+        pkgs.openssl
         pkgs.python312
+        cgal
+        opencascade
+        slvs
         wxInspector
       ];
 
@@ -187,6 +251,9 @@ let
     postPatch =
       (old.postPatch or "")
       + ''
+        substituteInPlace src/libslic3r/Feature/FuzzySkin/FuzzySkin.cpp \
+          --replace-fail '<libnoise/module/modulebase.h>' \
+            '<noise/module/modulebase.h>'
         substituteInPlace CMakeLists.txt \
           --replace-fail 'set(_bundled_python_version "3.12.13")' \
             'set(_bundled_python_version "${pkgs.python312.version}")' \
@@ -203,7 +270,6 @@ let
             'COMPONENTS iostreams' \
           --replace-fail $'  Boost::system\n' '''
         for asio_source in \
-          src/libslic3r/GCodeSender.cpp \
           src/slic3r/GUI/HttpServer.hpp \
           src/slic3r/GUI/WebUserLoginDialog.cpp \
           src/slic3r/Utils/Bonjour.cpp \
@@ -212,12 +278,13 @@ let
         do
           substituteInPlace "$asio_source" \
             --replace-fail 'boost::asio::io_service' \
-              'boost::asio::io_context'
+              'boost::asio::io_context' \
+            --replace-fail '<boost/asio/io_service.hpp>' \
+              '<boost/asio/io_context.hpp>'
         done
-        substituteInPlace src/libslic3r/GCodeSender.hpp \
-          --replace-fail 'asio::io_service' \
-            'asio::io_context'
         substituteInPlace src/slic3r/Utils/Serial.cpp \
+          --replace-fail '<boost/asio/io_service.hpp>' \
+            '<boost/asio/io_context.hpp>' \
           --replace-fail 'asio::io_service' \
             'asio::io_context' \
           --replace-fail 'io_service.reset();' \
@@ -227,6 +294,8 @@ let
           --replace-fail 'timer.expires_from_now(boost::posix_time::milliseconds(timeout));' \
             'timer.expires_after(std::chrono::milliseconds(timeout));'
         substituteInPlace src/slic3r/Utils/Bonjour.cpp \
+          --replace-fail '<boost/asio/deadline_timer.hpp>' \
+            '<boost/asio/steady_timer.hpp>' \
           --replace-fail '#include <cstdint>' \
             $'#include <chrono>\n#include <cstdint>' \
           --replace-fail 'io_service->post(' \
@@ -239,11 +308,10 @@ let
           --replace-fail 'endpoints->endpoint()' \
             'endpoints.begin()->endpoint()'
         substituteInPlace src/slic3r/GUI/PostProcessor.cpp \
-          --replace-fail '#include <boost/process.hpp>' \
-            '#include <boost/process/v1.hpp>' \
           --replace-fail 'namespace process = boost::process;' \
             'namespace process = boost::process::v1;'
         for process_source in \
+          src/slic3r/GUI/PostProcessor.cpp \
           src/slic3r/GUI/MediaPlayCtrl.cpp \
           src/slic3r/GUI/ProcessRunner.cpp \
           src/slic3r/GUI/ProcessRunner.hpp \
@@ -251,21 +319,12 @@ let
           src/slic3r/plugin/PluginLoader.cpp
         do
           substituteInPlace "$process_source" \
+            --replace-fail '<boost/process/' \
+              '<boost/process/v1/' \
             --replace-fail '#include <boost/process.hpp>' \
               '#include <boost/process/v1.hpp>'
         done
-        for process_source in \
-          src/slic3r/GUI/MediaPlayCtrl.cpp \
-          src/slic3r/GUI/ProcessRunner.cpp \
-          src/slic3r/plugin/PluginLoader.cpp
-        do
-          substituteInPlace "$process_source" \
-            --replace-fail '#include <boost/process/windows.hpp>' \
-              '#include <boost/process/v1/windows.hpp>'
-        done
         substituteInPlace src/slic3r/GUI/ProcessRunner.cpp \
-          --replace-fail '#include <boost/process/env.hpp>' \
-            '#include <boost/process/v1/env.hpp>' \
           --replace-fail 'namespace bp = boost::process;' \
             'namespace bp = boost::process::v1;'
         substituteInPlace src/slic3r/plugin/PluginLoader.cpp \
@@ -281,10 +340,8 @@ let
               'boost::process::v1::'
         done
         substituteInPlace src/slic3r/Utils/Process.cpp \
-          --replace-fail '#include <boost/process/spawn.hpp>' \
-            '#include <boost/process/v1/spawn.hpp>' \
-          --replace-fail '#include <boost/process/args.hpp>' \
-            '#include <boost/process/v1/args.hpp>' \
+          --replace-fail '<boost/process/' \
+            '<boost/process/v1/' \
           --replace-fail 'boost::process::spawn' \
             'boost::process::v1::spawn'
       ''
@@ -307,6 +364,10 @@ let
         substituteInPlace src/CMakeLists.txt \
           --replace-fail 'find_package(wxWidgets 3.3 CONFIG REQUIRED' \
             'find_package(wxWidgets 3.3 REQUIRED'
+        # Use nixpkgs' shared FFmpeg instead of upstream's static deps bundle.
+        substituteInPlace src/slic3r/CMakeLists.txt \
+          --replace-fail $'if (APPLE)\n    # Static FFmpeg' \
+            $'find_package(PkgConfig REQUIRED)\nif (APPLE AND SLIC3R_STATIC)\n    # Static FFmpeg'
       '';
 
     # Prevent CMake from downloading uv in the network-isolated Nix build.
