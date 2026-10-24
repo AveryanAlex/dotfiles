@@ -22,7 +22,7 @@
       "serv1.asc.rssi.ru" = {
         ForwardAgent = true;
         User = "averyan";
-        HostName = "mole";
+        HostName = "10.57.1.42";
         HostKeyAlias = "serv1.asc.rssi.ru";
         Port = 3122;
       };
@@ -30,13 +30,13 @@
       "serv2.asc.rssi.ru" = {
         ForwardAgent = true;
         User = "averyan";
-        HostName = "mole";
+        HostName = "10.57.1.42";
         HostKeyAlias = "serv2.asc.rssi.ru";
         Port = 3124;
       };
 
       "git.asc.rssi.ru" = {
-        HostName = "mole";
+        HostName = "10.57.1.42";
         HostKeyAlias = "git.asc.rssi.ru";
         Port = 3123;
       };
