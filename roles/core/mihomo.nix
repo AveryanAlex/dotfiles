@@ -304,11 +304,15 @@ in
               interval = 300;
               lazy = true;
               proxies = [
-                "__Canada"
-                "__USA"
-                "Dima AMD"
-                "Proxy"
+                # "__Canada"
+                # "__USA"
+                # "Dima AMD"
+                # "Proxy"
               ];
+              use = [
+                "akenai"
+              ];
+              filter = "Швеция";
             }
             # {
             #   name = "__Sweden";
