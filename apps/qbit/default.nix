@@ -82,6 +82,8 @@ in
             autoUpdate = "registry";
             memory = "8g";
             stopTimeout = 60;
+            # libtorrent's NETLINK IP notifier is unsupported by gVisor.
+            podmanArgs = [ "--runtime=runc" ];
             networks = [ networks.${name}.ref ];
             ip = "10.90.84.2";
             volumes = [
