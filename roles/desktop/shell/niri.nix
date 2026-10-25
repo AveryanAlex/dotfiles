@@ -5,11 +5,12 @@
   ...
 }:
 let
-  niri-pkgs = inputs.niri-flake.packages.${pkgs.system};
+  # Use the system package set so Niri can load the system Mesa/GBM drivers.
+  niri = pkgs.niri;
   niri-vrr-toggle = pkgs.writeShellScript "niri-vrr-toggle" ''
     set -eu
 
-    outputs_json="$(${niri-pkgs.niri-unstable}/bin/niri msg --json outputs)"
+    outputs_json="$(${niri}/bin/niri msg --json outputs)"
 
     if printf '%s\n' "$outputs_json" | ${pkgs.jq}/bin/jq -e 'to_entries[] | select(.value.vrr_supported and .value.vrr_enabled)' >/dev/null; then
       next=on-demand
@@ -26,9 +27,9 @@ let
     printf '%s\n' "$outputs" |
     while IFS= read -r output; do
       if [ "$next" = "on-demand" ]; then
-        ${niri-pkgs.niri-unstable}/bin/niri msg output "$output" vrr on --on-demand
+        ${niri}/bin/niri msg output "$output" vrr on --on-demand
       else
-        ${niri-pkgs.niri-unstable}/bin/niri msg output "$output" vrr on
+        ${niri}/bin/niri msg output "$output" vrr on
       fi
     done
 
@@ -50,10 +51,10 @@ in
   #   - home-manager.sharedModules with niri-flake config module
   programs.niri = {
     enable = true;
-    package = niri-pkgs.niri-unstable;
+    package = niri;
   };
 
-  environment.systemPackages = [ niri-pkgs.xwayland-satellite-unstable ];
+  environment.systemPackages = [ pkgs.xwayland-satellite ];
 
   hm = {
     programs.niri.settings = {
