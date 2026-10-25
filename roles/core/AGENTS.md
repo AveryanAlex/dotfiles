@@ -17,8 +17,9 @@ Changes here affect system networking, podman, shell defaults, module imports, a
 
 ## CONVENTIONS
 
-- `default.nix` wires in `inputs.nixcfg`, `inputs.home-manager`, `inputs.quadlet-nix`, and the custom modules from `inputs.self.nixosModules.modules.*`.
-- `hm` is provided by the external `nixcfg` flake and targets `home-manager.users.alex`; it is not defined in this repo.
+- `default.nix` wires in `home.nix`, `inputs.quadlet-nix`, and the custom modules from `inputs.self.nixosModules.modules.*`.
+- `home.nix` imports Home Manager, defines `hm` as an alias for `home-manager.users.alex`, and configures Alex's base home. Olga's home is configured separately by the family role.
+- NUR and automatic `pkgs.stable` / `pkgs.master` aliases live in `profiles/nur.nix` and `profiles/nixpkgs-inputs.nix`. Do not expose `nixpkgs-kernel` as `pkgs.kernel`: it collides with optional package arguments.
 - `system.nix` is the profile bus for shared non-role-specific profiles.
 - Add shell tools as separate files under `shell/` and import them from `shell/default.nix`; do not keep growing one monolithic shell file.
 - If a setting is truly cross-machine and not obviously desktop-only or server-only, this is usually the right subtree.

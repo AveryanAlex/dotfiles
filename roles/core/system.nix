@@ -2,6 +2,7 @@
   imports = [
     ../../profiles/agenix.nix
     ../../profiles/boot.nix
+    ../../profiles/console.nix
     ../../profiles/filesystems.nix
     ../../profiles/locale.nix
     ../../profiles/logs.nix
@@ -9,12 +10,15 @@
     ../../profiles/monitoring.nix
     ../../profiles/nebula-averyan.nix
     ../../profiles/nix.nix
+    ../../profiles/nixpkgs-inputs.nix
+    ../../profiles/nur.nix
     ../../profiles/persist.nix
     ../../profiles/proxy.nix
     ../../profiles/ssh-server.nix
     ../../profiles/sudo.nix
     ../../profiles/unfree.nix
     ../../profiles/unsecure.nix
+    ../../profiles/upgrade-diff.nix
     ../../profiles/userdirs.nix
     ../../profiles/users.nix
     ../../profiles/vmvariant.nix

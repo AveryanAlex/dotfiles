@@ -20,14 +20,7 @@
   };
 
   # ─── PipeWire + WirePlumber ─────────────────────────────────────────────
-  security.rtkit.enable = true;
-
   services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    # alsa.support32Bit = true;
-    pulse.enable = true;
-
     # Enable BAP (LE Audio) roles in addition to Classic profiles.
     # The default WirePlumber role list already includes bap_*, but if anything
     # else in your config sets bluez5.roles, that override wins — so we set
@@ -59,7 +52,5 @@
   environment.systemPackages = with pkgs; [
     bluez
     bluez-tools
-    pavucontrol
-    pwvucontrol
   ];
 }

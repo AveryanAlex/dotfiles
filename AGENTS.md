@@ -82,7 +82,7 @@ When adding or migrating packages, first trace the current machine's import chai
 - When editing an existing file, match that file's current style (`hm`, `home-manager.users.alex`, inline comments, list layout). New files should match nearby siblings.
 - `inputs` and `secrets` are passed through `specialArgs`. Use `"${secrets}/..."` for shared secrets and relative `./file.age` paths for app-local secrets.
 - The repo is flakes-only: `nix.channel.enable = false`.
-- `hm` is shorthand for `home-manager.users.alex`, provided by the external `nixcfg` input. It is not defined locally.
+- `hm` is shorthand for `home-manager.users.alex`, defined in `roles/core/home.nix` together with the base Home Manager setup. Olga has a separate configuration in `roles/family/home.nix`.
 - Persistent host data usually goes through `persist.state`, `persist.derivative`, or `persist.cache`. App containers are the main exception: they usually create `/persist/<app>/...` via `systemd.tmpfiles.rules`.
 - Hardware modules are referenced as `inputs.self.nixosModules.hardware.<name>`; custom modules as `inputs.self.nixosModules.modules.<name>`.
 - CI is split: GitHub Actions handles formatting and flake.lock updates; Woodpecker runs lint plus `nix flake check`.

@@ -1675,24 +1675,6 @@
         "type": "github"
       }
     },
-    "nixcfg": {
-      "inputs": {
-        "srvos": "srvos"
-      },
-      "locked": {
-        "lastModified": 1773178689,
-        "narHash": "sha256-Y+GOtagPgp8fDDaSnMrVqdR7K6wdjHnQUFMqGrQ9g/4=",
-        "owner": "averyanalex",
-        "repo": "nixcfg",
-        "rev": "d4334bce4eb155520c798d8d363f0a10761f51ab",
-        "type": "github"
-      },
-      "original": {
-        "owner": "averyanalex",
-        "repo": "nixcfg",
-        "type": "github"
-      }
-    },
     "nixos-hardware": {
       "inputs": {
         "nixpkgs": "nixpkgs_20"
@@ -2502,7 +2484,6 @@
         "nix-darwin": "nix-darwin",
         "nix-flatpak": "nix-flatpak",
         "nix-vscode-extensions": "nix-vscode-extensions",
-        "nixcfg": "nixcfg",
         "nixos-hardware": "nixos-hardware",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs_21",
@@ -2708,22 +2689,6 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "type": "github"
-      }
-    },
-    "srvos": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1722473484,
-        "narHash": "sha256-gl0NnSdNwjuAgIHfmGSVx/2jKHNfN5ie8Ex6OTjfczY=",
-        "owner": "nix-community",
-        "repo": "srvos",
-        "rev": "46a59095dc9228a945bf1ee8160b397eb502ad6c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "srvos",
         "type": "github"
       }
     },

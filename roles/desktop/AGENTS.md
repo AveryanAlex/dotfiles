@@ -25,7 +25,7 @@
 
 ## CONVENTIONS
 
-- `default.nix` sets `nixcfg.desktop = true` to signal desktop mode to the nixcfg module.
+- `default.nix` imports `profiles/pipewire.nix` for common audio configuration; `lc3.nix` only adds Bluetooth/LE Audio settings and Bluetooth tools.
 - `default.nix` imports many profiles from `../../profiles/` (fonts, mail, music, sdr, flatpak, sync, etc.); check its import list before adding a new profile import.
 - Transparent proxy is enabled at the desktop layer: `networking.tproxy.output.enable = true` with xray backend.
 - `programs.nh.flake` points to `/home/alex/projects/AveryanAlex/dotfiles`.

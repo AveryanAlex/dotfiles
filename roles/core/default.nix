@@ -1,11 +1,12 @@
 {
+  config,
   inputs,
+  lib,
   ...
 }:
 {
   imports = [
-    ./nixcfg.nix
-    inputs.home-manager.nixosModules.default
+    ./home.nix
     inputs.quadlet-nix.nixosModules.quadlet
     inputs.self.nixosModules.modules.nebula-averyan
     inputs.self.nixosModules.modules.persist
@@ -30,10 +31,9 @@
     "-w /home/alex/.local/share/keyrings -p rwa -k keyring_access"
   ];
 
-  # A pkgs.kernel package-set alias is also picked up by callPackage's optional
-  # kernel arguments (e.g. ZFS), mixing the pinned and current toolchains.
-  nixcfg.inputs = builtins.removeAttrs inputs [ "nixpkgs-kernel" ];
-  nixcfg.username = "alex";
+  documentation.info.enable = false;
+
+  users.users.alex.extraGroups = lib.optional config.programs.wireshark.enable "wireshark";
 
   # boot.tmp.useTmpfs = true;
 

@@ -11,9 +11,6 @@
     # nixpkgs-fork.url = "git+file:///home/alex/projects/averyanalex/nixpkgs";
     # nixpkgs-fork.url = "github:averyanalex/nixpkgs/test";
 
-    # nixcfg.url = "git+file:///home/alex/projects/averyanalex/nixcfg";
-    nixcfg.url = "github:averyanalex/nixcfg";
-
     nixpak = {
       url = "github:nixpak/nixpak";
       inputs.nixpkgs.follows = "nixpkgs";
