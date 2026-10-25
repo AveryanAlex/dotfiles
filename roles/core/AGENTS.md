@@ -21,6 +21,7 @@ Changes here affect system networking, podman, shell defaults, module imports, a
 - `home.nix` imports Home Manager, defines `hm` as an alias for `home-manager.users.alex`, and configures Alex's base home. Olga's home is configured separately by the family role.
 - NUR and automatic `pkgs.stable` / `pkgs.master` aliases live in `profiles/nur.nix` and `profiles/nixpkgs-inputs.nix`. Do not expose `nixpkgs-kernel` as `pkgs.kernel`: it collides with optional package arguments.
 - `system.nix` is the profile bus for shared non-role-specific profiles.
+- `profiles/audit.nix` enables auditing, preserves audit logs, and schedules daily rotation for every host importing core; do not put this policy in a machine-specific module.
 - Add shell tools as separate files under `shell/` and import them from `shell/default.nix`; do not keep growing one monolithic shell file.
 - If a setting is truly cross-machine and not obviously desktop-only or server-only, this is usually the right subtree.
 

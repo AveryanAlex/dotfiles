@@ -1,6 +1,7 @@
 {
   imports = [
     ../../profiles/agenix.nix
+    ../../profiles/audit.nix
     ../../profiles/boot.nix
     ../../profiles/console.nix
     ../../profiles/filesystems.nix
