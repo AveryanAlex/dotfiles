@@ -532,8 +532,9 @@ in
 
         "${name}-minio" = {
           containerConfig = {
-            image = "docker.io/minio/minio:latest";
-            autoUpdate = "registry";
+            # Upstream images are no longer pullable. Preserve whale's cached
+            # release and omit autoUpdate so MinIO cannot abort Reploy's batch.
+            image = "docker.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e";
             memory = "2g";
             networks = [ network ];
             ip = "${subnet}.8";
@@ -557,8 +558,8 @@ in
 
         "${name}-minio-init" = {
           containerConfig = {
-            image = "docker.io/minio/mc:latest";
-            autoUpdate = "registry";
+            # Keep the cached client too; MinIO upgrades require an explicit rollout.
+            image = "docker.io/minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727";
             memory = "512m";
             networks = [ network ];
             ip = "${subnet}.14";
