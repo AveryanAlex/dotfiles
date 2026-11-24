@@ -1,0 +1,151 @@
+From: AveryanAlex <alex@averyan.ru>
+Subject: Fix X2D AMS sync filament array mismatch
+
+Rebased from AveryanAlex/OrcaSlicer commit c5cd4a8f4b0d5432814c38c6696cefa9343d9f38.
+
+diff --git a/src/libslic3r/PresetBundle.cpp b/src/libslic3r/PresetBundle.cpp
+index 0235c04..f5194b9 100644
+--- a/src/libslic3r/PresetBundle.cpp
++++ b/src/libslic3r/PresetBundle.cpp
+@@ -4718,6 +4718,7 @@ unsigned int PresetBundle::sync_ams_list(std::vector<std::pair<DynamicPrintConfi
+     ConfigOptionStrings *filament_color = project_config.option<ConfigOptionStrings>("filament_colour");
+     ConfigOptionStrings *filament_color_type = project_config.option<ConfigOptionStrings>("filament_colour_type");
+     ConfigOptionInts *   filament_map = project_config.option<ConfigOptionInts>("filament_map");
++    ConfigOptionInts *   filament_nozzle_map = project_config.option<ConfigOptionInts>("filament_nozzle_map");
+     ConfigOptionInts *   filament_volume_map = project_config.option<ConfigOptionInts>("filament_volume_map");
+     // Snapshot and temporarily strip mixed filament slots so AMS sync operates on physical
+     // filaments only. A mixed slot is virtual and has no tray to sync against; leaving it in
+@@ -5077,9 +5078,41 @@ unsigned int PresetBundle::sync_ams_list(std::vector<std::pair<DynamicPrintConfi
+         }
+     }
+
+-    // Update ams_multi_color_filment
+-    update_filament_multi_color();
++    // A multi-extruder printer may require more project filament slots than the AMS sync returned
++    // (for example, an X2D with only one loaded source). The preset updater enforces that minimum
++    // on filament_presets, so extend every parallel array to the same final size before returning.
+     update_multi_material_filament_presets();
++
++    const size_t final_filament_count = this->filament_presets.size();
++    const std::string fallback_color = filament_color->values.empty() ? "#CECECE" : filament_color->values.back();
++    const std::string fallback_color_type = filament_color_type->values.empty() ? "1" : filament_color_type->values.back();
++    const std::vector<std::string> fallback_multi_color =
++        ams_multi_color_filment.empty() || ams_multi_color_filment.back().empty()
++            ? std::vector<std::string>{fallback_color}
++            : ams_multi_color_filment.back();
++
++    filament_color->values.resize(final_filament_count, fallback_color);
++    filament_color_type->values.resize(final_filament_count, fallback_color_type);
++    ams_multi_color_filment.resize(final_filament_count, fallback_multi_color);
++    filament_map->values.resize(final_filament_count, 1);
++    filament_nozzle_map->values.resize(final_filament_count, 0);
++    filament_volume_map->values.resize(final_filament_count, static_cast<int>(NozzleVolumeType::nvtStandard));
++    if (is_mixed_opt)
++        is_mixed_opt->values.resize(final_filament_count, (unsigned char)false);
++    if (mixed_comp_opt)
++        mixed_comp_opt->values.resize(final_filament_count);
++    if (mixed_ratios_opt)
++        mixed_ratios_opt->values.resize(final_filament_count);
++    if (mixed_gradient_opt)
++        mixed_gradient_opt->values.resize(final_filament_count, (unsigned char)false);
++    if (mixed_grad_range_opt)
++        mixed_grad_range_opt->values.resize(final_filament_count);
++    if (mixed_grad_curve_opt)
++        mixed_grad_curve_opt->values.resize(final_filament_count);
++    if (mixed_per_part_opt)
++        mixed_per_part_opt->values.resize(final_filament_count, (unsigned char)false);
++
++    update_filament_multi_color();
+     BOOST_LOG_TRIVIAL(info) << __FUNCTION__ << "finish sync ams list";
+     return this->filament_presets.size();
+ }
+diff --git a/src/slic3r/GUI/Plater.cpp b/src/slic3r/GUI/Plater.cpp
+index 644a2c2..3d675c6 100644
+--- a/src/slic3r/GUI/Plater.cpp
++++ b/src/slic3r/GUI/Plater.cpp
+@@ -6404,7 +6404,7 @@ void Sidebar::sync_ams_list(bool is_from_big_sync_btn)
+     ConfigOptionStrings* color_opt = project_config.option<ConfigOptionStrings>("filament_colour");
+     for (int i = 0; i < p->combos_filament.size(); ++i) {
+         is_support_before.push_back(is_support_filament(i));
+-        color_before_sync.push_back(color_opt->values[i]);
++        color_before_sync.push_back(i < color_opt->values.size() ? color_opt->values[i] : std::string{});
+     }
+     MergeFilamentInfo merge_info;
+     std::vector<std::pair<DynamicPrintConfig *,std::string>> unknowns;
+@@ -6455,13 +6455,13 @@ void Sidebar::sync_ams_list(bool is_from_big_sync_btn)
+     // BBS:Synchronized consumables information
+     // auto calculation of flushing volumes
+     for (int i = 0; i < p->combos_filament.size(); ++i) {
+-        if (i >= color_before_sync.size()) {
++        if (i >= color_before_sync.size() || i >= color_opt->values.size()) {
+             auto_calc_flushing_volumes(i);
+         }
+         else if(color_before_sync[i] != color_opt->values[i] && wxGetApp().app_config->get("auto_calculate_flush") != "disabled"){
+             auto_calc_flushing_volumes(i);
+         }
+-        else if(is_support_filament(i) !=is_support_before[i] && wxGetApp().app_config->get("auto_calculate_flush") == "all"){
++        else if(i < is_support_before.size() && is_support_filament(i) != is_support_before[i] && wxGetApp().app_config->get("auto_calculate_flush") == "all"){
+             auto_calc_flushing_volumes(i);
+         }
+     }
+diff --git a/tests/libslic3r/test_preset_bundle_loading.cpp b/tests/libslic3r/test_preset_bundle_loading.cpp
+index e6e7dc1..5726acb 100644
+--- a/tests/libslic3r/test_preset_bundle_loading.cpp
++++ b/tests/libslic3r/test_preset_bundle_loading.cpp
+@@ -2759,6 +2759,56 @@ TEST_CASE("set_num_filaments keeps mixed-color arrays in step with the filament
+     }
+ }
+
++TEST_CASE("AMS overwrite sync keeps a slot for every printer extruder", "[Preset][Bundle][AMS][Regression]")
++{
++    PresetBundle bundle;
++
++    Preset &printer = add_inmemory_preset(bundle.printers, "Dual Extruder Printer");
++    printer.config.option<ConfigOptionFloats>("nozzle_diameter", true)->values = { 0.4, 0.4 };
++    bundle.printers.select_preset_by_name(printer.name, true);
++
++    Preset &filament = add_inmemory_preset(bundle.filaments, "Test PLA");
++    filament.filament_id = "GFSL00";
++    filament.config.option<ConfigOptionStrings>("filament_type", true)->values = { "PLA" };
++    bundle.filaments.select_preset_by_name(filament.name, true);
++
++    bundle.set_num_filaments(2u, std::string("#000000"));
++    bundle.filament_presets.assign(2, filament.name);
++
++    DynamicPrintConfig tray;
++    tray.set_key_value("filament_id", new ConfigOptionStrings{ filament.filament_id });
++    tray.set_key_value("filament_colour", new ConfigOptionStrings{ "#123456" });
++    tray.set_key_value("filament_colour_type", new ConfigOptionStrings{ "1" });
++    tray.set_key_value("filament_multi_colour", new ConfigOptionStrings{ "#123456" });
++    tray.set_key_value("filament_type", new ConfigOptionStrings{ "PLA" });
++    tray.set_key_value("ams_id", new ConfigOptionStrings{ "0" });
++    tray.set_key_value("slot_id", new ConfigOptionStrings{ "0" });
++    bundle.filament_ams_list.emplace(0, std::move(tray));
++
++    std::vector<std::pair<DynamicPrintConfig *, std::string>> unknowns;
++    std::map<int, AMSMapInfo> maps;
++    MergeFilamentInfo merge_info;
++    const size_t filament_count = bundle.sync_ams_list(unknowns, false, maps, false, merge_info, false);
++
++    REQUIRE(filament_count == 2);
++    CHECK(unknowns.empty());
++    CHECK(bundle.filament_presets.size() == filament_count);
++    for (const char *key : { "filament_colour", "filament_multi_colour", "filament_colour_type" }) {
++        DYNAMIC_SECTION(key << " follows the final filament count") {
++            CHECK(bundle.project_config.option<ConfigOptionStrings>(key)->values.size() == filament_count);
++        }
++    }
++    for (const char *key : { "filament_map", "filament_nozzle_map", "filament_volume_map" }) {
++        DYNAMIC_SECTION(key << " follows the final filament count") {
++            CHECK(bundle.project_config.option<ConfigOptionInts>(key)->values.size() == filament_count);
++        }
++    }
++
++    const auto &colors = bundle.project_config.option<ConfigOptionStrings>("filament_colour")->values;
++    CHECK(colors[0] == "#123456");
++    CHECK(colors[1] == "#123456");
++}
++
+ // A mix is described by 1-based indices into the project's filament list, which Orca rebuilds
+ // from the selected printer's snapshot (filament_%02u / filament_colors) at startup and on every
+ // printer selection. Held anywhere but that same per-printer snapshot, the mixed arrays end up

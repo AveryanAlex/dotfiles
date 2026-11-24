@@ -4,14 +4,15 @@ let
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   mergedBambuCa = import ../../../roles/desktop/bambu-certs/package.nix { inherit pkgs; };
 
+  version = "2.5.1";
   orcaSource = pkgs.fetchFromGitHub {
     owner = "OrcaSlicer";
     repo = "OrcaSlicer";
-    rev = "857896dc6b3fdfbf5cebc5057bde5a179a29b1ba";
-    hash = "sha256-wskZIXObZ1Km8lGhW+yLZMW9aoH0DV5HJXLLVHd2Yhg=";
+    tag = "v${version}";
+    hash = "sha256-jT6kD8vdHkdwdzomrOG2q5s39Wme894lGPZvS7P+Pkw=";
   };
 
-  # Match main's CAD dependencies and its OCCT triangulation fix.
+  # Match Orca's CAD dependencies and its OCCT triangulation fix.
   opencascade = pkgs.stdenv.mkDerivation {
     pname = "opencascade-occt";
     version = "8.0.1";
@@ -68,6 +69,15 @@ let
     nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.unzip ];
   });
 
+  # Orca 2.5.1 requires Expat 2.10. Its Autotools build enables the entity amplification guard.
+  expat = pkgs.expat.overrideAttrs {
+    version = "2.10.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/libexpat/libexpat/releases/download/R_2_10_0/expat-2.10.0.tar.xz";
+      hash = "sha256-xiS6KZj8Zd8RY6SWQf8/mrcxOLEWQdkshr7g+wGxvH8=";
+    };
+  };
+
   # The 2.4.2 nixpkgs recipe pins Boost 1.86, but current OpenVDB uses 1.89.
   # Keep Orca on the same Boost ABI so both versions are not loaded at once.
   boost = pkgs.boost.override {
@@ -106,7 +116,7 @@ let
           ];
         });
 
-  # Current Orca main requires wxInspector even in release builds, where its
+  # Orca requires wxInspector even in release builds, where its
   # UI is disabled. It is not packaged in nixpkgs yet.
   wxInspector = pkgs.stdenv.mkDerivation {
     pname = "wxInspector";
@@ -131,27 +141,25 @@ let
     ];
   };
 
-  orca-slicer-main = pkgs.orca-slicer.overrideAttrs (old: {
-    version = "unstable-2026-10-21";
-
+  orca-slicer = pkgs.orca-slicer.overrideAttrs (old: {
+    inherit version;
     src = orcaSource;
 
-    # Rebase nixpkgs' OpenCV and configurable update-check patches onto main.
+    # Use the rebased OpenCV and update-check patches. Orca 2.5.1 includes
+    # nixpkgs' OpenGL context fixes for slicing and toolpath preview.
     patches =
       pkgs.lib.filter (
         patch:
         !(pkgs.lib.hasInfix "dont-link-opencv-world-orca.patch" (toString patch))
         && !(pkgs.lib.hasInfix "pr-7650-configurable-update-check.patch" (toString patch))
+        && !(pkgs.lib.hasInfix "pr-15873-fix-slice-crash.patch" (toString patch))
+        && !(pkgs.lib.hasInfix "pr-16109-fix-toolpath-freeze.patch" (toString patch))
         && !(isDarwin && pkgs.lib.hasInfix "Link-against-webkit2gtk" (toString patch))
       ) (old.patches or [ ])
       ++ [
         ./patches/orca-slicer-dont-link-opencv-world.patch
         ./patches/orca-slicer-configurable-update-check.patch
-        (pkgs.fetchpatch {
-          name = "x2d-ams-sync-filament-arrays.patch";
-          url = "https://github.com/AveryanAlex/OrcaSlicer/commit/c5cd4a8f4b0d5432814c38c6696cefa9343d9f38.patch";
-          hash = "sha256-z8LqYcGMPFlb35R/1+HG6FnL1rxFQpA+ahMq0M+o9Bw=";
-        })
+        ./patches/x2d-ams-sync-filament-arrays.patch
       ];
 
     nativeBuildInputs =
@@ -181,7 +189,6 @@ let
             curl
             draco
             eigen_5
-            expat
             ffmpeg
             freetype
             glew
@@ -203,6 +210,7 @@ let
             !(builtins.elem (input.pname or "") [
               "boost"
               "cgal"
+              "expat"
               "opencascade-occt"
             ])
             && (toString input) != (toString pkgs.gcc-unwrapped)
@@ -217,6 +225,7 @@ let
         pkgs.openssl
         pkgs.python312
         cgal
+        expat
         opencascade
         slvs
         wxInspector
@@ -234,20 +243,13 @@ let
       );
     };
 
-    # Main expects its dependency build to provide a bundled Python 3.12.13.
+    # Orca expects its dependency build to provide a bundled Python 3.12.13.
     # Point both configure and the post-build staging step at nixpkgs' 3.12
     # runtime instead, while tracking its patch release.
     #
     # Boost.System is header-only in nixpkgs' Boost 1.89, so there is no
     # boost_system CMake component or shared library to request. Orca and its
     # bundled FindOpenVDB module still list the obsolete compiled component.
-    #
-    # Boost 1.89 also removed the old Asio io_service alias and deprecated
-    # member/timer APIs, made resolver results an explicit iterator range, and
-    # moved the original Boost.Process API under its v1 compatibility
-    # namespace. These source substitutions keep current Orca main building
-    # against the one Boost version selected above; they can go away after
-    # upstream migrates.
     postPatch =
       (old.postPatch or "")
       + ''
@@ -269,83 +271,15 @@ let
           --replace-fail 'COMPONENTS iostreams system' \
             'COMPONENTS iostreams' \
           --replace-fail $'  Boost::system\n' '''
-        for asio_source in \
-          src/slic3r/GUI/HttpServer.hpp \
-          src/slic3r/GUI/WebUserLoginDialog.cpp \
-          src/slic3r/Utils/Bonjour.cpp \
-          src/slic3r/Utils/Bonjour.hpp \
-          src/slic3r/Utils/Serial.hpp
-        do
-          substituteInPlace "$asio_source" \
-            --replace-fail 'boost::asio::io_service' \
-              'boost::asio::io_context' \
-            --replace-fail '<boost/asio/io_service.hpp>' \
-              '<boost/asio/io_context.hpp>'
-        done
-        substituteInPlace src/slic3r/Utils/Serial.cpp \
-          --replace-fail '<boost/asio/io_service.hpp>' \
-            '<boost/asio/io_context.hpp>' \
-          --replace-fail 'asio::io_service' \
-            'asio::io_context' \
-          --replace-fail 'io_service.reset();' \
-            'io_service.restart();' \
-          --replace-fail 'asio::deadline_timer' \
-            'asio::steady_timer' \
-          --replace-fail 'timer.expires_from_now(boost::posix_time::milliseconds(timeout));' \
-            'timer.expires_after(std::chrono::milliseconds(timeout));'
-        substituteInPlace src/slic3r/Utils/Bonjour.cpp \
-          --replace-fail '<boost/asio/deadline_timer.hpp>' \
-            '<boost/asio/steady_timer.hpp>' \
-          --replace-fail '#include <cstdint>' \
-            $'#include <chrono>\n#include <cstdint>' \
-          --replace-fail 'io_service->post(' \
-            'boost::asio::post(*io_service, ' \
-          --replace-fail 'asio::deadline_timer' \
-            'asio::steady_timer' \
-          --replace-fail 'timer.expires_from_now(boost::posix_time::seconds(timeout));' \
-            'timer.expires_after(std::chrono::seconds(timeout));'
         substituteInPlace src/slic3r/Utils/TCPConsole.cpp \
           --replace-fail 'endpoints->endpoint()' \
             'endpoints.begin()->endpoint()'
-        substituteInPlace src/slic3r/GUI/PostProcessor.cpp \
-          --replace-fail 'namespace process = boost::process;' \
-            'namespace process = boost::process::v1;'
-        for process_source in \
-          src/slic3r/GUI/PostProcessor.cpp \
-          src/slic3r/GUI/MediaPlayCtrl.cpp \
-          src/slic3r/GUI/ProcessRunner.cpp \
-          src/slic3r/GUI/ProcessRunner.hpp \
-          src/slic3r/GUI/RemovableDriveManager.cpp \
-          src/slic3r/plugin/PluginLoader.cpp
-        do
-          substituteInPlace "$process_source" \
-            --replace-fail '<boost/process/' \
-              '<boost/process/v1/' \
-            --replace-fail '#include <boost/process.hpp>' \
-              '#include <boost/process/v1.hpp>'
-        done
-        substituteInPlace src/slic3r/GUI/ProcessRunner.cpp \
-          --replace-fail 'namespace bp = boost::process;' \
-            'namespace bp = boost::process::v1;'
-        substituteInPlace src/slic3r/plugin/PluginLoader.cpp \
-          --replace-fail 'namespace process = boost::process;' \
-            'namespace process = boost::process::v1;'
-        for process_source in \
-          src/slic3r/GUI/MediaPlayCtrl.cpp \
-          src/slic3r/GUI/ProcessRunner.hpp \
-          src/slic3r/GUI/RemovableDriveManager.cpp
-        do
-          substituteInPlace "$process_source" \
-            --replace-fail 'boost::process::' \
-              'boost::process::v1::'
-        done
-        substituteInPlace src/slic3r/Utils/Process.cpp \
-          --replace-fail '<boost/process/' \
-            '<boost/process/v1/' \
-          --replace-fail 'boost::process::spawn' \
-            'boost::process::v1::spawn'
       ''
       + lib.optionalString isDarwin ''
+        # The macOS process launcher still includes pre-1.88 Boost.Process headers.
+        substituteInPlace src/slic3r/Utils/Process.cpp \
+          --replace-fail $'#include <boost/process/spawn.hpp>\n    #include <boost/process/args.hpp>' \
+            '#include "BoostProcessCompat.hpp"'
         # Orca's Cocoa WebView uses this header-only helper, which wxWidgets'
         # Autotools installation omits. Use the exact same wxWidgets source.
         mkdir -p src/wx/private
@@ -425,18 +359,18 @@ in
 if isDarwin then
   # Seal the complete bundle after stripping and installing the custom CA.
   # Keeping signing separate also avoids recompiling Orca for bundle-only changes.
-  pkgs.runCommand orca-slicer-main.name
+  pkgs.runCommand orca-slicer.name
     {
-      inherit (orca-slicer-main) pname version meta;
+      inherit (orca-slicer) pname version meta;
       nativeBuildInputs = [ pkgs.rcodesign ];
-      passthru.unwrapped = orca-slicer-main;
+      passthru.unwrapped = orca-slicer;
     }
     ''
       mkdir -p "$out/bin"
-      cp -R ${orca-slicer-main}/Applications "$out/Applications"
+      cp -R ${orca-slicer}/Applications "$out/Applications"
       chmod -R u+w "$out/Applications"
       rcodesign sign "$out/Applications/OrcaSlicer.app"
       ln -s "$out/Applications/OrcaSlicer.app/Contents/MacOS/OrcaSlicer" "$out/bin/orca-slicer"
     ''
 else
-  orca-slicer-main
+  orca-slicer
